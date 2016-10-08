@@ -20,9 +20,8 @@ set(MODULE_INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_BINARY_DIR}/Widgets
   ${vtkSlicerVolumesModuleLogic_SOURCE_DIR}
   ${vtkSlicerVolumesModuleLogic_BINARY_DIR}
-  ${vtkSlicerCropVolumeLogic_SOURCE_DIR}
-  ${vtkSlicerCropVolumeLogic_BINARY_DIR}
-
+  ${vtkSlicerCropVolumeModuleLogic_SOURCE_DIR}
+  ${vtkSlicerCropVolumeModuleLogic_BINARY_DIR}
   )
 
 set(MODULE_SRCS
@@ -45,7 +44,7 @@ set(MODULE_TARGET_LIBRARIES
   vtkSlicer${MODULE_NAME}ModuleLogic
   qSlicer${MODULE_NAME}ModuleWidgets
   vtkSlicerVolumesModuleLogic
-  vtkSlicerCropVolumeLogic
+  vtkSlicerCropVolumeModuleLogic
   )
 
 set(MODULE_RESOURCES

@@ -16,37 +16,70 @@
 ==============================================================================*/
 // Qt includes
 #include <QDebug>
-#include   <iostream>   
-using   namespace   std;
+#include <QMouseEvent>
+
+
 // SlicerQt includes
 #include "qSlicerCalculusModuleWidget.h"
 #include "ui_qSlicerCalculusModuleWidget.h"
+
+
 #include <qSlicerCoreApplication.h>
 #include <qSlicerModuleManager.h>
+
+
+// MRML includes
+#include "vtkMRMLScene.h"
+
+// Markups includes
+#include "vtkMRMLMarkupsFiducialNode.h"
+#include "vtkMRMLMarkupsNode.h"
+#include "vtkSlicerMarkupsLogic.h"
+
+#include "vtkMRMLCropVolumeParametersNode.h"
+
+#include "qSlicerCoreApplication.h"
+#include "qSlicerModuleManager.h"
+
+
+// vtkSlicerCalculusLogic includes
+#include "vtkSlicerCalculusLogic.h"
 
 //-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_ExtensionTemplate
 class qSlicerCalculusModuleWidgetPrivate: public Ui_qSlicerCalculusModuleWidget
 {
+	Q_DECLARE_PUBLIC(qSlicerCalculusModuleWidget);
+protected:
+	qSlicerCalculusModuleWidget* const q_ptr;
 public:
-  qSlicerCalculusModuleWidgetPrivate();
+	qSlicerCalculusModuleWidgetPrivate(qSlicerCalculusModuleWidget& object);
+	~qSlicerCalculusModuleWidgetPrivate();
+  vtkSlicerCalculusLogic* logic() const;
 };
 
 //-----------------------------------------------------------------------------
 // qSlicerCalculusModuleWidgetPrivate methods
 
 //-----------------------------------------------------------------------------
-qSlicerCalculusModuleWidgetPrivate::qSlicerCalculusModuleWidgetPrivate()
+qSlicerCalculusModuleWidgetPrivate::qSlicerCalculusModuleWidgetPrivate(qSlicerCalculusModuleWidget& object):q_ptr(&object)
 {
 }
-
+qSlicerCalculusModuleWidgetPrivate::~qSlicerCalculusModuleWidgetPrivate()
+{
+}
+vtkSlicerCalculusLogic* qSlicerCalculusModuleWidgetPrivate::logic() const
+{
+	Q_Q(const qSlicerCalculusModuleWidget);
+	return vtkSlicerCalculusLogic::SafeDownCast(q->logic());
+}
 //-----------------------------------------------------------------------------
 // qSlicerCalculusModuleWidget methods
 
 //-----------------------------------------------------------------------------
 qSlicerCalculusModuleWidget::qSlicerCalculusModuleWidget(QWidget* _parent)
   : Superclass( _parent )
-  , d_ptr( new qSlicerCalculusModuleWidgetPrivate )
+  , d_ptr(new qSlicerCalculusModuleWidgetPrivate(*this))
 {
 }
 
@@ -61,8 +94,43 @@ void qSlicerCalculusModuleWidget::setup()
   Q_D(qSlicerCalculusModuleWidget);
   d->setupUi(this);
   this->Superclass::setup();
+
+  // set up buttons connection
+  connect(d->acqStoneBtn, SIGNAL(clicked()),
+	  this, SLOT(onAcqStoneBtnClicked()));
+
+  // set up input&output&markups connection
+  connect(d->inputVolumeMRMLNodeComboBox, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
+	  this, SLOT(onInputVolumeMRMLNodeChanged()));
 }
 
+//-----------------------------------------------------------------------------
+void qSlicerCalculusModuleWidget::setMRMLScene(vtkMRMLScene* scene)
+{
+	this->Superclass::setMRMLScene(scene);
+	if (scene == NULL)
+	{
+		return;
+	}
+
+	// observe close event so can re-add a parameters node if necessary
+	qvtkReconnect(this->mrmlScene(), vtkMRMLScene::EndCloseEvent,
+		this, SLOT(onEndCloseEvent()));
+
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerCalculusModuleWidget::enter()
+{
+	// if there are already some
+	// volumes or ROIs in the scene, they can be set up for use
+
+	this->onInputVolumeMRMLNodeChanged();
+	Q_D(qSlicerCalculusModuleWidget);
+	//d->outputVolumeMRMLNodeComboBox->setEnabled(false);
+
+	this->Superclass::enter();
+}
 void qSlicerCalculusModuleWidget::on_pushButton_clicked()
 {
 	QStringList namesList = qSlicerCoreApplication::application()->moduleManager()->modulesNames();
@@ -74,5 +142,43 @@ void qSlicerCalculusModuleWidget::on_pushButton_clicked()
 		names.append(namesList.at(i));
 		qDebug() << " "<< namesList.at(i);
 	}
+
+}
+void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
+{
+
+	Q_D(qSlicerCalculusModuleWidget);
+	vtkSmartPointer<vtkSlicerCalculusLogic> logic = d->logic();
+	/*
+	logic->reset(vtkMRMLMarkupsFiducialNode::SafeDownCast(d->markupsMRMLNodeComboBox->currentNode()), 1);
+	d->resetPushButton->setEnabled(false);
+	d->applyPushButton->setEnabled(true);
+	d->reapplyPushButton->setEnabled(false);
+	d->outputVolumeMRMLNodeComboBox->setEnabled(false);
+	d->star2CheckBox->setEnabled(true);
+	d->star3CheckBox->setEnabled(true);
+	d->inputVolumeMRMLNodeComboBox->setEnabled(true);
+	d->markupsMRMLNodeComboBox->setEnabled(true);
+	qDebug() << "reset button clicked!" << endl;*/
+
+}
+void qSlicerCalculusModuleWidget::onInputVolumeMRMLNodeChanged()
+{
+	Q_D(qSlicerCalculusModuleWidget);
+	Q_ASSERT(d->inputVolumeMRMLNodeComboBox);
+	updateAcqStoneButtonState();
+	qDebug() << "onInputVolumeMRMLNodeChanged" << endl;
+}
+void qSlicerCalculusModuleWidget::updateAcqStoneButtonState()
+{
+
+	Q_D(qSlicerCalculusModuleWidget);
+	if (d->inputVolumeMRMLNodeComboBox->currentNode())
+	{
+		d->acqStoneBtn->setToolTip("Input volume is required to do the segmentation.");
+		d->acqStoneBtn->setEnabled(false);
+	}
+	
+
 
 }
