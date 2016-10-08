@@ -182,3 +182,12 @@ void qSlicerCalculusModuleWidget::updateAcqStoneButtonState()
 
 
 }
+void qSlicerCalculusModuleWidget::onEndCloseEvent()
+{
+	Q_D(qSlicerCalculusModuleWidget);
+	vtkSmartPointer<vtkSlicerCalculusLogic> logic = d->logic();
+	//logic->reset(vtkMRMLMarkupsFiducialNode::SafeDownCast(d->markupsMRMLNodeComboBox->currentNode()), 0);
+	//d->acqStoneBtn->setEnabled(true);
+	cout << "close scene!" << endl;
+}
+

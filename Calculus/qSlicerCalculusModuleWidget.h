@@ -52,6 +52,8 @@ void updateAcqStoneButtonState();
 void onAcqStoneBtnClicked();
 void on_pushButton_clicked();
 
+
+void onEndCloseEvent();
 protected:
   QScopedPointer<qSlicerCalculusModuleWidgetPrivate> d_ptr;
 
