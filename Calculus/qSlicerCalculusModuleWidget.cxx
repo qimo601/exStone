@@ -17,7 +17,7 @@
 // Qt includes
 #include <QDebug>
 #include <QMouseEvent>
-
+#include <QToolTip>
 
 // SlicerQt includes
 #include "qSlicerCalculusModuleWidget.h"
@@ -176,7 +176,8 @@ void qSlicerCalculusModuleWidget::updateAcqStoneButtonState()
 	if (d->inputVolumeMRMLNodeComboBox->currentNode())
 	{
 		d->acqStoneBtn->setToolTip("Input volume is required to do the segmentation.");
-		d->acqStoneBtn->setEnabled(false);
+		QToolTip::showText(mapToGlobal(d->acqStoneBtn->pos()), "d->inputVolumeMRMLNodeComboBox");
+		d->acqStoneBtn->setEnabled(true);
 	}
 	
 
