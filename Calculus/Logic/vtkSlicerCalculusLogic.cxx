@@ -100,3 +100,29 @@ vtkSlicerCropVolumeLogic* vtkSlicerCalculusLogic::getCropVolumeLogic()
 {
 	return this->cropVolumeLogic;
 }
+
+bool vtkSlicerCalculusLogic::acqSliceData(vtkMRMLScalarVolumeNode* input)
+{
+	//Set background box
+	//Set pixels outside a box which is larger than the tightbox to be background
+	MyBasic::Range3D bkgBox;
+	MyBasic::Range3D imgBox;
+	vtkImageData* orgimage = input->GetImageData();
+	//尺寸长宽高
+	int* dims = orgimage->GetDimensions();
+	//每个像素的数量RGB
+	int numberOfScalarComponents = orgimage->GetNumberOfScalarComponents();
+	//gData.wholeRange.col = dims[0];
+	//gData.wholeRange.row = dims[1];
+	//gData.wholeRange.sli = dims[2];
+	//
+	////loadImage into gData
+	//gData.loadImage(orgimage, imgBox);
+
+	//Data3D<bool> mat_mask(gData.image.getSize(), true);
+
+	//gData.seeds.set(gData.shifttightBox, UNKNOWN);
+
+
+	return true;
+}

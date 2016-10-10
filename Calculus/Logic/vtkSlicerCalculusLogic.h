@@ -29,12 +29,13 @@
 #include "vtkSlicerVolumesLogic.h"
 #include "vtkSlicerCropVolumeLogic.h"
 // MRML includes
-
+#include "vtkMRMLScalarVolumeNode.h"
 // STD includes
 #include <cstdlib>
 
 #include "vtkSlicerCalculusModuleLogicExport.h"
-
+#include "TumorSegm/AdaptiveSegment3D.h"
+#include "TumorSegm/AppData.h"
 
 /// \ingroup Slicer_QtModules_ExtensionTemplate
 class VTK_SLICER_CALCULUS_MODULE_LOGIC_EXPORT vtkSlicerCalculusLogic :
@@ -51,6 +52,8 @@ public:
 
   void setCropVolumeLogic(vtkSlicerCropVolumeLogic* cropVolume);
   vtkSlicerCropVolumeLogic* getCropVolumeLogic();
+  //获取当前切片的像素数据
+  bool acqSliceData(vtkMRMLScalarVolumeNode* input);
 
 protected:
   vtkSlicerCalculusLogic();
@@ -67,6 +70,8 @@ private:
   vtkSlicerCalculusLogic(const vtkSlicerCalculusLogic&); // Not implemented
   void operator=(const vtkSlicerCalculusLogic&); // Not implemented
 
+  AdaptiveSegment3D* m_seg;
+  AppData m_gData;
   //体数据的logic
   vtkSlicerVolumesLogic* volumesLogic;
   //剪切后的体数据

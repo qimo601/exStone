@@ -149,17 +149,12 @@ void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
 
 	Q_D(qSlicerCalculusModuleWidget);
 	vtkSmartPointer<vtkSlicerCalculusLogic> logic = d->logic();
-	/*
-	logic->reset(vtkMRMLMarkupsFiducialNode::SafeDownCast(d->markupsMRMLNodeComboBox->currentNode()), 1);
-	d->resetPushButton->setEnabled(false);
-	d->applyPushButton->setEnabled(true);
-	d->reapplyPushButton->setEnabled(false);
-	d->outputVolumeMRMLNodeComboBox->setEnabled(false);
-	d->star2CheckBox->setEnabled(true);
-	d->star3CheckBox->setEnabled(true);
-	d->inputVolumeMRMLNodeComboBox->setEnabled(true);
-	d->markupsMRMLNodeComboBox->setEnabled(true);
-	qDebug() << "reset button clicked!" << endl;*/
+
+	if (logic->acqSliceData(vtkMRMLScalarVolumeNode::SafeDownCast(d->inputVolumeMRMLNodeComboBox->currentNode())))
+	{
+		qDebug() << "logic->AcqSliceData";
+
+	}
 
 }
 void qSlicerCalculusModuleWidget::onInputVolumeMRMLNodeChanged()
@@ -176,7 +171,7 @@ void qSlicerCalculusModuleWidget::updateAcqStoneButtonState()
 	if (d->inputVolumeMRMLNodeComboBox->currentNode())
 	{
 		d->acqStoneBtn->setToolTip("Input volume is required to do the segmentation.");
-		QToolTip::showText(mapToGlobal(d->acqStoneBtn->pos()), "d->inputVolumeMRMLNodeComboBox");
+		QToolTip::showText(mapToGlobal(d->acqStoneBtn->pos()), QString("d->inputVolumeMRMLNodeComboBox"), (QWidget*)d->acqStoneBtn, QRect());
 		d->acqStoneBtn->setEnabled(true);
 	}
 	
