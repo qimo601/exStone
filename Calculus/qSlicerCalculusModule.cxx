@@ -18,6 +18,7 @@
 // Qt includes
 #include <QDebug>
 #include <QtPlugin>
+#include<qtextcodec.h>
 // Slicer includes
 #include <qSlicerCoreApplication.h>
 #include <qSlicerModuleManager.h>
@@ -110,6 +111,8 @@ QStringList qSlicerCalculusModule::dependencies() const
 //初始化接口
 void qSlicerCalculusModule::setup()
 {
+
+
 	this->Superclass::setup();
 	//获取本module的logic
 	vtkSlicerCalculusLogic* moduleLogic = vtkSlicerCalculusLogic::SafeDownCast(this->logic());

@@ -14,7 +14,8 @@
   limitations under the License.
 
 ==============================================================================*/
-
+//Qt includes
+#include<qdebug.h>
 // Calculus Logic includes
 #include "vtkSlicerCalculusLogic.h"
 
@@ -110,11 +111,29 @@ bool vtkSlicerCalculusLogic::acqSliceData(vtkMRMLScalarVolumeNode* input)
 	vtkImageData* orgimage = input->GetImageData();
 	//尺寸长宽高
 	int* dims = orgimage->GetDimensions();
+
+	m_gData.wholeRange.col = dims[0];
+	m_gData.wholeRange.row = dims[1];
+	m_gData.wholeRange.sli = dims[2];
+	qDebug() << "image dims:" << dims[0] << " " << dims[1] << " " << dims[2] << endl;
+
+	//图像范围
+	int extent[6];
+	orgimage->GetExtent(extent);
+	qDebug() << "image extent:" << extent[0] << " " << extent[1] <<" " << extent[2] << " " << extent[3] << " " << extent[4] << " " << extent[5];
 	//每个像素的数量RGB
 	int numberOfScalarComponents = orgimage->GetNumberOfScalarComponents();
-	//gData.wholeRange.col = dims[0];
-	//gData.wholeRange.row = dims[1];
-	//gData.wholeRange.sli = dims[2];
+	qDebug() << "image numberOfScalarComponents:" << numberOfScalarComponents;
+	//图像原点
+	double origin[3];
+	orgimage->GetOrigin(origin);
+
+	qDebug() << "image origin:" << origin[0] << " " << origin[1] << "" << origin[2];
+	//像素间隔
+	double spaceing[3];
+	orgimage->GetSpacing(spaceing);
+	qDebug()<< "pixel space:" << spaceing[0] << " " << spaceing[1] << "" << spaceing[2] ;
+
 	//
 	////loadImage into gData
 	//gData.loadImage(orgimage, imgBox);
@@ -122,6 +141,24 @@ bool vtkSlicerCalculusLogic::acqSliceData(vtkMRMLScalarVolumeNode* input)
 	//Data3D<bool> mat_mask(gData.image.getSize(), true);
 
 	//gData.seeds.set(gData.shifttightBox, UNKNOWN);
+
+	uchar* pixel = new uchar[m_gData.wholeRange.col *	m_gData.wholeRange.row * m_gData.wholeRange.sli]();
+	uchar* q = pixel;
+	for (int k = 0; k < dims[2]; k++)
+	{
+		for (int j = 0; j < dims[1]; j++)
+		{
+			for (int i = 0; i < dims[0]; i++)
+			{
+				
+					uchar* p = (uchar*)(orgimage->GetScalarPointer(i, j, k));
+					//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *p;
+					//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+1);
+					//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+2);
+			}
+
+		}
+	}
 
 
 	return true;

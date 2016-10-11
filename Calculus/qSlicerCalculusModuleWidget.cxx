@@ -152,7 +152,7 @@ void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
 
 	if (logic->acqSliceData(vtkMRMLScalarVolumeNode::SafeDownCast(d->inputVolumeMRMLNodeComboBox->currentNode())))
 	{
-		qDebug() << "logic->AcqSliceData";
+		qDebug() << "logic->AcqSliceData()";
 
 	}
 
