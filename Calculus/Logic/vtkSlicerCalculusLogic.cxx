@@ -152,7 +152,7 @@ bool vtkSlicerCalculusLogic::acqSliceData(vtkMRMLScalarVolumeNode* input)
 			{
 				
 					uchar* p = (uchar*)(orgimage->GetScalarPointer(i, j, k));
-					//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *p;
+					q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *p;
 					//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+1);
 					//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+2);
 			}

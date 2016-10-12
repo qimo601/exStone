@@ -44,6 +44,7 @@
 
 // vtkSlicerCalculusLogic includes
 #include "vtkSlicerCalculusLogic.h"
+#include "qSlicerCalculusReformatWidget.h"
 
 //-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_ExtensionTemplate
@@ -55,6 +56,7 @@ protected:
 public:
 	qSlicerCalculusModuleWidgetPrivate(qSlicerCalculusModuleWidget& object);
 	~qSlicerCalculusModuleWidgetPrivate();
+
   vtkSlicerCalculusLogic* logic() const;
 };
 
@@ -146,15 +148,16 @@ void qSlicerCalculusModuleWidget::on_pushButton_clicked()
 }
 void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
 {
-
-	Q_D(qSlicerCalculusModuleWidget);
+	qSlicerCalculusReformatWidget* widget = new qSlicerCalculusReformatWidget();
+	widget->show();
+	/*Q_D(qSlicerCalculusModuleWidget);
 	vtkSmartPointer<vtkSlicerCalculusLogic> logic = d->logic();
 
 	if (logic->acqSliceData(vtkMRMLScalarVolumeNode::SafeDownCast(d->inputVolumeMRMLNodeComboBox->currentNode())))
 	{
 		qDebug() << "logic->AcqSliceData()";
 
-	}
+	}*/
 
 }
 void qSlicerCalculusModuleWidget::onInputVolumeMRMLNodeChanged()
