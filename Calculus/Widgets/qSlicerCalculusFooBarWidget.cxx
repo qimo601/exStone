@@ -45,7 +45,7 @@ qSlicerCalculusFooBarWidgetPrivate
 {
 }
 
-// --------------------------------------------------------------------------
+//// --------------------------------------------------------------------------
 void qSlicerCalculusFooBarWidgetPrivate
 ::setupUi(qSlicerCalculusFooBarWidget* widget)
 {

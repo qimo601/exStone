@@ -104,6 +104,7 @@ void qSlicerCalculusModuleWidget::setup()
   // set up input&output&markups connection
   connect(d->inputVolumeMRMLNodeComboBox, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
 	  this, SLOT(onInputVolumeMRMLNodeChanged()));
+  connect(this, SIGNAL(mrmlSceneChanged(vtkMRMLScene*)), d->reformatWidget, SLOT(setMRMLScene(vtkMRMLScene*)));
 }
 
 //-----------------------------------------------------------------------------
@@ -148,6 +149,11 @@ void qSlicerCalculusModuleWidget::on_pushButton_clicked()
 }
 void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
 {
+
+	qSlicerCalculusFooBarWidget* w1 = new qSlicerCalculusFooBarWidget();
+	w1->show();
+	QWidget* w = new QWidget();
+	w->show();
 	qSlicerCalculusReformatWidget* widget = new qSlicerCalculusReformatWidget();
 	widget->show();
 	/*Q_D(qSlicerCalculusModuleWidget);

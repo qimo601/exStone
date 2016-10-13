@@ -49,7 +49,8 @@ public:
 
 protected:
   virtual void setup();
-
+  virtual void setMRMLScene(vtkMRMLScene*);
+  virtual void enter();
 public slots:
   /// Set the position of the slice in world coordinates
   /// \sa setSliceOffsetValue
@@ -80,6 +81,7 @@ public slots:
   /// Set the normal to a z axis
   void setNormalToAxisZ();
 
+  void onEndCloseEvent();
 protected slots:
   /// Triggered upon MRML transform node updates
   void onMRMLSliceNodeModified(vtkObject* caller);

@@ -21,6 +21,7 @@
 // QT includes
 #include <QMenu>
 #include <QString>
+#include <QDebug>
 
 // SlicerQt includes
 #include "vtkMRMLSliceNode.h"
@@ -54,7 +55,7 @@ protected:
 public:
   qSlicerCalculusReformatWidgetPrivate(
     qSlicerCalculusReformatWidget& object);
-
+  virtual void setupUi(qSlicerCalculusReformatWidget*);
   /// Update the widget interface
   void updateUi();
 
@@ -114,7 +115,12 @@ void qSlicerCalculusReformatWidgetPrivate::setupReformatOptionsMenu()
 
   this->ShowReformatWidgetToolButton->setMenu(reformatMenu);
 }
-
+// --------------------------------------------------------------------------
+void qSlicerCalculusReformatWidgetPrivate
+::setupUi(qSlicerCalculusReformatWidget* widget)
+{
+	this->Ui_qSlicerCalculusReformatWidget::setupUi(widget);
+}
 //------------------------------------------------------------------------------
 void qSlicerCalculusReformatWidgetPrivate::updateUi()
 {
@@ -310,6 +316,7 @@ qSlicerCalculusReformatWidget::qSlicerCalculusReformatWidget(
   QWidget* _parent) : Superclass( _parent ),
   d_ptr( new qSlicerCalculusReformatWidgetPrivate(*this) )
 {
+	setup();
 }
 
 //------------------------------------------------------------------------------
@@ -322,7 +329,7 @@ void qSlicerCalculusReformatWidget::setup()
 {
   Q_D(qSlicerCalculusReformatWidget);
   d->setupUi(this);
-
+  this->Superclass::setup();
   // Populate the Linked menu
   d->setupReformatOptionsMenu();
 
@@ -400,6 +407,7 @@ void qSlicerCalculusReformatWidget::setup()
                 this, SLOT(onSliderRotationChanged(double)));
   this->connect(d->ISSlider, SIGNAL(valueChanged(double)),
                 this, SLOT(onSliderRotationChanged(double)));
+  qDebug() << "void qSlicerCalculusReformatWidget::setup()";
 }
 
 //------------------------------------------------------------------------------
@@ -724,4 +732,41 @@ void qSlicerCalculusReformatWidget::centerSliceNode()
 
   // Apply the center
   reformatLogic->SetSliceOrigin(d->MRMLSliceNode, center);
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerCalculusReformatWidget::setMRMLScene(vtkMRMLScene* scene)
+{
+	this->Superclass::setMRMLScene(scene);
+	if (scene == NULL)
+	{
+		return;
+	}
+
+	// observe close event so can re-add a parameters node if necessary
+	qvtkReconnect(this->mrmlScene(), vtkMRMLScene::EndCloseEvent,
+		this, SLOT(onEndCloseEvent()));
+
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerCalculusReformatWidget::enter()
+{
+	// if there are already some
+	// volumes or ROIs in the scene, they can be set up for use
+
+	//this->onInputVolumeMRMLNodeChanged();
+	//Q_D(qSlicerCalculusModuleWidget);
+	//d->outputVolumeMRMLNodeComboBox->setEnabled(false);
+
+	this->Superclass::enter();
+}
+void qSlicerCalculusReformatWidget::onEndCloseEvent()
+{
+	//Q_D(qSlicerCalculusReformatWidget);
+	//vtkSmartPointer<vtkSlicerReformatLogic> logic = d->logic();
+	//logic->reset(vtkMRMLMarkupsFiducialNode::SafeDownCast(d->markupsMRMLNodeComboBox->currentNode()), 0);
+	//d->acqStoneBtn->setEnabled(true);
+	cout << "close scene!" << endl;
+
 }
