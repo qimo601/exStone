@@ -104,7 +104,7 @@ void qSlicerCalculusModuleWidget::setup()
   // set up input&output&markups connection
   connect(d->inputVolumeMRMLNodeComboBox, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
 	  this, SLOT(onInputVolumeMRMLNodeChanged()));
-  connect(this, SIGNAL(mrmlSceneChanged(vtkMRMLScene*)), d->reformatWidget, SLOT(setMRMLScene(vtkMRMLScene*)));
+  //connect(this, SIGNAL(mrmlSceneChanged(vtkMRMLScene*)), d->reformatWidget, SIGNAL(d->reformatWidget->mrmlSceneChanged(vtkMRMLScene*)));
 }
 
 //-----------------------------------------------------------------------------

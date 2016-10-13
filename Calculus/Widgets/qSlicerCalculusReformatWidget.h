@@ -82,6 +82,8 @@ public slots:
   void setNormalToAxisZ();
 
   void onEndCloseEvent();
+
+  void onMRMLSceneChanged(vtkMRMLScene* scene);
 protected slots:
   /// Triggered upon MRML transform node updates
   void onMRMLSliceNodeModified(vtkObject* caller);

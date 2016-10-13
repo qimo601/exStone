@@ -31,44 +31,34 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <widget class="QLabel" name="label">
-         <property name="geometry">
-          <rect>
-           <x>40</x>
-           <y>10</y>
-           <width>101</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>input volume</string>
-         </property>
-        </widget>
-        <widget class="qMRMLNodeComboBox" name="inputVolumeMRMLNodeComboBox" native="true">
-         <property name="geometry">
-          <rect>
-           <x>180</x>
-           <y>10</y>
-           <width>151</width>
-           <height>21</height>
-          </rect>
-         </property>
-         <property name="nodeTypes" stdset="0">
-          <string>vtkMRMLScalarVolumeNode</string>
-         </property>
-         <property name="noneEnabled" stdset="0">
-          <bool>true</bool>
-         </property>
-         <property name="addEnabled" stdset="0">
-          <bool>false</bool>
-         </property>
-         <property name="removeEnabled" stdset="0">
-          <bool>true</bool>
-         </property>
-         <property name="renameEnabled" stdset="0">
-          <bool>false</bool>
-         </property>
-        </widget>
+        <layout class="QFormLayout" name="formLayout">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>input volume</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="qMRMLNodeComboBox" name="inputVolumeMRMLNodeComboBox" native="true">
+           <property name="nodeTypes" stdset="0">
+            <string>vtkMRMLScalarVolumeNode</string>
+           </property>
+           <property name="noneEnabled" stdset="0">
+            <bool>true</bool>
+           </property>
+           <property name="addEnabled" stdset="0">
+            <bool>false</bool>
+           </property>
+           <property name="removeEnabled" stdset="0">
+            <bool>true</bool>
+           </property>
+           <property name="renameEnabled" stdset="0">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
@@ -115,6 +105,12 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>ctkCollapsibleButton</class>
+   <extends>QWidget</extends>
+   <header>ctkCollapsibleButton.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>qMRMLNodeComboBox</class>
    <extends>QWidget</extends>
    <header>qMRMLNodeComboBox.h</header>
@@ -130,12 +126,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ctkCollapsibleButton</class>
-   <extends>QWidget</extends>
-   <header>ctkCollapsibleButton.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>qSlicerCalculusFooBarWidget</class>
    <extends>QWidget</extends>
    <header>qSlicerCalculusFooBarWidget.h</header>
@@ -146,6 +136,9 @@
    <extends>QWidget</extends>
    <header>qslicercalculusreformatwidget.h</header>
    <container>1</container>
+   <slots>
+    <slot>onMRMLSceneChanged(vtkMRMLScene*)</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -163,6 +156,22 @@
     <hint type="destinationlabel">
      <x>282</x>
      <y>48</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>qSlicerCalculusModuleWidget</sender>
+   <signal>mrmlSceneChanged(vtkMRMLScene*)</signal>
+   <receiver>reformatWidget</receiver>
+   <slot>onMRMLSceneChanged(vtkMRMLScene*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>112</x>
+     <y>4</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>207</x>
+     <y>272</y>
     </hint>
    </hints>
   </connection>

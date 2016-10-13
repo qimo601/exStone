@@ -76,6 +76,7 @@ public:
 
   /// Setup the reformate option menu associated to the button
   void setupReformatOptionsMenu();
+  vtkSlicerReformatLogic* logic() const;
 
   QButtonGroup* OriginCoordinateReferenceButtonGroup;
   vtkMRMLSliceNode* MRMLSliceNode;
@@ -99,7 +100,11 @@ qSlicerCalculusReformatWidgetPrivate(
   this->LastRotationValues[qSlicerCalculusReformatWidget::axisY] = 0;
   this->LastRotationValues[qSlicerCalculusReformatWidget::axisZ] = 0;
 }
-
+vtkSlicerReformatLogic* qSlicerCalculusReformatWidgetPrivate::logic() const
+{
+	Q_Q(const qSlicerCalculusReformatWidget);
+	return vtkSlicerReformatLogic::SafeDownCast(vtkSlicerReformatLogic::New());
+}
 //------------------------------------------------------------------------------
 void qSlicerCalculusReformatWidgetPrivate::setupReformatOptionsMenu()
 {
@@ -768,5 +773,14 @@ void qSlicerCalculusReformatWidget::onEndCloseEvent()
 	//logic->reset(vtkMRMLMarkupsFiducialNode::SafeDownCast(d->markupsMRMLNodeComboBox->currentNode()), 0);
 	//d->acqStoneBtn->setEnabled(true);
 	cout << "close scene!" << endl;
+
+}
+void qSlicerCalculusReformatWidget::onMRMLSceneChanged(vtkMRMLScene* scene)
+{
+	//Q_D(qSlicerCalculusReformatWidget);
+	//vtkSmartPointer<vtkSlicerReformatLogic> logic = d->logic();
+	//logic->reset(vtkMRMLMarkupsFiducialNode::SafeDownCast(d->markupsMRMLNodeComboBox->currentNode()), 0);
+	//d->acqStoneBtn->setEnabled(true);
+	emit mrmlSceneChanged(scene);
 
 }
