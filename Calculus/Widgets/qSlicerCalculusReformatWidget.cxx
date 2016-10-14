@@ -412,15 +412,28 @@ void qSlicerCalculusReformatWidget::setup()
                 this, SLOT(onSliderRotationChanged(double)));
   qDebug() << "void qSlicerCalculusReformatWidget::setup()";
 }
+//------------------------------------------------------------------------------
 //自定义 设置ReformatLogic
 void qSlicerCalculusReformatWidget::setReformatLogic(vtkSlicerReformatLogic* logic)
 {
 	m_reformatLogic = logic;
 }
+//------------------------------------------------------------------------------
 //自定义 返回当前的logic，覆盖父类qSlicerAbstractModuleRepresentation 的logic
 vtkMRMLAbstractLogic* qSlicerCalculusReformatWidget::logic()
 {
 	return vtkMRMLAbstractLogic::SafeDownCast(m_reformatLogic);
+}
+
+//自定义 设置本module的Logic
+void qSlicerCalculusReformatWidget::setCalculusLogic(vtkSlicerCalculusLogic* logic)
+{
+	m_calculusLogic = logic;
+}
+//自定义 获取本module的Logic
+vtkSlicerCalculusLogic* qSlicerCalculusReformatWidget::getCalculusLogic()
+{
+	return m_calculusLogic;
 }
 //------------------------------------------------------------------------------
 void qSlicerCalculusReformatWidget::
@@ -845,7 +858,7 @@ void qSlicerCalculusReformatWidget::rotate(QString direction, double value)
 	else if (direction == "IS")
 		d->ISSlider->setValue(value);
 
-
+	getSliceRawData();
 
 }
 //------------------------------------------------------------------------------
@@ -949,5 +962,8 @@ void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 */
 void qSlicerCalculusReformatWidget::getSliceRawData()
 {
-
+	Q_D(qSlicerCalculusReformatWidget);
+	//获取单帧切片数据
+	if (!m_calculusLogic)
+		m_calculusLogic->acqSliceData(d->MRMLSliceNode);
 }

@@ -102,7 +102,7 @@ vtkSlicerCropVolumeLogic* vtkSlicerCalculusLogic::getCropVolumeLogic()
 	return this->cropVolumeLogic;
 }
 
-bool vtkSlicerCalculusLogic::acqSliceData(vtkMRMLScalarVolumeNode* input)
+bool vtkSlicerCalculusLogic::acqSliceData(vtkMRMLSliceNode* input)
 {
 	//Set background box
 	//Set pixels outside a box which is larger than the tightbox to be background
@@ -120,7 +120,7 @@ bool vtkSlicerCalculusLogic::acqSliceData(vtkMRMLScalarVolumeNode* input)
 	//图像范围
 	int extent[6];
 	orgimage->GetExtent(extent);
-	qDebug() << "image extent:" << extent[0] << " " << extent[1] <<" " << extent[2] << " " << extent[3] << " " << extent[4] << " " << extent[5];
+	qDebug() << "image extent:" << extent[0] << " " << extent[1] << " " << extent[2] << " " << extent[3] << " " << extent[4] << " " << extent[5];
 	//每个像素的数量RGB
 	int numberOfScalarComponents = orgimage->GetNumberOfScalarComponents();
 	qDebug() << "image numberOfScalarComponents:" << numberOfScalarComponents;
@@ -132,7 +132,7 @@ bool vtkSlicerCalculusLogic::acqSliceData(vtkMRMLScalarVolumeNode* input)
 	//像素间隔
 	double spaceing[3];
 	orgimage->GetSpacing(spaceing);
-	qDebug()<< "pixel space:" << spaceing[0] << " " << spaceing[1] << "" << spaceing[2] ;
+	qDebug() << "pixel space:" << spaceing[0] << " " << spaceing[1] << "" << spaceing[2];
 
 	//
 	////loadImage into gData
@@ -142,24 +142,23 @@ bool vtkSlicerCalculusLogic::acqSliceData(vtkMRMLScalarVolumeNode* input)
 
 	//gData.seeds.set(gData.shifttightBox, UNKNOWN);
 
-	uchar* pixel = new uchar[m_gData.wholeRange.col *	m_gData.wholeRange.row * m_gData.wholeRange.sli]();
-	uchar* q = pixel;
-	for (int k = 0; k < dims[2]; k++)
-	{
-		for (int j = 0; j < dims[1]; j++)
-		{
-			for (int i = 0; i < dims[0]; i++)
-			{
-				
-					uchar* p = (uchar*)(orgimage->GetScalarPointer(i, j, k));
-					q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *p;
-					//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+1);
-					//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+2);
-			}
+	//uchar* pixel = new uchar[m_gData.wholeRange.col *	m_gData.wholeRange.row * m_gData.wholeRange.sli]();
+	//uchar* q = pixel;
+	//for (int k = 0; k < dims[2]; k++)
+	//{
+	//	for (int j = 0; j < dims[1]; j++)
+	//	{
+	//		for (int i = 0; i < dims[0]; i++)
+	//		{
+	//			
+	//				uchar* p = (uchar*)(orgimage->GetScalarPointer(i, j, k));
+	//				q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *p;
+	//				//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+1);
+	//				//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+2);
+	//		}
 
-		}
-	}
-
+	//	}
+	//}
 
 	return true;
 }

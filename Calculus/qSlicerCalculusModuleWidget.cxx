@@ -115,10 +115,11 @@ void qSlicerCalculusModuleWidget::setup()
   {
 	  vtkSlicerReformatLogic* reformatLogic =
 		  vtkSlicerReformatLogic::SafeDownCast(reformatModule->logic());
-
+	  //获取Reformat module的logic
 	  d->reformatWidget->setReformatLogic(reformatLogic);
   }
-
+  //传递本module的logic
+  d->reformatWidget->setCalculusLogic(d->logic());
  
 }
 

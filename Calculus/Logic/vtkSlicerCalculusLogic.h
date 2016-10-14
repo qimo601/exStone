@@ -30,6 +30,8 @@
 #include "vtkSlicerCropVolumeLogic.h"
 // MRML includes
 #include "vtkMRMLScalarVolumeNode.h"
+#include "vtkMRMLSliceNode.h"
+
 // STD includes
 #include <cstdlib>
 
@@ -53,7 +55,7 @@ public:
   void setCropVolumeLogic(vtkSlicerCropVolumeLogic* cropVolume);
   vtkSlicerCropVolumeLogic* getCropVolumeLogic();
   //获取当前切片的像素数据
-  bool acqSliceData(vtkMRMLScalarVolumeNode* input);
+  bool acqSliceData(vtkMRMLSliceNode* input);
 
 protected:
   vtkSlicerCalculusLogic();
@@ -79,3 +81,5 @@ private:
 };
 
 #endif
+
+

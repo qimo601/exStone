@@ -24,6 +24,8 @@
 // SlicerQt includes
 #include "qSlicerAbstractModuleWidget.h"
 #include "vtkSlicerReformatLogic.h"
+#include "vtkSlicerCalculusLogic.h"
+
 // FooBar Widgets includes
 #include "qSlicerCalculusModuleWidgetsExport.h"
 #include<QTimerEvent>
@@ -47,8 +49,12 @@ public:
 
   /// Utility function that sets the normal of the slice plane.
   void setSliceNormal(double x, double y, double z);
+  //自定义 设置Reformat模块的logic
   void setReformatLogic(vtkSlicerReformatLogic* logic);
- 
+  //自定义 设置本module的Logic
+  void setCalculusLogic(vtkSlicerCalculusLogic* logic);
+  //自定义 获取本module的Logic
+  vtkSlicerCalculusLogic* getCalculusLogic();
 protected:
   virtual void setup();
   virtual void setMRMLScene(vtkMRMLScene*);
@@ -132,6 +138,7 @@ private:
 	QList<int> m_lrValueList;
 	QList<int> m_paValueList;
   vtkSlicerReformatLogic* m_reformatLogic;
+  vtkSlicerCalculusLogic* m_calculusLogic;
 };
 
 #endif
