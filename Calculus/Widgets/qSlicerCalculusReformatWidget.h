@@ -23,9 +23,10 @@
 
 // SlicerQt includes
 #include "qSlicerAbstractModuleWidget.h"
-
+#include "vtkSlicerReformatLogic.h"
 // FooBar Widgets includes
 #include "qSlicerCalculusModuleWidgetsExport.h"
+#include<QTimerEvent>
 
 class qSlicerCalculusReformatWidgetPrivate;
 class vtkMRMLNode;
@@ -40,17 +41,19 @@ public:
   typedef qSlicerAbstractModuleWidget Superclass;
   qSlicerCalculusReformatWidget(QWidget *parent=0);
   virtual ~qSlicerCalculusReformatWidget();
-
+  virtual void timerEvent(QTimerEvent *event);
   enum OriginReferenceType {ONPLANE, INVOLUME};
   enum AxesReferenceType {axisX=0, axisY, axisZ};
 
   /// Utility function that sets the normal of the slice plane.
   void setSliceNormal(double x, double y, double z);
-
+  void setReformatLogic(vtkSlicerReformatLogic* logic);
+ 
 protected:
   virtual void setup();
   virtual void setMRMLScene(vtkMRMLScene*);
   virtual void enter();
+  vtkMRMLAbstractLogic* logic();
 public slots:
   /// Set the position of the slice in world coordinates
   /// \sa setSliceOffsetValue
@@ -84,6 +87,18 @@ public slots:
   void onEndCloseEvent();
 
   void onMRMLSceneChanged(vtkMRMLScene* scene);
+
+  //允许当前的窗口变形
+  void enableReformat(bool enable);
+  //旋转
+  void rotate(QString direction, double value);
+ 
+  //随机函数
+  int getRand(int min, int max);
+  //随机旋转
+  void randRotate();
+  //获取当切片数据
+  void getSliceRawData();
 protected slots:
   /// Triggered upon MRML transform node updates
   void onMRMLSliceNodeModified(vtkObject* caller);
@@ -108,6 +123,15 @@ protected:
 private:
   Q_DECLARE_PRIVATE(qSlicerCalculusReformatWidget);
   Q_DISABLE_COPY(qSlicerCalculusReformatWidget);
+
+private:
+	int m_lrTimerId;//lr方向旋转，计时器
+	int m_lrTimerCount;//lr执行次数
+	int m_paTimerId;//pa方向旋转，计时器
+	int m_paTimerCount;//pa执行次数
+	QList<int> m_lrValueList;
+	QList<int> m_paValueList;
+  vtkSlicerReformatLogic* m_reformatLogic;
 };
 
 #endif

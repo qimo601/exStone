@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="5,0,0,0,0,0">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="5,0,0">
    <item>
     <widget class="ctkCollapsibleButton" name="CTKCollapsibleButton" native="true">
      <property name="text" stdset="0">
@@ -58,6 +58,44 @@
            </property>
           </widget>
          </item>
+         <item row="1" column="1">
+          <widget class="QPushButton" name="acqStoneBtn">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>120</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>采集结石参数</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="pushButton">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>120</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>测试</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
@@ -65,27 +103,15 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="acqStoneBtn">
-     <property name="text">
-      <string>采集结石参数</string>
+    <widget class="ctkCollapsibleButton" name="CTKCollapsibleButton_2" native="true">
+     <property name="text" stdset="0">
+      <string>Reformat Area</string>
      </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="pushButton">
-     <property name="text">
-      <string>测试</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="qSlicerCalculusReformatWidget" name="reformatWidget" native="true"/>
-   </item>
-   <item>
-    <widget class="QPushButton" name="pushButton_2">
-     <property name="text">
-      <string>上面是Reformat</string>
-     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0">
+      <item>
+       <widget class="qSlicerCalculusReformatWidget" name="reformatWidget" native="true"/>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>

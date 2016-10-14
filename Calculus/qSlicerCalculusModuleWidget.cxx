@@ -18,11 +18,10 @@
 #include <QDebug>
 #include <QMouseEvent>
 #include <QToolTip>
-
 // SlicerQt includes
 #include "qSlicerCalculusModuleWidget.h"
 #include "ui_qSlicerCalculusModuleWidget.h"
-
+#include "qSlicerAbstractCoreModule.h"
 
 #include <qSlicerCoreApplication.h>
 #include <qSlicerModuleManager.h>
@@ -45,6 +44,7 @@
 // vtkSlicerCalculusLogic includes
 #include "vtkSlicerCalculusLogic.h"
 #include "qSlicerCalculusReformatWidget.h"
+#include "vtkSlicerReformatLogic.h"
 
 //-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_ExtensionTemplate
@@ -83,6 +83,8 @@ qSlicerCalculusModuleWidget::qSlicerCalculusModuleWidget(QWidget* _parent)
   : Superclass( _parent )
   , d_ptr(new qSlicerCalculusModuleWidgetPrivate(*this))
 {
+
+
 }
 
 //-----------------------------------------------------------------------------
@@ -105,6 +107,19 @@ void qSlicerCalculusModuleWidget::setup()
   connect(d->inputVolumeMRMLNodeComboBox, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
 	  this, SLOT(onInputVolumeMRMLNodeChanged()));
   //connect(this, SIGNAL(mrmlSceneChanged(vtkMRMLScene*)), d->reformatWidget, SIGNAL(d->reformatWidget->mrmlSceneChanged(vtkMRMLScene*)));
+
+
+  qSlicerAbstractCoreModule* reformatModule =
+	  qSlicerCoreApplication::application()->moduleManager()->module("Reformat");
+  if (reformatModule)
+  {
+	  vtkSlicerReformatLogic* reformatLogic =
+		  vtkSlicerReformatLogic::SafeDownCast(reformatModule->logic());
+
+	  d->reformatWidget->setReformatLogic(reformatLogic);
+  }
+
+ 
 }
 
 //-----------------------------------------------------------------------------
@@ -149,13 +164,9 @@ void qSlicerCalculusModuleWidget::on_pushButton_clicked()
 }
 void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
 {
-
-	qSlicerCalculusFooBarWidget* w1 = new qSlicerCalculusFooBarWidget();
-	w1->show();
-	QWidget* w = new QWidget();
-	w->show();
-	qSlicerCalculusReformatWidget* widget = new qSlicerCalculusReformatWidget();
-	widget->show();
+	Q_D(qSlicerCalculusModuleWidget);
+	d->reformatWidget->enableReformat(true);//‘ –Ì±‰–Œ
+	
 	/*Q_D(qSlicerCalculusModuleWidget);
 	vtkSmartPointer<vtkSlicerCalculusLogic> logic = d->logic();
 

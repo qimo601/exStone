@@ -22,10 +22,10 @@
 #include <QMenu>
 #include <QString>
 #include <QDebug>
-
+#include <QTime>
+#include <QTimer>
 // SlicerQt includes
 #include "vtkMRMLSliceNode.h"
-#include "vtkSlicerReformatLogic.h"
 
 #include "qSlicerCalculusReformatWidget.h"
 #include "ui_qSlicerCalculusReformatWidget.h"
@@ -76,7 +76,6 @@ public:
 
   /// Setup the reformate option menu associated to the button
   void setupReformatOptionsMenu();
-  vtkSlicerReformatLogic* logic() const;
 
   QButtonGroup* OriginCoordinateReferenceButtonGroup;
   vtkMRMLSliceNode* MRMLSliceNode;
@@ -99,11 +98,6 @@ qSlicerCalculusReformatWidgetPrivate(
   this->LastRotationValues[qSlicerCalculusReformatWidget::axisX] = 0;
   this->LastRotationValues[qSlicerCalculusReformatWidget::axisY] = 0;
   this->LastRotationValues[qSlicerCalculusReformatWidget::axisZ] = 0;
-}
-vtkSlicerReformatLogic* qSlicerCalculusReformatWidgetPrivate::logic() const
-{
-	Q_Q(const qSlicerCalculusReformatWidget);
-	return vtkSlicerReformatLogic::SafeDownCast(vtkSlicerReformatLogic::New());
 }
 //------------------------------------------------------------------------------
 void qSlicerCalculusReformatWidgetPrivate::setupReformatOptionsMenu()
@@ -322,6 +316,10 @@ qSlicerCalculusReformatWidget::qSlicerCalculusReformatWidget(
   d_ptr( new qSlicerCalculusReformatWidgetPrivate(*this) )
 {
 	setup();
+	m_lrTimerId =0;//lr方向旋转，计时器
+	m_lrTimerCount=0;//lr执行次数
+	m_paTimerId=0;//pa方向旋转，计时器
+	m_paTimerCount=0;//pa执行次数
 }
 
 //------------------------------------------------------------------------------
@@ -414,7 +412,16 @@ void qSlicerCalculusReformatWidget::setup()
                 this, SLOT(onSliderRotationChanged(double)));
   qDebug() << "void qSlicerCalculusReformatWidget::setup()";
 }
-
+//自定义 设置ReformatLogic
+void qSlicerCalculusReformatWidget::setReformatLogic(vtkSlicerReformatLogic* logic)
+{
+	m_reformatLogic = logic;
+}
+//自定义 返回当前的logic，覆盖父类qSlicerAbstractModuleRepresentation 的logic
+vtkMRMLAbstractLogic* qSlicerCalculusReformatWidget::logic()
+{
+	return vtkMRMLAbstractLogic::SafeDownCast(m_reformatLogic);
+}
 //------------------------------------------------------------------------------
 void qSlicerCalculusReformatWidget::
 onMRMLSliceNodeModified(vtkObject* caller)
@@ -766,6 +773,7 @@ void qSlicerCalculusReformatWidget::enter()
 
 	this->Superclass::enter();
 }
+//
 void qSlicerCalculusReformatWidget::onEndCloseEvent()
 {
 	//Q_D(qSlicerCalculusReformatWidget);
@@ -775,6 +783,7 @@ void qSlicerCalculusReformatWidget::onEndCloseEvent()
 	cout << "close scene!" << endl;
 
 }
+//传递qSlicerCalculusModuleWidget的mrmlSceneChanged(vtkMRMLScene*)信号
 void qSlicerCalculusReformatWidget::onMRMLSceneChanged(vtkMRMLScene* scene)
 {
 	//Q_D(qSlicerCalculusReformatWidget);
@@ -782,5 +791,163 @@ void qSlicerCalculusReformatWidget::onMRMLSceneChanged(vtkMRMLScene* scene)
 	//logic->reset(vtkMRMLMarkupsFiducialNode::SafeDownCast(d->markupsMRMLNodeComboBox->currentNode()), 0);
 	//d->acqStoneBtn->setEnabled(true);
 	emit mrmlSceneChanged(scene);
+
+}
+
+//------------------------------------------------------------------------------
+/**
+* @brief 允许当前的窗口变形
+* @author liuzhaobang
+* @date 2016-10-14
+*/
+void qSlicerCalculusReformatWidget::enableReformat(bool enable)
+{
+	Q_D(qSlicerCalculusReformatWidget);
+	//选择R窗口
+	d->SliceNodeSelector->setCurrentNodeIndex(0);
+	
+	if (enable)
+	{
+		if (!d->ShowReformatWidgetToolButton->isChecked())//允许变形
+			d->ShowReformatWidgetToolButton->toggle();
+		if (!d->VisibilityCheckBox->isChecked())//允许可见
+			d->VisibilityCheckBox->toggle();
+		
+	}
+	else
+	{
+		if (d->ShowReformatWidgetToolButton->isChecked())//关闭变形
+			d->ShowReformatWidgetToolButton->toggle();
+		if (d->VisibilityCheckBox->isChecked())//关闭可见
+			d->VisibilityCheckBox->toggle();
+	}
+
+
+	randRotate();
+	
+}
+
+//------------------------------------------------------------------------------
+/**
+* @brief 旋转
+* @param QString direction,"LR" "PA" "IS"
+* @param double value: 旋转角度
+* @author liuzhaobang
+* @date 2016-10-14
+*/
+void qSlicerCalculusReformatWidget::rotate(QString direction, double value)
+{
+	Q_D(qSlicerCalculusReformatWidget);
+	if (direction == "LR")
+		d->LRSlider->setValue(value);
+	else if (direction == "PA")
+		d->PASlider->setValue(value);
+	else if (direction == "IS")
+		d->ISSlider->setValue(value);
+
+
+
+}
+//------------------------------------------------------------------------------
+/**
+* @brief 随机函数
+* @param int min, int max
+* @author liuzhaobang
+* @date 2016-10-14
+*/
+int qSlicerCalculusReformatWidget::getRand(int min, int max)
+{
+	return min + qrand() % (max - min);
+}
+/**
+* @brief 随机旋转
+* @param int min, int max
+* @author liuzhaobang
+* @date 2016-10-14
+*/
+void qSlicerCalculusReformatWidget::randRotate()
+{
+	Q_D(qSlicerCalculusReformatWidget);
+	//随机函数种子初始化，运行一次软件只初始化这一次，保证随机性不重复。
+	QTime t;
+	t = QTime::currentTime();
+	qsrand(t.msec() + t.second() * 1000);
+	int value = 0;
+	m_lrValueList.clear();
+	m_paValueList.clear();
+	//任意旋转
+	for (int i = 0; i < 16; i++)
+	{
+		value = getRand(-200, 200);
+		m_lrValueList.append(value);
+
+
+		value = getRand(-200, 200);
+		m_paValueList.append(value);
+		//d->PASlider->setValue(0);
+		//d->LRSlider->setValue(0);
+
+		/*value = getRand(-200, 200);
+		rotate("PA", value);
+		d->PASlider->setValue(0);
+		d->LRSlider->setValue(0);*/
+		
+	}
+
+	m_lrTimerId = startTimer(1000);
+
+	m_paTimerId = startTimer(1000);
+}
+/**
+* @brief 定时器事件
+* @author liuzhaobang
+* @date 2016-10-14
+*/
+void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
+{
+	if (event->timerId() == m_lrTimerId)
+	{
+
+		if (m_lrTimerCount < m_lrValueList.count())
+		{
+			rotate("LR", m_lrValueList[m_lrTimerCount]);
+			m_lrTimerCount++;
+			qDebug() << "qSlicerCalculusReformatWidget::timerEvent,m_lrTimerCount:" << m_lrTimerCount;
+		}
+
+		else
+		{
+			m_lrTimerCount = 0;
+			killTimer(m_lrTimerId);
+			m_lrValueList.clear();
+
+		}
+	}
+	else if (event->timerId() == m_paTimerId)
+	{
+		
+		if (m_paTimerCount < m_paValueList.count())
+		{
+			rotate("PA", m_paValueList[m_paTimerCount]);
+			m_paTimerCount++;
+			qDebug() << "qSlicerCalculusReformatWidget::timerEvent,m_paTimerCount:" << m_paTimerCount;
+
+		}
+
+		else
+		{
+			m_paTimerCount = 0;
+			killTimer(m_paTimerId);
+			m_paValueList.clear();
+		}
+	}
+}
+/**
+* @brief 获取当切片数据
+* @author liuzhaobang
+* @date 2016-10-14
+*/
+void qSlicerCalculusReformatWidget::getSliceRawData()
+{
 
 }

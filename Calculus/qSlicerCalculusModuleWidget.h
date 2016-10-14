@@ -52,7 +52,11 @@ void updateAcqStoneButtonState();
 void onAcqStoneBtnClicked();
 void on_pushButton_clicked();
 
-
+/**
+* @brief 场景关闭事件
+* @author liuzhaobang
+* @date 2016-10-14
+*/
 void onEndCloseEvent();
 protected:
   QScopedPointer<qSlicerCalculusModuleWidgetPrivate> d_ptr;
