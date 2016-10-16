@@ -102,13 +102,13 @@ vtkSlicerCropVolumeLogic* vtkSlicerCalculusLogic::getCropVolumeLogic()
 	return this->cropVolumeLogic;
 }
 
-bool vtkSlicerCalculusLogic::acqSliceData(vtkMRMLSliceNode* input)
+bool vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* reslice)
 {
 	//Set background box
 	//Set pixels outside a box which is larger than the tightbox to be background
 	MyBasic::Range3D bkgBox;
 	MyBasic::Range3D imgBox;
-	vtkImageData* orgimage = input->GetImageData();
+	vtkImageData* orgimage = reslice->GetInformationInput();
 	//尺寸长宽高
 	int* dims = orgimage->GetDimensions();
 
@@ -124,12 +124,12 @@ bool vtkSlicerCalculusLogic::acqSliceData(vtkMRMLSliceNode* input)
 	//每个像素的数量RGB
 	int numberOfScalarComponents = orgimage->GetNumberOfScalarComponents();
 	qDebug() << "image numberOfScalarComponents:" << numberOfScalarComponents;
-	//图像原点
+	//图像基准点
 	double origin[3];
 	orgimage->GetOrigin(origin);
 
 	qDebug() << "image origin:" << origin[0] << " " << origin[1] << "" << origin[2];
-	//像素间隔
+	//像素间距
 	double spaceing[3];
 	orgimage->GetSpacing(spaceing);
 	qDebug() << "pixel space:" << spaceing[0] << " " << spaceing[1] << "" << spaceing[2];

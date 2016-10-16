@@ -167,7 +167,8 @@ void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
 	d->reformatWidget->enableReformat(true);//允许变形
-	
+	//设置VolumeMRMLNode
+	d->reformatWidget->setVtkMRMLVolumeNode(vtkMRMLVolumeNode::SafeDownCast(d->inputVolumeMRMLNodeComboBox->currentNode()));
 	/*Q_D(qSlicerCalculusModuleWidget);
 	vtkSmartPointer<vtkSlicerCalculusLogic> logic = d->logic();
 

@@ -37,12 +37,17 @@
 #include "vtkMRMLSliceCompositeNode.h"
 #include "vtkMRMLSliceLogic.h"
 #include "vtkMRMLVolumeNode.h"
+#include "vtkMRMLSliceLayerLogic.h"
+
 
 // VTK includes
 #include <vtkCamera.h>
 #include <vtkMath.h>
 #include <vtkNew.h>
 #include <vtkTransform.h>
+#include <vtkImageReslice.h>
+#include <vtkMRMLTransformNode.h>
+#include <vtkGeneralTransform.h>
 
 //------------------------------------------------------------------------------
 class qSlicerCalculusReformatWidgetPrivate :
@@ -424,7 +429,7 @@ vtkMRMLAbstractLogic* qSlicerCalculusReformatWidget::logic()
 {
 	return vtkMRMLAbstractLogic::SafeDownCast(m_reformatLogic);
 }
-
+//------------------------------------------------------------------------------
 //自定义 设置本module的Logic
 void qSlicerCalculusReformatWidget::setCalculusLogic(vtkSlicerCalculusLogic* logic)
 {
@@ -434,6 +439,15 @@ void qSlicerCalculusReformatWidget::setCalculusLogic(vtkSlicerCalculusLogic* log
 vtkSlicerCalculusLogic* qSlicerCalculusReformatWidget::getCalculusLogic()
 {
 	return m_calculusLogic;
+}
+//------------------------------------------------------------------------------
+void qSlicerCalculusReformatWidget::setVtkMRMLVolumeNode(vtkMRMLVolumeNode* node)
+{
+	m_vtkMRMLVolumeNode = node;
+}
+vtkMRMLVolumeNode* qSlicerCalculusReformatWidget::getVtkMRMLVolumeNode()
+{
+	return m_vtkMRMLVolumeNode;
 }
 //------------------------------------------------------------------------------
 void qSlicerCalculusReformatWidget::
@@ -963,7 +977,110 @@ void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 void qSlicerCalculusReformatWidget::getSliceRawData()
 {
 	Q_D(qSlicerCalculusReformatWidget);
+
+	d->MRMLSliceLogic =
+		this->logic()->GetMRMLApplicationLogic()->GetSliceLogic(d->MRMLSliceNode);
+	vtkMRMLSliceLayerLogic* sliceLayerLogic = d->MRMLSliceLogic->GetBackgroundLayer();
+	//vtkSmartPointer<vtkImageReslice> reslice = sliceLayerLogic->GetReslice();
+	vtkNew<vtkImageReslice> reslice;
+
+
+
+//	int extent[6];
+//	this->m_vtkMRMLVolumeNode->GetImageData()->GetExtent(extent);
+//	vtkNew<vtkMatrix4x4> rasToIJK;
+//
+//	vtkNew<vtkTransform> transform;
+//	//vtkTransform *transform = vtkTransform::New();
+//	//transform->SetMatrix(d->MRMLSliceNode->GetSliceToRAS());
+//	//reslice->SetResliceTransform(transform.GetPointer());
+//
+//
+//
+//
+//	
+//	reslice->GenerateStencilOutputOn();
+//
+//	vtkNew<vtkGeneralTransform> resampleXform;
+//	resampleXform->Identity();
+//	resampleXform->PostMultiply();
+//
+//	this->m_vtkMRMLVolumeNode->GetRASToIJKMatrix(rasToIJK.GetPointer());
+//
+//	vtkNew<vtkMatrix4x4> IJKToRAS;
+//	IJKToRAS->DeepCopy(rasToIJK.GetPointer());
+//	IJKToRAS->Invert();
+//	transform->Inverse();
+//
+//	resampleXform->Concatenate(IJKToRAS.GetPointer());
+//	resampleXform->Concatenate(transform.GetPointer());
+//	resampleXform->Concatenate(rasToIJK.GetPointer());
+//
+//	// vtkImageReslice works faster if the input is a linear transform, so try to convert it
+//	// to a linear transform
+//	vtkNew<vtkTransform> linearResampleXform;
+//	if (vtkMRMLTransformNode::IsGeneralTransformLinear(resampleXform.GetPointer(), linearResampleXform.GetPointer()))
+//	{
+//		reslice->SetResliceTransform(linearResampleXform.GetPointer());
+//	}
+//	else
+//	{
+//		reslice->SetResliceTransform(resampleXform.GetPointer());
+//	}
+//
+//#if (VTK_MAJOR_VERSION <= 5)
+//	reslice->SetInput(this->ImageData);
+//#else
+//	reslice->SetInputConnection(this->m_vtkMRMLVolumeNode->GetImageDataConnection());
+//#endif
+//	reslice->SetInterpolationModeToLinear();//线性
+//	reslice->SetBackgroundColor(0, 0, 0, 0);
+//	reslice->AutoCropOutputOff();//关闭
+//	reslice->SetOptimization(1);
+//
+//	reslice->SetOutputOrigin(this->m_vtkMRMLVolumeNode->GetImageData()->GetOrigin());
+//	reslice->SetOutputSpacing(this->m_vtkMRMLVolumeNode->GetImageData()->GetSpacing());
+//	reslice->SetOutputDimensionality(3);
+//
+//
+//	reslice->SetOutputExtent(extent);
+//
+//	reslice->Update();
+//#if (VTK_MAJOR_VERSION <= 5)
+//	if (reslice->GetOutput(1))
+//	{
+//		reslice->GetOutput(1)->SetUpdateExtentToWholeExtent();
+//	}
+//#endif
+//
+	//vtkNew<vtkImageData> resampleImage;
+	//resampleImage->DeepCopy(reslice->GetOutput());
+
+	//this->m_vtkMRMLVolumeNode->SetAndObserveImageData(resampleImage.GetPointer());
+	
+
+	vtkImageReslice *imageReslice = vtkImageReslice::New();
+	////imageReslice->SetInput();
+
+
+	//vtkNew<vtkImageReslice> reslice;
+	//reslice->SetInputConnection(this->m_vtkMRMLVolumeNode->GetImageDataConnection());
+	//reslice->SetInterpolationModeToLinear();//线性
+	//reslice->SetBackgroundColor(0, 0, 0, 0);
+	//reslice->AutoCropOutputOff();//关闭
+	//reslice->SetOptimization(1);
+	//
+	//reslice->SetOutputOrigin(this->m_vtkMRMLVolumeNode->GetImageData()->GetOrigin());
+	//reslice->SetOutputSpacing(this->m_vtkMRMLVolumeNode->GetImageData()->GetSpacing());
+	//reslice->SetOutputDimensionality(2);
+	//reslice->SetOutputExtent(extent);
+	//
+	//reslice->Update();
+
 	//获取单帧切片数据
-	if (!m_calculusLogic)
-		m_calculusLogic->acqSliceData(d->MRMLSliceNode);
+	if (m_calculusLogic)
+		m_calculusLogic->acqSliceData(reslice.GetPointer());
+
+
+
 }

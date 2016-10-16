@@ -39,6 +39,9 @@
 #include "TumorSegm/AdaptiveSegment3D.h"
 #include "TumorSegm/AppData.h"
 
+// VTK includes
+#include <vtkImageReslice.h>
+
 /// \ingroup Slicer_QtModules_ExtensionTemplate
 class VTK_SLICER_CALCULUS_MODULE_LOGIC_EXPORT vtkSlicerCalculusLogic :
   public vtkSlicerModuleLogic
@@ -55,7 +58,7 @@ public:
   void setCropVolumeLogic(vtkSlicerCropVolumeLogic* cropVolume);
   vtkSlicerCropVolumeLogic* getCropVolumeLogic();
   //获取当前切片的像素数据
-  bool acqSliceData(vtkMRMLSliceNode* input);
+  bool acqSliceData(vtkImageReslice* reslice);
 
 protected:
   vtkSlicerCalculusLogic();
