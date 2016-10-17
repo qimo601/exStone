@@ -48,7 +48,15 @@
 #include <vtkImageReslice.h>
 #include <vtkMRMLTransformNode.h>
 #include <vtkGeneralTransform.h>
-
+//***
+#include <vtkLookupTable.h>
+#include <vtkImageMapToColors.h>
+#include <vtkImageActor.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkInteractorStyleImage.h>
+#include <vtkRenderer.h>
 //------------------------------------------------------------------------------
 class qSlicerCalculusReformatWidgetPrivate :
 public Ui_qSlicerCalculusReformatWidget
@@ -923,7 +931,7 @@ void qSlicerCalculusReformatWidget::randRotate()
 
 	m_lrTimerId = startTimer(1000);
 
-	m_paTimerId = startTimer(1000);
+	//m_paTimerId = startTimer(1000);
 }
 /**
 * @brief 定时器事件
@@ -935,7 +943,8 @@ void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 	if (event->timerId() == m_lrTimerId)
 	{
 
-		if (m_lrTimerCount < m_lrValueList.count())
+		//if (m_lrTimerCount < m_lrValueList.count())
+		if (m_lrTimerCount < 1)//临时一次
 		{
 			rotate("LR", m_lrValueList[m_lrTimerCount]);
 			m_lrTimerCount++;
@@ -953,7 +962,8 @@ void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 	else if (event->timerId() == m_paTimerId)
 	{
 		
-		if (m_paTimerCount < m_paValueList.count())
+		//if (m_paTimerCount < m_paValueList.count())
+		if (m_paTimerCount < 1)
 		{
 			rotate("PA", m_paValueList[m_paTimerCount]);
 			m_paTimerCount++;
@@ -982,7 +992,7 @@ void qSlicerCalculusReformatWidget::getSliceRawData()
 		this->logic()->GetMRMLApplicationLogic()->GetSliceLogic(d->MRMLSliceNode);
 	vtkMRMLSliceLayerLogic* sliceLayerLogic = d->MRMLSliceLogic->GetBackgroundLayer();
 	//vtkSmartPointer<vtkImageReslice> reslice = sliceLayerLogic->GetReslice();
-	vtkNew<vtkImageReslice> reslice;
+	//vtkNew<vtkImageReslice> reslice;
 
 
 
@@ -1059,23 +1069,89 @@ void qSlicerCalculusReformatWidget::getSliceRawData()
 	//this->m_vtkMRMLVolumeNode->SetAndObserveImageData(resampleImage.GetPointer());
 	
 
-	vtkImageReslice *imageReslice = vtkImageReslice::New();
-	////imageReslice->SetInput();
+	int extent[6];
+	double spacing[3];
+	double origin[3];
+	this->m_vtkMRMLVolumeNode->GetImageData()->GetExtent(extent);
+	this->m_vtkMRMLVolumeNode->GetImageData()->GetOrigin(origin);
+	this->m_vtkMRMLVolumeNode->GetImageData()->GetSpacing(spacing);
+
+	vtkNew<vtkImageReslice> reslice;
+	
+	
+	reslice->SetOutputOrigin(origin);
+	reslice->SetOutputSpacing(spacing);
+	reslice->SetOutputDimensionality(2);
+	reslice->SetOutputExtent(extent);
+
+	/*double center[3];
+	center[0] = origin[0] + spacing[0] * 0.5 * (extent[0] + extent[1]);
+	center[1] = origin[1] + spacing[1] * 0.5 * (extent[2] + extent[3]);
+	center[2] = origin[2] + spacing[2] * 0.5 * (extent[4] + extent[5]);
+	double axialElements[16] = {
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1 };
+	vtkSmartPointer<vtkMatrix4x4> resliceAxes =
+		vtkSmartPointer<vtkMatrix4x4>::New();
+	resliceAxes->DeepCopy(axialElements);
+
+	resliceAxes->SetElement(0, 3, center[0]);
+	resliceAxes->SetElement(1, 3, center[1]);
+	resliceAxes->SetElement(2, 3, center[2]);
+	reslice->SetResliceAxes(resliceAxes);*/
+
+	reslice->SetInputConnection(0,this->m_vtkMRMLVolumeNode->GetImageDataConnection());
+	reslice->SetInterpolationModeToLinear();//线性
+	reslice->SetBackgroundColor(0, 0, 0, 0);
+	reslice->AutoCropOutputOff();//关闭
+	reslice->SetOptimization(1);
+	
+	reslice->Update();
 
 
-	//vtkNew<vtkImageReslice> reslice;
-	//reslice->SetInputConnection(this->m_vtkMRMLVolumeNode->GetImageDataConnection());
-	//reslice->SetInterpolationModeToLinear();//线性
-	//reslice->SetBackgroundColor(0, 0, 0, 0);
-	//reslice->AutoCropOutputOff();//关闭
-	//reslice->SetOptimization(1);
-	//
-	//reslice->SetOutputOrigin(this->m_vtkMRMLVolumeNode->GetImageData()->GetOrigin());
-	//reslice->SetOutputSpacing(this->m_vtkMRMLVolumeNode->GetImageData()->GetSpacing());
-	//reslice->SetOutputDimensionality(2);
-	//reslice->SetOutputExtent(extent);
-	//
-	//reslice->Update();
+
+	vtkImageData* orgimage = reslice->GetImageDataInput(0);
+	//尺寸长宽高
+	int* dims = orgimage->GetDimensions();
+
+
+
+
+	//vtkSmartPointer<vtkLookupTable> colorTable =
+	//	vtkSmartPointer<vtkLookupTable>::New();
+	//colorTable->SetRange(0, 1000);
+	//colorTable->SetValueRange(0.0, 1.0);
+	//colorTable->SetSaturationRange(0.0, 0.0);
+	//colorTable->SetRampToLinear();
+	//colorTable->Build();
+	//vtkSmartPointer<vtkImageMapToColors> colorMap =
+	//	vtkSmartPointer<vtkImageMapToColors>::New();
+	//colorMap->SetLookupTable(colorTable);
+	//colorMap->SetInputConnection(reslice->GetOutputPort());
+	//vtkSmartPointer<vtkImageActor> imgActor =
+
+	//	vtkSmartPointer<vtkImageActor>::New();
+
+	//imgActor->SetInputData(colorMap->GetOutput());
+	//vtkSmartPointer<vtkRenderer> renderer =
+	//	vtkSmartPointer<vtkRenderer>::New();
+	//renderer->AddActor(imgActor);
+	//renderer->SetBackground(.4, .5, .6);
+	//vtkSmartPointer<vtkRenderWindow> renderWindow =
+	//	vtkSmartPointer<vtkRenderWindow>::New();
+	//renderWindow->SetSize(500, 500);
+	//renderWindow->AddRenderer(renderer);
+	//vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor =
+	//	vtkSmartPointer<vtkRenderWindowInteractor>::New();
+	//vtkSmartPointer<vtkInteractorStyleImage> imagestyle =
+	//	vtkSmartPointer<vtkInteractorStyleImage>::New();
+	//renderWindowInteractor->SetInteractorStyle(imagestyle);
+	//renderWindowInteractor->SetRenderWindow(renderWindow);
+	//renderWindowInteractor->Initialize();
+	//renderWindowInteractor->Start();
+
 
 	//获取单帧切片数据
 	if (m_calculusLogic)

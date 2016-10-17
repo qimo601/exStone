@@ -108,7 +108,7 @@ bool vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* reslice)
 	//Set pixels outside a box which is larger than the tightbox to be background
 	MyBasic::Range3D bkgBox;
 	MyBasic::Range3D imgBox;
-	vtkImageData* orgimage = reslice->GetInformationInput();
+	vtkImageData* orgimage = reslice->GetImageDataInput(0);
 	//尺寸长宽高
 	int* dims = orgimage->GetDimensions();
 
@@ -142,23 +142,34 @@ bool vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* reslice)
 
 	//gData.seeds.set(gData.shifttightBox, UNKNOWN);
 
-	//uchar* pixel = new uchar[m_gData.wholeRange.col *	m_gData.wholeRange.row * m_gData.wholeRange.sli]();
-	//uchar* q = pixel;
-	//for (int k = 0; k < dims[2]; k++)
-	//{
-	//	for (int j = 0; j < dims[1]; j++)
-	//	{
-	//		for (int i = 0; i < dims[0]; i++)
-	//		{
-	//			
-	//				uchar* p = (uchar*)(orgimage->GetScalarPointer(i, j, k));
-	//				q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *p;
-	//				//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+1);
-	//				//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+2);
-	//		}
+	FILE* file = fopen("before.txt", "wb");
+	if (!file)
+	{
+		//qDebug("air_expo.txt空曝数据文件打开失败！\n");
+	}
+	int size = 0; 
+	
 
-	//	}
-	//}
+	uint16* pixel = new uint16[m_gData.wholeRange.col *	m_gData.wholeRange.row * m_gData.wholeRange.sli]();
+	uint16* q = pixel;
+	for (int k = 0; k < dims[2]; k++)
+	{
+		for (int j = 0; j < dims[1]; j++)
+		{
+			for (int i = 0; i < dims[0]; i++)
+			{
+				
+				    uint16* p = (uint16*)(orgimage->GetScalarPointer(i, j, k));
+					q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *p;
+					//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+1);
+					//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+2);
 
+					
+			}
+
+		}
+	}
+	fwrite(pixel, sizeof(uint16), m_gData.wholeRange.col *	m_gData.wholeRange.row * m_gData.wholeRange.sli, file);
+	fclose(file);
 	return true;
 }

@@ -167,6 +167,13 @@ void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
 	d->reformatWidget->enableReformat(true);//允许变形
+
+	vtkSmartPointer<vtkMRMLVolumeNode> node = vtkMRMLVolumeNode::SafeDownCast(d->inputVolumeMRMLNodeComboBox->currentNode());
+
+	vtkImageData* orgimage = node->GetImageData();
+	//尺寸长宽高
+	int* dims = orgimage->GetDimensions();
+
 	//设置VolumeMRMLNode
 	d->reformatWidget->setVtkMRMLVolumeNode(vtkMRMLVolumeNode::SafeDownCast(d->inputVolumeMRMLNodeComboBox->currentNode()));
 	/*Q_D(qSlicerCalculusModuleWidget);
