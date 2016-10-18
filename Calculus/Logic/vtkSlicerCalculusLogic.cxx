@@ -150,26 +150,40 @@ bool vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* reslice)
 	int size = 0; 
 	
 
-	uint16* pixel = new uint16[m_gData.wholeRange.col *	m_gData.wholeRange.row * m_gData.wholeRange.sli]();
-	uint16* q = pixel;
-	for (int k = 0; k < dims[2]; k++)
-	{
-		for (int j = 0; j < dims[1]; j++)
-		{
-			for (int i = 0; i < dims[0]; i++)
-			{
-				
-				    uint16* p = (uint16*)(orgimage->GetScalarPointer(i, j, k));
-					q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *p;
-					//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+1);
-					//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+2);
 
-					
+	int row = dims[1];
+	int column = dims[0];
+	int li = dims[2];
+
+	uint16* pixel = new uint16[row*column*li]();
+	uint16* q = pixel;
+	int t = 0;
+	for (int k = 0; k < li; k++)
+	{
+		for (int j = 0; j < row; j++)
+		{
+			for (int i = 0; i < column; i++)
+			{
+
+				uint16* p = (uint16*)(orgimage->GetScalarPointer(i, j, k));
+				q[i + j*row + k*li] = *p;
+
+				//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+1);
+				//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+2);
+				if (*p >0)
+				{
+
+					std::cout << " p[" << i << "][" << j << "]" << "[" << k << "]" << *p << "  t=" << t << std::endl;
+					t++;
+				}
+
+
+
 			}
 
 		}
 	}
-	fwrite(pixel, sizeof(uint16), m_gData.wholeRange.col *	m_gData.wholeRange.row * m_gData.wholeRange.sli, file);
-	fclose(file);
+	//fwrite(pixel, sizeof(uint16), m_gData.wholeRange.col *	m_gData.wholeRange.row * m_gData.wholeRange.sli, file);
+	//fclose(file);
 	return true;
 }
