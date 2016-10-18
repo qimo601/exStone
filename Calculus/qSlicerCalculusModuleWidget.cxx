@@ -166,20 +166,15 @@ void qSlicerCalculusModuleWidget::on_pushButton_clicked()
 void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
+	vtkMRMLNode *mrmlNode = this->mrmlScene()->GetNodeByID("vtkMRMLSliceNodeRed");
+
 	//设置VolumeMRMLNode
 	d->reformatWidget->setVtkMRMLVolumeNode(vtkMRMLVolumeNode::SafeDownCast(d->inputVolumeMRMLNodeComboBox->currentNode()));
-	vtkMRMLNode *mrmlNode = this->mrmlScene()->GetNodeByID("vtkMRMLSliceNodeRed");
+	//设置VolumeMRMLNode
+	d->reformatWidget->setVtkMRMLSliceNodeRed(vtkMRMLSliceNode::SafeDownCast(mrmlNode));
 	d->reformatWidget->enableReformat(true);//允许变形
 
 
-	/*Q_D(qSlicerCalculusModuleWidget);
-	vtkSmartPointer<vtkSlicerCalculusLogic> logic = d->logic();
-
-	if (logic->acqSliceData(vtkMRMLScalarVolumeNode::SafeDownCast(d->inputVolumeMRMLNodeComboBox->currentNode())))
-	{
-		qDebug() << "logic->AcqSliceData()";
-
-	}*/
 
 }
 void qSlicerCalculusModuleWidget::onInputVolumeMRMLNodeChanged()

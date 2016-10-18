@@ -458,6 +458,15 @@ vtkMRMLVolumeNode* qSlicerCalculusReformatWidget::getVtkMRMLVolumeNode()
 	return m_vtkMRMLVolumeNode;
 }
 //------------------------------------------------------------------------------
+void qSlicerCalculusReformatWidget::setVtkMRMLSliceNodeRed(vtkMRMLSliceNode* node)
+{
+	m_vtkMRMLSliceNodeRed = node;
+}
+vtkMRMLSliceNode* qSlicerCalculusReformatWidget::getVtkMRMLSliceNodeRed()
+{
+	return m_vtkMRMLSliceNodeRed;
+}
+//------------------------------------------------------------------------------
 void qSlicerCalculusReformatWidget::
 onMRMLSliceNodeModified(vtkObject* caller)
 {
@@ -990,7 +999,7 @@ void qSlicerCalculusReformatWidget::getSliceRawData()
 
 	
 	d->MRMLSliceLogic =
-		this->logic()->GetMRMLApplicationLogic()->GetSliceLogic(vtkMRMLSliceNode::SafeDownCast(d->MRMLSliceNode));
+		this->logic()->GetMRMLApplicationLogic()->GetSliceLogic(this->m_vtkMRMLSliceNodeRed);
 	/*d->MRMLSliceLogic =
 		this->logic()->GetMRMLApplicationLogic()->GetSliceLogic(d->MRMLSliceNode);*/
 	vtkMRMLSliceLayerLogic* sliceLayerLogic = d->MRMLSliceLogic->GetBackgroundLayer();

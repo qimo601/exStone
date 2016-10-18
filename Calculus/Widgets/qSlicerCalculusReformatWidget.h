@@ -58,6 +58,8 @@ public:
   vtkSlicerCalculusLogic* getCalculusLogic();
   void setVtkMRMLVolumeNode(vtkMRMLVolumeNode* node);
   vtkMRMLVolumeNode* getVtkMRMLVolumeNode();
+  void setVtkMRMLSliceNodeRed(vtkMRMLSliceNode* node); 
+	  vtkMRMLSliceNode* getVtkMRMLSliceNodeRed();
 protected:
   virtual void setup();
   virtual void setMRMLScene(vtkMRMLScene*);
@@ -142,7 +144,7 @@ private:
 	QList<int> m_paValueList;
   vtkSlicerReformatLogic* m_reformatLogic;
   vtkSlicerCalculusLogic* m_calculusLogic;
-
+  vtkMRMLSliceNode* m_vtkMRMLSliceNodeRed;//当前Red的Node
   vtkMRMLVolumeNode* m_vtkMRMLVolumeNode;//当前分割后的数据
 };
 
