@@ -60,6 +60,10 @@ public:
   vtkMRMLVolumeNode* getVtkMRMLVolumeNode();
   void setVtkMRMLSliceNodeRed(vtkMRMLSliceNode* node); 
 	  vtkMRMLSliceNode* getVtkMRMLSliceNodeRed();
+  void setVtkMRMLScene(vtkMRMLScene* scene);
+	  vtkMRMLScene* getVtkMRMLScene();
+QHash<QString, double> m_stoneParamsHash;
+	  
 protected:
   virtual void setup();
   virtual void setMRMLScene(vtkMRMLScene*);
@@ -110,6 +114,8 @@ public slots:
   void randRotate();
   //获取当切片数据
   void getSliceRawData();
+signals:
+  void newStoneParms(QHash<QString, double>);
 protected slots:
   /// Triggered upon MRML transform node updates
   void onMRMLSliceNodeModified(vtkObject* caller);
@@ -146,6 +152,7 @@ private:
   vtkSlicerCalculusLogic* m_calculusLogic;
   vtkMRMLSliceNode* m_vtkMRMLSliceNodeRed;//当前Red的Node
   vtkMRMLVolumeNode* m_vtkMRMLVolumeNode;//当前分割后的数据
+  vtkMRMLScene* m_vtkMRMLScene;//当前的场景
 };
 
 #endif

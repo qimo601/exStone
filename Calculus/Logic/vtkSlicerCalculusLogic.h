@@ -42,45 +42,83 @@
 // VTK includes
 #include <vtkImageReslice.h>
 
+//----------------朱珊珊添加----------------------
+// Slicer includes
+#include "vtkMRMLMarkupsFiducialNode.h"
+#include "vtkMRMLMarkupsNode.h"
+#include "vtkSlicerMarkupsLogic.h"
+#include <cstdlib>
+#include "vtkSlicerCalculusModuleLogicExport.h"
+//--------------与excel有关的头文件
+#include <ActiveQt/qaxobject.h>
+#include <ActiveQt/qaxbase.h>
+#include <Qtcore/qstring.h>
+#include "vtkPoints.h"
+class QLabel;
+class QPushButton;
+#include <vtkIOStream.h>
+#include <string>
+#include <stdlib.h>
+#include <stdio.h>
+//与tableWidget有关的类
+#include <QTableWidget>  
+#include <QTableWidgetItem>
+#include <QDialog>
+#include <QAction>
+#include <QApplication>
+//excel有关头文件
+#include <ActiveQt/qaxobject.h>
+#include <ActiveQt/qaxbase.h>
+#include <Qtcore/qstring.h>
+using namespace std;
+//----------------添加结束---------------------------------
+
 /// \ingroup Slicer_QtModules_ExtensionTemplate
 class VTK_SLICER_CALCULUS_MODULE_LOGIC_EXPORT vtkSlicerCalculusLogic :
   public vtkSlicerModuleLogic
 {
 public:
 
-  static vtkSlicerCalculusLogic *New();
-  vtkTypeMacro(vtkSlicerCalculusLogic, vtkSlicerModuleLogic);
-  void PrintSelf(ostream& os, vtkIndent indent);
-  //设置当前体数据的logic
-  void setVolumesLogic(vtkSlicerVolumesLogic* logic);
-  vtkSlicerVolumesLogic* getVolumesLogic();
 
-  void setCropVolumeLogic(vtkSlicerCropVolumeLogic* cropVolume);
-  vtkSlicerCropVolumeLogic* getCropVolumeLogic();
-  //获取当前切片的像素数据
-  bool acqSliceData(vtkImageReslice* reslice);
+	static vtkSlicerCalculusLogic *New();
+	vtkTypeMacro(vtkSlicerCalculusLogic, vtkSlicerModuleLogic);
+	void PrintSelf(ostream& os, vtkIndent indent);
+	//设置当前体数据的logic
+	void setVolumesLogic(vtkSlicerVolumesLogic* logic);
+	vtkSlicerVolumesLogic* getVolumesLogic();
 
+	void setCropVolumeLogic(vtkSlicerCropVolumeLogic* cropVolume);
+	vtkSlicerCropVolumeLogic* getCropVolumeLogic();
+	//获取当前切片的像素数据
+	QHash<QString, double> acqSliceData(vtkImageReslice* reslice);
+	  //-------朱珊珊---
+	  QHash<QString, double> aqc(vtkMRMLVolumeNode* input, vtkMRMLMarkupsFiducialNode* markups);
+	  //-------朱珊珊--------
+
+	  double max(double a[], int n);
+	  double min(double a[], int n);
+	  double aver(double a[], int n);
 protected:
-  vtkSlicerCalculusLogic();
-  virtual ~vtkSlicerCalculusLogic();
+	vtkSlicerCalculusLogic();
+	virtual ~vtkSlicerCalculusLogic();
 
-  virtual void SetMRMLSceneInternal(vtkMRMLScene* newScene);
-  /// Register MRML Node classes to Scene. Gets called automatically when the MRMLScene is attached to this logic class.
-  virtual void RegisterNodes();
-  virtual void UpdateFromMRMLScene();
-  virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* node);
-  virtual void OnMRMLSceneNodeRemoved(vtkMRMLNode* node);
+	virtual void SetMRMLSceneInternal(vtkMRMLScene* newScene);
+	/// Register MRML Node classes to Scene. Gets called automatically when the MRMLScene is attached to this logic class.
+	virtual void RegisterNodes();
+	virtual void UpdateFromMRMLScene();
+	virtual void OnMRMLSceneNodeAdded(vtkMRMLNode* node);
+	virtual void OnMRMLSceneNodeRemoved(vtkMRMLNode* node);
 private:
 
-  vtkSlicerCalculusLogic(const vtkSlicerCalculusLogic&); // Not implemented
-  void operator=(const vtkSlicerCalculusLogic&); // Not implemented
+	vtkSlicerCalculusLogic(const vtkSlicerCalculusLogic&); // Not implemented
+	void operator=(const vtkSlicerCalculusLogic&); // Not implemented
 
-  AdaptiveSegment3D* m_seg;
-  AppData m_gData;
-  //体数据的logic
-  vtkSlicerVolumesLogic* volumesLogic;
-  //剪切后的体数据
-  vtkSlicerCropVolumeLogic* cropVolumeLogic;
+	AdaptiveSegment3D* m_seg;
+	AppData m_gData;
+	//体数据的logic
+	vtkSlicerVolumesLogic* volumesLogic;
+	//剪切后的体数据
+	vtkSlicerCropVolumeLogic* cropVolumeLogic;
 };
 
 #endif

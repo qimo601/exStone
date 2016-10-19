@@ -45,6 +45,7 @@ set(MODULE_TARGET_LIBRARIES
   qSlicer${MODULE_NAME}ModuleWidgets
   vtkSlicerVolumesModuleLogic
   vtkSlicerCropVolumeModuleLogic
+  vtkSlicerMarkupsModuleMRML
   )
 
 set(MODULE_RESOURCES

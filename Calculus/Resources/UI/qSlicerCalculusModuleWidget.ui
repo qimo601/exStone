@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>525</width>
-    <height>319</height>
+    <width>902</width>
+    <height>721</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="5,0,0">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="2,1,2,0">
    <item>
     <widget class="ctkCollapsibleButton" name="CTKCollapsibleButton" native="true">
      <property name="text" stdset="0">
@@ -32,6 +32,9 @@
          <enum>QFrame::Raised</enum>
         </property>
         <layout class="QFormLayout" name="formLayout">
+         <property name="fieldGrowthPolicy">
+          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+         </property>
          <item row="0" column="0">
           <widget class="QLabel" name="label">
            <property name="text">
@@ -58,41 +61,56 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
+         <item row="1" column="0" colspan="2">
+          <widget class="QTableWidget" name="tableblock_2">
+           <column>
+            <property name="text">
+             <string>最大值</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>最小值</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>平均值</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>平均光密度值</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>积分光密度值</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="2">
+          <widget class="QPushButton" name="saveButton_2">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>save</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0" colspan="2">
           <widget class="QPushButton" name="acqStoneBtn">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>120</width>
-             <height>30</height>
-            </size>
-           </property>
            <property name="text">
             <string>采集结石参数</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
-          <widget class="QPushButton" name="pushButton">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>120</width>
-             <height>30</height>
-            </size>
-           </property>
+         <item row="4" column="0" colspan="2">
+          <widget class="QPushButton" name="clearButton_2">
            <property name="text">
-            <string>测试</string>
+            <string>清空结石参数</string>
            </property>
           </widget>
          </item>
@@ -110,6 +128,129 @@
      <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0">
       <item>
        <widget class="qSlicerCalculusReformatWidget" name="reformatWidget" native="true"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="ctkCollapsibleButton" name="CTKCollapsibleButton_3" native="true">
+     <property name="text" stdset="0">
+      <string>Bed Hole Parameter</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <property name="fieldGrowthPolicy">
+       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>markups</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="qMRMLNodeComboBox" name="markupsMRMLNodeComboBox" native="true">
+        <property name="nodeTypes" stdset="0">
+         <string>vtkMRMLMarkupsFiducialNode</string>
+        </property>
+        <property name="noneEnabled" stdset="0">
+         <bool>true</bool>
+        </property>
+        <property name="addEnabled" stdset="0">
+         <bool>false</bool>
+        </property>
+        <property name="removeEnabled" stdset="0">
+         <bool>true</bool>
+        </property>
+        <property name="renameEnabled" stdset="0">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>input volume</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="qMRMLNodeComboBox" name="inputVolumeMRMLNodeComboBox_2" native="true">
+        <property name="nodeTypes" stdset="0">
+         <string>vtkMRMLScalarVolumeNode</string>
+        </property>
+        <property name="noneEnabled" stdset="0">
+         <bool>true</bool>
+        </property>
+        <property name="addEnabled" stdset="0">
+         <bool>false</bool>
+        </property>
+        <property name="removeEnabled" stdset="0">
+         <bool>true</bool>
+        </property>
+        <property name="renameEnabled" stdset="0">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QTableWidget" name="tableblock">
+        <column>
+         <property name="text">
+          <string>最大值</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>最小值</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>平均值</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>平均光密度值</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>积分光密度值</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+      <item row="4" column="0" colspan="2">
+       <widget class="QPushButton" name="generateButton">
+        <property name="text">
+         <string>采集床孔数据</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QPushButton" name="saveButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>save</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QPushButton" name="clearButton">
+        <property name="text">
+         <string>清空床孔数据</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -196,8 +337,40 @@
      <y>4</y>
     </hint>
     <hint type="destinationlabel">
-     <x>207</x>
-     <y>272</y>
+     <x>225</x>
+     <y>252</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>qSlicerCalculusModuleWidget</sender>
+   <signal>mrmlSceneChanged(vtkMRMLScene*)</signal>
+   <receiver>markupsMRMLNodeComboBox</receiver>
+   <slot>setMRMLScene(vtkMRMLScene*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>450</x>
+     <y>360</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>489</x>
+     <y>291</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>qSlicerCalculusModuleWidget</sender>
+   <signal>mrmlSceneChanged(vtkMRMLScene*)</signal>
+   <receiver>inputVolumeMRMLNodeComboBox_2</receiver>
+   <slot>setMRMLScene(vtkMRMLScene*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>450</x>
+     <y>360</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>489</x>
+     <y>318</y>
     </hint>
    </hints>
   </connection>
