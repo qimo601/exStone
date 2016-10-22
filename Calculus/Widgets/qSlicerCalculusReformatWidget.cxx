@@ -902,12 +902,12 @@ void qSlicerCalculusReformatWidget::enableReformat(bool enable)
 void qSlicerCalculusReformatWidget::rotate(QString direction, double value)
 {
 	Q_D(qSlicerCalculusReformatWidget);
-	if (direction == "LR")
-		d->LRSlider->setValue(value);
-	else if (direction == "PA")
-		d->PASlider->setValue(value);
-	else if (direction == "IS")
-		d->ISSlider->setValue(value);
+	//if (direction == "LR")
+	//	d->LRSlider->setValue(value);
+	//else if (direction == "PA")
+	//	d->PASlider->setValue(value);
+	//else if (direction == "IS")
+	//	d->ISSlider->setValue(value);
 
 	getSliceRawData();
 
@@ -1023,8 +1023,26 @@ void qSlicerCalculusReformatWidget::getSliceRawData()
 	vtkMRMLSliceLayerLogic* sliceLayerLogic = d->MRMLSliceLogic->GetBackgroundLayer();
 	vtkSmartPointer<vtkImageReslice> reslice = sliceLayerLogic->GetReslice();
 
-	
+	vtkNew<vtkTransform> transform;
+	transform->SetMatrix(d->MRMLSliceNode->GetSliceToRAS());
+	vtkSmartPointer<vtkMatrix4x4> resliceAxes;
+	resliceAxes = transform->GetMatrix();
+	//reslice->SetResliceAxes(resliceAxes);
 
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			std::cout<< " ["<<i<<"]["<<j<<"] "<< resliceAxes->GetElement(i,j);
+		}
+		std::cout << std::endl;
+	}
+
+	//reslice->SetResliceTransform(transform.GetPointer());
+	
+	// Apply the transform
+	//d->MRMLSliceNode->GetSliceToRAS()->DeepCopy(transform->GetMatrix());
+	//d->MRMLSliceNode->UpdateMatrices();
 
 	//int extent[6];
 	//double spacing[3];

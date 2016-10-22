@@ -155,7 +155,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 	m_gData.wholeRange.col = dims[0];
 	m_gData.wholeRange.row = dims[1];
 	m_gData.wholeRange.sli = dims[2];
-	qDebug() << "image dims:" << dims[0] << " " << dims[1] << " " << dims[2] << endl;
+	qDebug() << "image dims:" <<"col:"<<dims[0] << " row:" << dims[1] << " li:" << dims[2] << endl;
 
 	//图像范围
 	int extent[6];
@@ -195,6 +195,13 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 	uint16* q = pixel;
 	int t = 0;
 	QList<double> data;
+	QString fileName = "before";
+	QByteArray array = fileName.toLocal8Bit();
+	FILE* file = fopen(array.data(), "wb");
+	if (!file)
+	{
+		qDebug() << fileName << "数据文件打开失败！\n";
+	}
 	for (int k = 0; k < li; k++)
 	{
 		/*QString fileName = QString("before-%1").arg(k);
@@ -226,11 +233,11 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 			}
 
 		}
-		/*fwrite(pixel, sizeof(uint16), column *row, file);
-		fclose(file);*/
+
 	}
 
-
+	fwrite(pixel, sizeof(uint16), column *row*li, file);
+	fclose(file);
 	double* sliceDataDouble = new double[data.size()]();
 	for (int i = 0; i < data.size(); i++)
 	{

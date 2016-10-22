@@ -312,13 +312,13 @@ void qSlicerCalculusModuleWidget::saveClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
 	ExcelExportHelper excel;
-	for (int i = 1; i < (d->tableblock->rowCount() + 1); i++)
+	for (int i = 0; i < (d->tableblock->rowCount()); i++)
 	{
-		for (int j = 1; j < (d->tableblock->columnCount() + 1); j++)
+		for (int j = 0; j < (d->tableblock->columnCount() ); j++)
 		{
-			QString str = d->tableblock->item((i - 1), (j - 1))->text();
+			QString str = d->tableblock->item((i ), (j ))->text();
 			qDebug() << str << endl;
-			excel.SetCellValue(i, j, str);
+			excel.SetCellValue(i+1, j+1, str);
 		}
 	}
 	//const QString fileName = "E:\\kaka14.xlsx";
@@ -329,13 +329,13 @@ void qSlicerCalculusModuleWidget::saveClicked_2()
 {
 	Q_D(qSlicerCalculusModuleWidget);
 	ExcelExportHelper excel;
-	for (int i = 1; i < (d->tableblock_2->rowCount() + 1); i++)
+	for (int i = 0; i < (d->tableblock_2->rowCount()); i++)
 	{
-		for (int j = 1; j < (d->tableblock_2->columnCount() + 1); j++)
+		for (int j = 0; j < (d->tableblock_2->columnCount()); j++)
 		{
-			QString str = d->tableblock_2->item((i - 1), (j - 1))->text();
+			QString str = d->tableblock_2->item((i), (j))->text();
 			qDebug() << str << endl;
-			excel.SetCellValue(i, j+8, str);
+			excel.SetCellValue(i+1, j+1+8, str);
 		}
 	}
 	//const QString fileName = "E:\\kaka14.xlsx";
@@ -347,7 +347,7 @@ void qSlicerCalculusModuleWidget::clearButtonClicked()
 	int counts = d->tableblock->rowCount();
 	for (int i = 0; i < counts; i++)
 	{
-		d->tableblock->removeRow(i);
+		d->tableblock->removeRow(d->tableblock->rowCount()-1);
 	}
 }
 void qSlicerCalculusModuleWidget::clearButtonClicked_2()
@@ -356,7 +356,7 @@ void qSlicerCalculusModuleWidget::clearButtonClicked_2()
 	int counts = d->tableblock_2->rowCount();
 	for (int i = 0; i < counts; i++)
 	{
-		d->tableblock_2->removeRow(i);
+		d->tableblock_2->removeRow(d->tableblock_2->rowCount()-1);
 	}
 }
 ExcelExportHelper::ExcelExportHelper(bool closeExcelOnExit)
