@@ -1022,7 +1022,7 @@ void qSlicerCalculusReformatWidget::getSliceRawData()
 		this->logic()->GetMRMLApplicationLogic()->GetSliceLogic(d->MRMLSliceNode);*/
 	vtkMRMLSliceLayerLogic* sliceLayerLogic = d->MRMLSliceLogic->GetBackgroundLayer();
 	vtkSmartPointer<vtkImageReslice> reslice = sliceLayerLogic->GetReslice();
-
+	
 	vtkNew<vtkTransform> transform;
 	transform->SetMatrix(d->MRMLSliceNode->GetSliceToRAS());
 	vtkSmartPointer<vtkMatrix4x4> resliceAxes;
@@ -1043,7 +1043,7 @@ void qSlicerCalculusReformatWidget::getSliceRawData()
 	// Apply the transform
 	//d->MRMLSliceNode->GetSliceToRAS()->DeepCopy(transform->GetMatrix());
 	//d->MRMLSliceNode->UpdateMatrices();
-
+	reslice->GetOutputPort();
 	//int extent[6];
 	//double spacing[3];
 	//double origin[3];
