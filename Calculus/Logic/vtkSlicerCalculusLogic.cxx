@@ -89,6 +89,10 @@ void vtkSlicerCalculusLogic::PrintSelf(ostream& os, vtkIndent indent)
 	this->Superclass::PrintSelf(os, indent);
 }
 
+
+double vtkSlicerCalculusLogic::s_sliceThick;//任意角度切片厚度
+double vtkSlicerCalculusLogic::s_uWater;//水的衰减系数
+double vtkSlicerCalculusLogic::s_materialThick;//材料厚度
 //---------------------------------------------------------------------------
 void vtkSlicerCalculusLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
 {
@@ -142,49 +146,50 @@ vtkSlicerCropVolumeLogic* vtkSlicerCalculusLogic::getCropVolumeLogic()
 	return this->cropVolumeLogic;
 }
 
-QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* reslice)
+
+
+QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* reslice, vtkMRMLSliceNode* sliceNode, vtkMRMLVolumeNode* volumeNode)
 {
-	//Set background box
-	//Set pixels outside a box which is larger than the tightbox to be background
-	MyBasic::Range3D bkgBox;
-	MyBasic::Range3D imgBox;
+
+
+
+	vtkSmartPointer<vtkMatrix4x4> sliceToRAS = sliceNode->GetSliceToRAS();//slice原点和法向量矩阵
+	vtkSmartPointer<vtkMatrix4x4> RASToIJKMatrix = vtkSmartPointer<vtkMatrix4x4>::New();//4*4矩阵
+	vtkSmartPointer<vtkMatrix4x4> IJKToRASMatrix = vtkSmartPointer<vtkMatrix4x4>::New();//转换矩阵
+	volumeNode->GetRASToIJKMatrix(RASToIJKMatrix);
+	volumeNode->GetIJKToRASMatrix(IJKToRASMatrix);
+
+	double normal[4];//法向量
+	normal[0] = sliceToRAS->GetElement(0, 2);
+	normal[1] = sliceToRAS->GetElement(1, 2);
+	normal[2] = sliceToRAS->GetElement(2, 2);
+	normal[3] = 1;
+
+	qDebug() << "normal:" << normal[0] << " " << normal[1] << " " << normal[2] << " " << normal[3];
+
+
+	double origin[4];//法向量
+	origin[0] = sliceToRAS->GetElement(0, 3);
+	origin[1] = sliceToRAS->GetElement(1, 3);
+	origin[2] = sliceToRAS->GetElement(2, 3);
+	origin[3] = 1;
+
+	qDebug() << "origin:" << origin[0] << " " << origin[1] << " " << origin[2] << " " << origin[3];
+
+	//计算平面方程
+
+	double A = normal[0];
+	double B = normal[1];
+	double C = normal[2];
+	double d = -(A * origin[0] + B * origin[1] + C * origin[2]);//平面方程D
+
+
+	//得到所有>0点IJK坐标
 	vtkImageData* orgimage = reslice->GetImageDataInput(0);
+
 	//尺寸长宽高
 	int* dims = orgimage->GetDimensions();
-
-	m_gData.wholeRange.col = dims[0];
-	m_gData.wholeRange.row = dims[1];
-	m_gData.wholeRange.sli = dims[2];
-	qDebug() << "image dims:" <<"col:"<<dims[0] << " row:" << dims[1] << " li:" << dims[2] << endl;
-
-	//图像范围
-	int extent[6];
-	orgimage->GetExtent(extent);
-	qDebug() << "image extent:" << extent[0] << " " << extent[1] << " " << extent[2] << " " << extent[3] << " " << extent[4] << " " << extent[5];
-	//每个像素的数量RGB
-	int numberOfScalarComponents = orgimage->GetNumberOfScalarComponents();
-	qDebug() << "image numberOfScalarComponents:" << numberOfScalarComponents;
-	//图像基准点
-	double origin[3];
-	orgimage->GetOrigin(origin);
-
-	qDebug() << "image origin:" << origin[0] << " " << origin[1] << "" << origin[2];
-	//像素间距
-	double spaceing[3];
-	orgimage->GetSpacing(spaceing);
-	qDebug() << "pixel space:" << spaceing[0] << " " << spaceing[1] << "" << spaceing[2];
-
-	//
-	////loadImage into gData
-	//gData.loadImage(orgimage, imgBox);
-
-	//Data3D<bool> mat_mask(gData.image.getSize(), true);
-
-	//gData.seeds.set(gData.shifttightBox, UNKNOWN);
-
-
-	int size = 0;
-
+	QList<double*> pointList;//结石的有效点
 
 
 	int row = dims[1];
@@ -194,7 +199,6 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 	uint16* pixel = new uint16[row*column *li]();
 	uint16* q = pixel;
 	int t = 0;
-	QList<double> data;
 	QString fileName = "before";
 	QByteArray array = fileName.toLocal8Bit();
 	FILE* file = fopen(array.data(), "wb");
@@ -209,7 +213,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 		FILE* file = fopen(array.data(), "wb");
 		if (!file)
 		{
-			qDebug() << fileName << "数据文件打开失败！\n";
+		qDebug() << fileName << "数据文件打开失败！\n";
 		}*/
 		for (int j = 0; j < row; j++)
 		{
@@ -217,15 +221,20 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 			{
 
 				uint16* p = (uint16*)(orgimage->GetScalarPointer(i, j, k));
-				q[i + j*column +k*row*column] = *p;
-				//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+1);
-				//q[i + j*m_gData.wholeRange.col + k*m_gData.wholeRange.sli] = *(p+2);
+				q[i + j*column + k*row*column] = *p;
 				if (*p >0)
 				{
 
-					std::cout << " p[" << i << "][" << j << "]" << "[" << k << "]" << *p << "  t=" << t << std::endl;
+					//std::cout << " p[" << i << "][" << j << "]" << "[" << k << "]" << *p << "  t=" << t << std::endl;
 					t++;
-					data.append(*p);
+					double*point = new double[5];
+					point[0] = j;
+					point[1] = i;
+					point[2] = k;
+					point[3] = 1;
+					point[4] = *p;
+
+					pointList.append(point);
 				}
 
 
@@ -238,22 +247,104 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 
 	fwrite(pixel, sizeof(uint16), column *row*li, file);
 	fclose(file);
-	double* sliceDataDouble = new double[data.size()]();
-	for (int i = 0; i < data.size(); i++)
+
+	//将所有点转换成RAS坐标
+
+	QList<double*> rasPointList;
+	//筛选一下容器点到面的距离<2
+	QList<double*> resultPointList;
+	for (int m1 = 0; m1 < pointList.count(); m1++)
 	{
-		sliceDataDouble[i] = data.at(i);
+		double*point = pointList.at(m1);
+		double* rasPoint = IJKToRASMatrix->MultiplyDoublePoint(point);
+		double distance = qAbs(A*rasPoint[0] + B*rasPoint[1] + C*rasPoint[2] + d) / qSqrt(A*A + B*B + C*C);
+		if (distance < vtkSlicerCalculusLogic::s_sliceThick)//distance有变化，但是坐标值输出看不出变化
+		{
+			//qDebug() << "m1:" << m1 << " ijkPoint :" << point[0] << " " << point[1] << " " << point[2] << " " << point[3] <<  ""<< point[4];
+			//qDebug() << "m1:" << m1 << " rasPoint :" << rasPoint[0] << " " << rasPoint[1] << " " << rasPoint[2] << " " << rasPoint[3];//IJK转换到RAS，坐标有变化
+			double* resultPoint = RASToIJKMatrix->MultiplyDoublePoint(rasPoint);
+			//qDebug() << "distance" << distance << " resultPointijk:" << resultPoint[0] << " " << resultPoint[1] << " " << resultPoint[2] << " " << resultPoint[3] <<" " << resultPoint[4];
+			double* result = new double[5]();
+			result[0] = resultPoint[0];
+			result[1] = resultPoint[1];
+			result[2] = resultPoint[2];
+			result[3] = resultPoint[3];
+			result[4] = point[4];
+			resultPointList.append(result);
+			qDebug() << "distance" << distance << " resultPointijk:" << result[0] << " " << result[1] << " " << result[2] << " " << result[3] << " " << result[4];
+
+		}
+		rasPointList.append(rasPoint);
+	}
+	qDebug() << "rasPointList size" << rasPointList.size() << " resultPointList size:" << resultPointList.size()<<endl;
+
+
+	double* sliceDataDouble = new double[resultPointList.size()]();
+	for (int i = 0; i < resultPointList.size(); i++)
+	{
+		double* point = resultPointList.at(i);
+		sliceDataDouble[i] = point[4];//得到CT值
 	}
 
 	QHash<QString, double> circleParamsHash;
-	circleParamsHash.insert("max", max(sliceDataDouble, data.size()));
-	circleParamsHash.insert("min", min(sliceDataDouble, data.size()));
-	circleParamsHash.insert("average", aver(sliceDataDouble, data.size()));
-
+	circleParamsHash.insert("max", max(sliceDataDouble, resultPointList.size()));
+	circleParamsHash.insert("min", min(sliceDataDouble, resultPointList.size()));
+	circleParamsHash.insert("average", aver(sliceDataDouble, resultPointList.size()));
+	circleParamsHash.insert("AOD", AOD(sliceDataDouble, resultPointList.size(), vtkSlicerCalculusLogic::s_uWater, vtkSlicerCalculusLogic::s_materialThick));
+	circleParamsHash.insert("IOD", IOD(sliceDataDouble, resultPointList.size(), vtkSlicerCalculusLogic::s_uWater, vtkSlicerCalculusLogic::s_materialThick));
 
 	delete[] sliceDataDouble;
 	delete[] pixel;
+	//释放所有点
+	for (int index = 0; index < pointList.size(); index++)
+	{
+		double* p = pointList.at(index);
+		delete[] p;
+	}
+	//释放所有点
+	for (int index = 0; index < resultPointList.size(); index++)
+	{
+		double* p = resultPointList.at(index);
+		delete[] p;
+	}
+
+	std::cout << "sliceToRAS:" << std::endl;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			std::cout << " [" << i << "][" << j << "] " << sliceToRAS->GetElement(i, j);
+		}
+		std::cout << std::endl;
+	}
+
+	//reslice->SetResliceAxes(resliceAxes);
+	std::cout << "RAS to IJK:" << std::endl;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			std::cout << " [" << i << "][" << j << "] " << RASToIJKMatrix->GetElement(i, j);
+		}
+		std::cout << std::endl;
+	}
+
+	std::cout << "IJK to RAS:" << std::endl;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			std::cout << " [" << i << "][" << j << "] " << IJKToRASMatrix->GetElement(i, j);
+		}
+		std::cout << std::endl;
+	}
+
+
+
 
 	return circleParamsHash;
+
+
 }
 
 
@@ -301,79 +392,83 @@ QHash<QString, double> vtkSlicerCalculusLogic::aqc(vtkMRMLVolumeNode* input, vtk
 	/*int originalImageExtents[6];
 	outputImageData->GetExtent(originalImageExtents);*/
 	//基准点数量检测
-	//vtkSmartPointer<vtkMatrix4x4> RASToIJKMatrix = vtkSmartPointer<vtkMatrix4x4>::New();//4*4矩阵
-	//input->GetRASToIJKMatrix(RASToIJKMatrix);//坐标系转换,得到矩阵坐标
-	//int markupNum = markups->GetNumberOfFiducials();
-	//qDebug() << markupNum << endl;
-	//vector<float> position;  //temp variance to store points' IJK 3 coordinates存储三维坐标
+	vtkSmartPointer<vtkMatrix4x4> RASToIJKMatrix = vtkSmartPointer<vtkMatrix4x4>::New();//4*4矩阵
+	input->GetRASToIJKMatrix(RASToIJKMatrix);//坐标系转换
+	int markupNum = markups->GetNumberOfFiducials();
+	qDebug() << markupNum << endl;
+	vector<float> position;  //temp variance to store points' IJK 3 coordinates存储三维坐标
 
-	//vector<float> worldposition;  //temp variance to store points' World 3 coordinates
+	vector<float> worldposition;  //temp variance to store points' World 3 coordinates
 
-	//vector<vector <float> > points;  //vector to store sorted markup points in IJK coordinate
+	vector<vector <float> > points;  //vector to store sorted markup points in IJK coordinate
 
-	//vector<vector <float> > worldpoints;
-	//if (markupNum != 4)//
-	//	qDebug() << "error No markupNum =4";
-	//else
-	//{
-	//	for (int i = 0; i < markupNum; i++)
-	//	{
-	//		double pos[4];//四个点
-	//		markups->GetNthFiducialWorldCoordinates(i, pos);//得到每个点的坐标
-	//		cout << "WorldPOS:" << pos[0] << ";" << pos[1] << ";" << pos[2] << ";" << pos[3] << endl;//四个点的坐标
-	//		float temp[4];
-	//		std::copy(pos, pos + 4, temp);
-	//		float* ijkpos = RASToIJKMatrix->MultiplyPoint(temp);
-	//		cout << "IJKPOS:" << ijkpos[0] << ";" << ijkpos[1] << ";" << ijkpos[2] << ";" << ijkpos[3] << endl;//IJK坐标系下的位置坐标
-	//		for (int j = 0; j < 3; j++)
-	//		{
-	//			position.push_back(ijkpos[j]);
-	//			worldposition.push_back(temp[j]);
-	//		}
-	//		if (i == 0)
-	//		{
-	//			points.push_back(position);
-	//			worldpoints.push_back(worldposition);
-	//		}
-	//		else
-	//		{
-	//			int j;
-	//			for (j = 0; j<points.size(); j++)
-	//			{
-	//				if (points.at(j).at(2)>position.at(2))
-	//					break;
-	//			}
-	//			if (j == points.size())
-	//			{
-	//				points.push_back(position);
-	//				worldpoints.push_back(worldposition);
-	//			}
-	//			else
-	//			{
-	//				points.insert(points.begin() + j, position);
-	//				worldpoints.insert(worldpoints.begin() + j, worldposition);
-	//			}
-	//		}
-	//		position.clear();
-	//		worldposition.clear();
-	//	}
-	//}
+	vector<vector <float> > worldpoints;
+	if (markupNum != 4)//
+		qDebug() << "error No markupNum =4";
+	else
+	{
+		for (int i = 0; i < markupNum; i++)
+		{
+			double pos[4];//四个点
+			markups->GetNthFiducialWorldCoordinates(i, pos);//得到每个点的坐标
+			cout << "WorldPOS:" << pos[0] << ";" << pos[1] << ";" << pos[2] << ";" << pos[3] << endl;//四个点的坐标
+			float temp[4];
+			std::copy(pos, pos + 4, temp);
+			float* ijkpos = RASToIJKMatrix->MultiplyPoint(temp);
+			cout << "IJKPOS:" << ijkpos[0] << ";" << ijkpos[1] << ";" << ijkpos[2] << ";" << ijkpos[3] << endl;//IJK坐标系下的位置坐标
+			for (int j = 0; j < 3; j++)
+			{
+				position.push_back(ijkpos[j]);
+				worldposition.push_back(temp[j]);
+			}
+			if (i == 0)
+			{
+				points.push_back(position);
+				worldpoints.push_back(worldposition);
+			}
+			else
+			{
+				int j;
+				for (j = 0; j<points.size(); j++)
+				{
+					if (points.at(j).at(2)>position.at(2))
+						break;
+				}
+				if (j == points.size())
+				{
+					points.push_back(position);
+					worldpoints.push_back(worldposition);
+				}
+				else
+				{
+					points.insert(points.begin() + j, position);
+					worldpoints.insert(worldpoints.begin() + j, worldposition);
+				}
+			}
+			position.clear();
+			worldposition.clear();
+		}
+	}
 
-	//vector<float> star_first = points.front();
-	//vector<float> star_last = points.back();
-	//vector<float> box1 = points.at(1);
-	//vector<float> box2 = points.at(2);
+	vector<float> star_first = points.front();
+	vector<float> star_last = points.back();
+	vector<float> box1 = points.at(1);
+	vector<float> box2 = points.at(2);
 
-	//cout << "POINTS[0]:" << star_first[0] << ";" << star_first[1] << ";" << star_first[2] << endl;
-	//cout << "POINTS[1]:" << box1[0] << ";" << box1[1] << ";" << box1[2] << endl;
-	//cout << "POINTS[2]:" << box2[0] << ";" << box2[1] << ";" << box2[2] << endl;
-	//cout << "POINTS[3]:" << star_last[0] << ";" << star_last[1] << ";" << star_last[2] << endl;//points是四个标记点坐标，是矢量
+	cout << "POINTS[0]:" << star_first[0] << ";" << star_first[1] << ";" << star_first[2] << endl;
+	cout << "POINTS[1]:" << box1[0] << ";" << box1[1] << ";" << box1[2] << endl;
+	cout << "POINTS[2]:" << box2[0] << ";" << box2[1] << ";" << box2[2] << endl;
+	cout << "POINTS[3]:" << star_last[0] << ";" << star_last[1] << ";" << star_last[2] << endl;//points是四个标记点坐标，是矢量
 
 	vtkImageData* outputImageData = input->GetImageData();//得到输入体数据的Imagedata
 	int* dims = outputImageData->GetDimensions();//原始图像维数
 	double origin[3];
 	outputImageData->GetOrigin(origin);
 	qDebug() << "o" << origin[0] << " " << origin[1] << " " << origin[2];
+
+	double spaceing[3];
+	outputImageData->GetSpacing(spaceing);
+	qDebug() << "像素间隔:" << spaceing[0] << " " << spaceing[1] << "" << spaceing[2] << endl;
 
 	//int dims[3]s;
 	//outputImageData->GetDimensions(dims);
@@ -382,10 +477,10 @@ QHash<QString, double> vtkSlicerCalculusLogic::aqc(vtkMRMLVolumeNode* input, vtk
 	//pixel = (double*)malloc(sizeof(double));//
 	int n = dims[0] * dims[1];
 	double  *pixel;
-	pixel = new double[n]();
+	pixel = (double*)malloc(sizeof(double)*n);//指针类型
 
 	//double pixel[990] = { 0 };
-	unsigned short *temp=0;
+	unsigned short *temp = { 0 };
 	double temp_value;
 
 
@@ -414,7 +509,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::aqc(vtkMRMLVolumeNode* input, vtk
 			if (temp_value < 60000)
 			{
 
-				pixel[x + dims[0] * y] = temp[0];//有个数据类型转换，unsigned char到double
+				pixel[x + dims[0] * y] = temp_value;//有个数据类型转换，unsigned char到double
 			}
 			else
 				pixel[x + dims[0] * y] = 0;
@@ -435,7 +530,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::aqc(vtkMRMLVolumeNode* input, vtk
 	//--------------------------原始数据归一化,压缩到255级
 	/*int n = dims[0] * dims[1];*/
 	double  *graypixel;
-	graypixel = new double[n]();
+	graypixel = (double*)malloc(sizeof(double)*n);
 	for (int i = 0; i < dims[1]; i++)//行30
 	{
 		for (int j = 0; j < dims[0]; j++)//列33
@@ -503,7 +598,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::aqc(vtkMRMLVolumeNode* input, vtk
 	iThrehold = (iThrehold / 255)*(a - b) + b;
 	cout << "The Threshold of this Image in imgIteration is:" << iThrehold << endl;
 	//-------------------------
-
+	int counter = 0;
 	for (int i = 0; i < dims[1]; i++)//行30
 	{
 		for (int j = 0; j < dims[0]; j++)//列33
@@ -516,27 +611,69 @@ QHash<QString, double> vtkSlicerCalculusLogic::aqc(vtkMRMLVolumeNode* input, vtk
 			}
 			else
 			{
+				++counter;
 				double value = 0;
-				value = ((pixel[j + dims[0] * i] - b) / (a - b)) * 255;
+				value = ((pixel[j + dims[0] * i] - b) / (a - b)) * 255;//输出的数据是对的
 				fwrite(&value, sizeof(double), 1, outFile);
 				//pixel[j + dims[0] * i] = value;
+
 
 			}
 		}
 
 	}
+	//分割后像素数据
+	double  *pixelsegmentation;
+	pixelsegmentation = (double*)malloc(sizeof(double)*counter);
+	int i = 0;
+	for (int j = 0; j < n; j++)
+	{
+		if (pixel[j])
+		{
+			pixelsegmentation[i] = pixel[j];
+			std::cout << pixelsegmentation[i] << " ";
+			i++;
+			continue;//结束整个循环，continue结束单次循环
+		}
+		//*pixelsegmentation++;//pixelsegmentation++与之区别
+	}
+
 	fclose(outFile);
 	QHash<QString, double> circleParamsHash;
-	circleParamsHash.insert("max", max(pixel, n));
-	circleParamsHash.insert("min", min(pixel, n));
-	circleParamsHash.insert("average", aver(pixel, n));
-
+	circleParamsHash.insert("max", max(pixelsegmentation, counter));
+	circleParamsHash.insert("min", min(pixelsegmentation, counter));
+	circleParamsHash.insert("average", aver(pixelsegmentation, counter));
+	circleParamsHash.insert("AOD", AOD(pixelsegmentation, counter, vtkSlicerCalculusLogic::s_uWater, vtkSlicerCalculusLogic::s_materialThick));
+	circleParamsHash.insert("IOD", IOD(pixelsegmentation, counter, vtkSlicerCalculusLogic::s_uWater, vtkSlicerCalculusLogic::s_materialThick));
 	qDebug() << circleParamsHash.value("max") << endl;
-
-
-
-	delete[] pixel;
-	delete[] graypixel;
 	return circleParamsHash;
+
+
 }
+
+
 //---------------添加结束----------------------------------
+double vtkSlicerCalculusLogic::AOD(double a[], int n, double m, double d)//n 像素个数 ,m是水的衰减系数,d材料厚度(每个像素点的厚度)算每点OD
+{
+	double r = 0;
+	for (int i = 0; i < n; i++)
+	{
+		r = ((a[i] / 1000)*m + m)*d;
+		a[i] = log10(exp(r));//每一点指数
+	}
+	//cout << aver(a, n) << endl;
+	return aver(a, n);
+}
+double vtkSlicerCalculusLogic::IOD(double a[], int n, double m, double d)
+{
+	double r = 0;
+	double sum = 0;
+	for (int i = 0; i < n; i++)
+	{
+		r = ((a[i] / 1000)*m + m)*d;
+		a[i] = log10(exp(r));//每一点指数
+		sum += a[i];//求和
+	}
+	//cout << sum << endl;
+	return sum;
+}

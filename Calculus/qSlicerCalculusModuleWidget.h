@@ -63,6 +63,9 @@ public:
   virtual ~qSlicerCalculusModuleWidget();
   //在tableWidget里添加一行参数
   void addTableWidgetRow(QHash<QString, double> paramHash, QTableWidget* widget);
+  //-----------------------------------------------------------------------------
+  //获取界面参数
+  void getParamsFromUi();
 signals:
   void clicked();
 

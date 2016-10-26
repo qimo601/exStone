@@ -195,10 +195,23 @@ void qSlicerCalculusModuleWidget::enter()
 
 	this->Superclass::enter();
 }
-
+//-----------------------------------------------------------------------------
+//获取界面参数
+void qSlicerCalculusModuleWidget::getParamsFromUi()
+{
+	Q_D(qSlicerCalculusModuleWidget);
+	vtkSlicerCalculusLogic::s_sliceThick = d->sliceThickSpinBox->value();
+	vtkSlicerCalculusLogic::s_uWater = d->uWaterSpinBox->value();
+	vtkSlicerCalculusLogic::s_materialThick = d->materialThickSpinBox->value();
+}
 void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
+
+	getParamsFromUi();//获取界面参数
+
+
+
 	vtkMRMLNode *mrmlNode = this->mrmlScene()->GetNodeByID("vtkMRMLSliceNodeRed");
 
 	//设置VolumeMRMLNode,暂时没用
@@ -294,16 +307,18 @@ void qSlicerCalculusModuleWidget::addTableWidgetRow(QHash<QString,double> paramH
 {
 	int counts = widget->rowCount();
 	widget->insertRow(counts);
-	QString a, b, c;
+	QString a, b, c,e,f;
 	a = QString::number(paramHash.value("max"));
 	b = QString::number(paramHash.value("min"));
 	c = QString::number(paramHash.value("average"));//将double数字转为qstring形式
+	e = QString::number(paramHash.value("AOD"));
+	f = QString::number(paramHash.value("IOD"));
 	qDebug() << b << endl;
 	widget->setItem(counts, 0, new QTableWidgetItem(a));
 	widget->setItem(counts, 1, new QTableWidgetItem(b));
 	widget->setItem(counts, 2, new QTableWidgetItem(c));
-	widget->setItem(counts, 3, new QTableWidgetItem("0"));
-	widget->setItem(counts, 4, new QTableWidgetItem("0"));
+	widget->setItem(counts, 3, new QTableWidgetItem(e));
+	widget->setItem(counts, 4, new QTableWidgetItem(f));
 	/*qDebug() << paramHash.value("max") << endl;
 	*/
 }

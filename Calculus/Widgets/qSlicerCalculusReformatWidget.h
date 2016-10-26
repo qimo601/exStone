@@ -63,7 +63,7 @@ public:
   void setVtkMRMLScene(vtkMRMLScene* scene);
 	  vtkMRMLScene* getVtkMRMLScene();
 QHash<QString, double> m_stoneParamsHash;
-	  
+
 protected:
   virtual void setup();
   virtual void setMRMLScene(vtkMRMLScene*);

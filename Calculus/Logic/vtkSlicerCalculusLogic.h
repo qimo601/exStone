@@ -90,7 +90,7 @@ public:
 	void setCropVolumeLogic(vtkSlicerCropVolumeLogic* cropVolume);
 	vtkSlicerCropVolumeLogic* getCropVolumeLogic();
 	//获取当前切片的像素数据
-	QHash<QString, double> acqSliceData(vtkImageReslice* reslice);
+	QHash<QString, double> acqSliceData(vtkImageReslice* reslice,vtkMRMLSliceNode* sliceNode, vtkMRMLVolumeNode* volumeNode);
 	  //-------朱珊珊---
 	  QHash<QString, double> aqc(vtkMRMLVolumeNode* input, vtkMRMLMarkupsFiducialNode* markups);
 	  //-------朱珊珊--------
@@ -98,6 +98,12 @@ public:
 	  double max(double a[], int n);
 	  double min(double a[], int n);
 	  double aver(double a[], int n);
+	  double AOD(double a[], int n, double m, double d);
+	  double IOD(double a[], int n, double m, double d);
+
+	  static double s_sliceThick;//任意角度切片厚度
+	  static double s_uWater;//水的衰减系数
+	  static double s_materialThick;//材料厚度
 protected:
 	vtkSlicerCalculusLogic();
 	virtual ~vtkSlicerCalculusLogic();
