@@ -253,6 +253,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 	QList<double*> rasPointList;
 	//筛选一下容器点到面的距离<2
 	QList<double*> resultPointList;
+	
 	for (int m1 = 0; m1 < pointList.count(); m1++)
 	{
 		double*point = pointList.at(m1);
@@ -279,22 +280,30 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 	qDebug() << "rasPointList size" << rasPointList.size() << " resultPointList size:" << resultPointList.size()<<endl;
 
 
-	double* sliceDataDouble = new double[resultPointList.size()]();
-	for (int i = 0; i < resultPointList.size(); i++)
+	double* sliceDataDouble;
+	QHash<QString, double> circleParamsHash;
+	if (resultPointList.size() > 0)
 	{
-		double* point = resultPointList.at(i);
-		sliceDataDouble[i] = point[4];//得到CT值
+		sliceDataDouble = new double[resultPointList.size()]();
+		for (int i = 0; i < resultPointList.size(); i++)
+		{
+			double* point = resultPointList.at(i);
+			sliceDataDouble[i] = point[4];//得到CT值
+		}
+		circleParamsHash.insert("max", max(sliceDataDouble, resultPointList.size()));
+		circleParamsHash.insert("min", min(sliceDataDouble, resultPointList.size()));
+		circleParamsHash.insert("average", aver(sliceDataDouble, resultPointList.size()));
+		circleParamsHash.insert("AOD", AOD(sliceDataDouble, resultPointList.size(), vtkSlicerCalculusLogic::s_uWater, vtkSlicerCalculusLogic::s_materialThick));
+		circleParamsHash.insert("IOD", IOD(sliceDataDouble, resultPointList.size(), vtkSlicerCalculusLogic::s_uWater, vtkSlicerCalculusLogic::s_materialThick));
+	
+		if (sliceDataDouble!=0)
+			delete[] sliceDataDouble;
 	}
 
-	QHash<QString, double> circleParamsHash;
-	circleParamsHash.insert("max", max(sliceDataDouble, resultPointList.size()));
-	circleParamsHash.insert("min", min(sliceDataDouble, resultPointList.size()));
-	circleParamsHash.insert("average", aver(sliceDataDouble, resultPointList.size()));
-	circleParamsHash.insert("AOD", AOD(sliceDataDouble, resultPointList.size(), vtkSlicerCalculusLogic::s_uWater, vtkSlicerCalculusLogic::s_materialThick));
-	circleParamsHash.insert("IOD", IOD(sliceDataDouble, resultPointList.size(), vtkSlicerCalculusLogic::s_uWater, vtkSlicerCalculusLogic::s_materialThick));
-
-	delete[] sliceDataDouble;
-	delete[] pixel;
+	
+	
+	if (pixel!=0)
+		delete[] pixel;
 	//释放所有点
 	for (int index = 0; index < pointList.size(); index++)
 	{
@@ -384,8 +393,9 @@ double vtkSlicerCalculusLogic::aver(double a[], int n)
 	cout << r << endl;
 	return r;
 }
-//--------------------
-QHash<QString, double> vtkSlicerCalculusLogic::aqc(vtkMRMLVolumeNode* input, vtkMRMLMarkupsFiducialNode* markups)//vtkMRMLScalarVolumeNode,返回值是指针的函数
+//--------------------------------------------------------------
+//获取圆的像素数据 
+QHash<QString, double> vtkSlicerCalculusLogic::aqcCircleData(vtkMRMLVolumeNode* input, vtkMRMLMarkupsFiducialNode* markups)//vtkMRMLScalarVolumeNode,返回值是指针的函数
 {
 	/*vtkNew<vtkImageData> outputImageData;
 	outputImageData->DeepCopy(input->GetImageData());*/
@@ -676,4 +686,133 @@ double vtkSlicerCalculusLogic::IOD(double a[], int n, double m, double d)
 	}
 	//cout << sum << endl;
 	return sum;
+}
+
+//-----------------------------------------------------------------------
+//获取垂直切面的slice数据
+QHash<QString, double> vtkSlicerCalculusLogic::acqSliceVerticalData(vtkMRMLVolumeNode* input,double offset,QString direction)
+{
+	//得到所有>0点IJK坐标
+	vtkImageData* orgimage = input->GetImageData();
+
+
+	
+	//尺寸长宽高
+	int* dims = orgimage->GetDimensions();
+	QList<double*> pointList;//结石的有效点
+
+
+	int row = dims[1];
+	int column = dims[0];
+	int li = dims[2];
+
+
+
+
+	vtkSmartPointer<vtkMatrix4x4> RASToIJKMatrix = vtkSmartPointer<vtkMatrix4x4>::New();//4*4矩阵
+	input->GetRASToIJKMatrix(RASToIJKMatrix);
+
+	double* rasPoint = new double[4]();
+	memset(rasPoint,0,4);
+	if (direction=="X")
+		rasPoint[0] = offset;
+	if (direction == "Y")
+		rasPoint[1] = offset;
+	if (direction == "Z")
+		rasPoint[2] = offset;
+	rasPoint[3] = 1;
+
+	double* ijkPoint = RASToIJKMatrix->MultiplyDoublePoint(rasPoint);
+	int intOffset;
+	if (direction == "X")
+		intOffset= ijkPoint[0];
+	if (direction == "Y")
+		intOffset = ijkPoint[1];
+	if (direction == "Z")
+		intOffset = ijkPoint[2];
+	uint16* pixel = new uint16[row*column *li]();
+	uint16* q = pixel;
+	int index = 0;//有效方向
+	int t = 0;
+	for (int k = 0; k < li; k++)
+	{
+		
+		for (int j = 0; j < row; j++)
+		{
+			for (int i = 0; i < column; i++)
+			{
+
+				uint16* p = (uint16*)(orgimage->GetScalarPointer(i, j, k));
+				q[i + j*column + k*row*column] = *p;
+				if (*p >0)
+				{
+
+					
+					if (direction == "X" || direction == "x")
+					{
+						index = i;
+					}
+					else if (direction == "Y" || direction == "y")
+					{
+						index = j;
+					}
+					else if (direction == "Z" || direction == "z")
+					{
+						index = k;
+					}
+
+					if (index == intOffset)
+					{
+						double*point = new double[5];
+						point[0] = j;
+						point[1] = i;
+						point[2] = k;
+						point[3] = 1;
+						point[4] = *p;
+
+						pointList.append(point);
+						t++;
+						std::cout << "t=" << t<< " p[" << i << "][" << j << "]" << "[" << k << "]" << *p << std::endl;
+					}
+				}
+
+
+
+			}
+
+		}
+
+	}
+	double* sliceDataDouble;
+	QHash<QString, double> circleParamsHash;
+	if (pointList.size() > 0)
+	{
+		sliceDataDouble = new double[pointList.size()]();
+		for (int i = 0; i < pointList.size(); i++)
+		{
+			double* point = pointList.at(i);
+			sliceDataDouble[i] = point[4];//得到CT值
+		}
+
+		circleParamsHash.insert("max", max(sliceDataDouble, pointList.size()));
+		circleParamsHash.insert("min", min(sliceDataDouble, pointList.size()));
+		circleParamsHash.insert("average", aver(sliceDataDouble, pointList.size()));
+		circleParamsHash.insert("AOD", AOD(sliceDataDouble, pointList.size(), vtkSlicerCalculusLogic::s_uWater, vtkSlicerCalculusLogic::s_materialThick));
+		circleParamsHash.insert("IOD", IOD(sliceDataDouble, pointList.size(), vtkSlicerCalculusLogic::s_uWater, vtkSlicerCalculusLogic::s_materialThick));
+		if (sliceDataDouble!=0)
+			delete[] sliceDataDouble;
+
+	}
+
+	if (pixel != 0)
+		delete[] pixel;
+	//释放所有点
+	for (int index = 0; index < pointList.size(); index++)
+	{
+		double* p = pointList.at(index);
+		delete[] p;
+	}
+	
+
+	return circleParamsHash;
 }

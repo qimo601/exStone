@@ -97,6 +97,12 @@ public:
   vtkMRMLSliceNode* MRMLSliceNode;
   vtkMRMLSliceLogic* MRMLSliceLogic;
   double LastRotationValues[3]; // LR, PA, IS
+
+
+  // Set the scale increments to match the z spacing (rotated into slice space)
+  double * m_sliceSpacing;
+  double m_sliceBounds[6];
+  double m_offset;
 };
 
 //------------------------------------------------------------------------------
@@ -215,7 +221,8 @@ void qSlicerCalculusReformatWidgetPrivate::updateOffsetSlidersGroupBox()
   this->OffsetSlider->setRange(sliceBounds[4], sliceBounds[5]);
 
   // Update slider position
-  this->OffsetSlider->setValue(this->MRMLSliceLogic->GetSliceOffset());
+  m_offset = this->MRMLSliceLogic->GetSliceOffset();
+  this->OffsetSlider->setValue(m_offset);
   this->OffsetSlider->blockSignals(wasBlocking);
 }
 
@@ -334,9 +341,12 @@ qSlicerCalculusReformatWidget::qSlicerCalculusReformatWidget(
 	setup();
 	m_lrTimerId =0;//lr方向旋转，计时器
 	m_lrTimerCount=0;//lr执行次数
+
 	m_paTimerId=0;//pa方向旋转，计时器
 	m_paTimerCount=0;//pa执行次数
 
+	m_verticalTimerId=0;//垂直方向计时器
+	m_verticalTimerCount=0;//垂直方向执行次数
 	m_vtkMRMLScene = 0;
 	m_vtkMRMLSliceNodeRed = 0;
 	m_vtkMRMLVolumeNode = 0;
@@ -376,6 +386,8 @@ void qSlicerCalculusReformatWidget::setup()
   this->connect(d->OffsetSlider, SIGNAL(valueIsChanging(double)),
                 this, SLOT(onTrackSliceOffsetValueChanged(double)),
                 Qt::QueuedConnection);
+  this->connect(d->OffsetSlider, SIGNAL(valueChanged(double)),
+	  this, SLOT(getVerticalStoneSlot(double)));
 
   // Add origin coordinate reference button to a button group
   d->OriginCoordinateReferenceButtonGroup =
@@ -863,14 +875,25 @@ void qSlicerCalculusReformatWidget::onMRMLSceneChanged(vtkMRMLScene* scene)
 //------------------------------------------------------------------------------
 /**
 * @brief 允许当前的窗口变形
+* @param direction
+*	//选择窗口 SliceNodeSelector的 NodeID值
+	//"vtkMRMLSliceNodeRed"
+	// "vtkMRMLSliceNodeYellow"
+	//"vtkMRMLSliceNodeGreen"
+	//""
 * @author liuzhaobang
 * @date 2016-10-14
 */
-void qSlicerCalculusReformatWidget::enableReformat(bool enable)
+void qSlicerCalculusReformatWidget::enableReformat(bool enable,QString direction)
 {
 	Q_D(qSlicerCalculusReformatWidget);
-	//选择R窗口
-	d->SliceNodeSelector->setCurrentNodeIndex(0);
+	//选择窗口 SliceNodeSelector的 NodeID值
+	//"vtkMRMLSliceNodeRed"
+	// "vtkMRMLSliceNodeYellow"
+	//"vtkMRMLSliceNodeGreen"
+	//""
+
+	d->SliceNodeSelector->setCurrentNodeID(direction);
 	
 	if (enable)
 	{
@@ -888,8 +911,6 @@ void qSlicerCalculusReformatWidget::enableReformat(bool enable)
 			d->VisibilityCheckBox->toggle();
 	}
 
-
-	randRotate();
 	
 }
 
@@ -904,12 +925,12 @@ void qSlicerCalculusReformatWidget::enableReformat(bool enable)
 void qSlicerCalculusReformatWidget::rotate(QString direction, double value)
 {
 	Q_D(qSlicerCalculusReformatWidget);
-	//if (direction == "LR")
-	//	d->LRSlider->setValue(value);
-	//else if (direction == "PA")
-	//	d->PASlider->setValue(value);
-	//else if (direction == "IS")
-	//	d->ISSlider->setValue(value);
+	if (direction == "LR")
+		d->LRSlider->setValue(value);
+	else if (direction == "PA")
+		d->PASlider->setValue(value);
+	else if (direction == "IS")
+		d->ISSlider->setValue(value);
 
 	getSliceRawData();
 
@@ -956,7 +977,7 @@ void qSlicerCalculusReformatWidget::randRotate()
 
 	m_lrTimerId = startTimer(1000);
 
-	//m_paTimerId = startTimer(1000);
+	m_paTimerId = startTimer(1000);
 }
 /**
 * @brief 定时器事件
@@ -965,11 +986,12 @@ void qSlicerCalculusReformatWidget::randRotate()
 */
 void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 {
+	Q_D(qSlicerCalculusReformatWidget);
 	if (event->timerId() == m_lrTimerId)
 	{
 
-		//if (m_lrTimerCount < m_lrValueList.count())
-		if (m_lrTimerCount < 1)//临时一次
+		if (m_lrTimerCount < m_lrValueList.count())
+		//if (m_lrTimerCount < 1)//临时一次
 		{
 			rotate("LR", m_lrValueList[m_lrTimerCount]);
 			m_lrTimerCount++;
@@ -987,8 +1009,8 @@ void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 	else if (event->timerId() == m_paTimerId)
 	{
 		
-		//if (m_paTimerCount < m_paValueList.count())
-		if (m_paTimerCount < 1)
+		if (m_paTimerCount < m_paValueList.count())
+		//if (m_paTimerCount < 1)
 		{
 			rotate("PA", m_paValueList[m_paTimerCount]);
 			m_paTimerCount++;
@@ -1001,6 +1023,26 @@ void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 			m_paTimerCount = 0;
 			killTimer(m_paTimerId);
 			m_paValueList.clear();
+		}
+	}
+	//垂直定时器
+	else if (event->timerId() == m_verticalTimerId)
+	{
+		double value = d->OffsetSlider->value();
+		double singleStep = d->OffsetSlider->singleStep();
+		double maximum = d->OffsetSlider->maximum();
+		if ((value + singleStep) <= maximum)//超出最大值
+		{
+			verticalAcqUi();//垂直采集
+			m_verticalTimerCount++;
+			qDebug() << "qSlicerCalculusReformatWidget::timerEvent,m_verticalTimerCount:" << m_verticalTimerCount;
+
+		}
+
+		else
+		{
+			m_verticalTimerCount = 0;
+			killTimer(m_verticalTimerId);
 		}
 	}
 }
@@ -1038,6 +1080,93 @@ void qSlicerCalculusReformatWidget::getSliceRawData()
 	//获取单帧切片数据
 	if (m_calculusLogic)
 		m_stoneParamsHash = m_calculusLogic->acqSliceData(reslice.GetPointer(), m_vtkMRMLSliceNodeRed, m_vtkMRMLVolumeNode);
-	emit newStoneParms(m_stoneParamsHash);
+	if (m_stoneParamsHash.size()>0)
+		emit newStoneParms(m_stoneParamsHash);
 
+}
+
+/**
+* @brief 获取垂直切片数据
+* @author liuzhaobang
+* @date 2016-10-14
+*/
+void qSlicerCalculusReformatWidget::getSliceVerticalRawData(double offset)
+{
+	Q_D(qSlicerCalculusReformatWidget);
+	QString direction;
+	QString nodeID;
+	//选择R窗口
+	nodeID = d->SliceNodeSelector->currentNodeID();
+	qDebug() << "nodeID:" << nodeID;
+	if (nodeID == "vtkMRMLSliceNodeRed")
+	{
+		direction = "Z";
+	}
+	else if (nodeID == "vtkMRMLSliceNodeYellow")
+	{
+		direction = "X";
+	}
+	else if (nodeID == "vtkMRMLSliceNodeGreen")
+	{
+		direction = "Y";
+	}
+	//获取单帧切片数据
+	if (m_calculusLogic)
+		m_stoneParamsHash = m_calculusLogic->acqSliceVerticalData(m_vtkMRMLVolumeNode, offset, direction);
+	if (m_stoneParamsHash.size()>0)
+		emit newStoneParms(m_stoneParamsHash);
+}
+/**
+* @brief 垂直采集
+* @author liuzhaobang
+* @date 2016-10-27
+*/
+void qSlicerCalculusReformatWidget::verticalAcq()
+{
+	Q_D(qSlicerCalculusReformatWidget);
+	//垂直采集初始化
+	double max = d->OffsetSlider->maximum();
+	double min = d->OffsetSlider->minimum();
+	d->OffsetSlider->setValue(min);//设置从当前的最小值开始
+
+	m_verticalTimerId = startTimer(1000);//准备开启定时器
+
+}
+/**
+* @brief 通过界面垂直采集
+* @author liuzhaobang
+* @date 2016-10-27
+*/
+void qSlicerCalculusReformatWidget::verticalAcqUi()
+{
+	Q_D(qSlicerCalculusReformatWidget);
+	double value = d->OffsetSlider->value();
+	double singleStep = d->OffsetSlider->singleStep();
+	d->OffsetSlider->setValue(value + singleStep);
+}
+
+/**
+* @brief 关闭所有reformat窗口
+* @author liuzhaobang
+* @date 2016-10-27
+*/
+void qSlicerCalculusReformatWidget::closeAllReformat()
+{
+	//选择窗口 SliceNodeSelector的 NodeID值
+	//"vtkMRMLSliceNodeRed"
+	// "vtkMRMLSliceNodeYellow"
+	//"vtkMRMLSliceNodeGreen"
+	enableReformat(false,"vtkMRMLSliceNodeRed");
+	enableReformat(false, "vtkMRMLSliceNodeYellow");
+	enableReformat(false, "vtkMRMLSliceNodeGreen");
+}
+/**
+* @brief  获取垂直切面参数
+* @author liuzhaobang
+* @date 2016-10-27
+*/
+void qSlicerCalculusReformatWidget::getVerticalStoneSlot(double value)
+{
+	//采集切面参数
+	getSliceVerticalRawData(value);
 }

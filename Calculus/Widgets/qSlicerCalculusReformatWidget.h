@@ -62,7 +62,9 @@ public:
 	  vtkMRMLSliceNode* getVtkMRMLSliceNodeRed();
   void setVtkMRMLScene(vtkMRMLScene* scene);
 	  vtkMRMLScene* getVtkMRMLScene();
+
 QHash<QString, double> m_stoneParamsHash;
+
 
 protected:
   virtual void setup();
@@ -104,7 +106,7 @@ public slots:
   void onMRMLSceneChanged(vtkMRMLScene* scene);
 
   //允许当前的窗口变形
-  void enableReformat(bool enable);
+  void enableReformat(bool enable,QString direction);
   //旋转
   void rotate(QString direction, double value);
  
@@ -114,6 +116,34 @@ public slots:
   void randRotate();
   //获取当切片数据
   void getSliceRawData();
+
+  //获取垂直切片数据
+  void getSliceVerticalRawData(double offset);
+
+  /**
+  * @brief 垂直采集
+  * @author liuzhaobang
+  * @date 2016-10-27
+  */
+  void verticalAcq();
+  /**
+  * @brief 通过界面垂直采集
+  * @author liuzhaobang
+  * @date 2016-10-27
+  */
+  void verticalAcqUi();
+  /**
+  * @brief 关闭所有reformat窗口
+  * @author liuzhaobang
+  * @date 2016-10-27
+  */
+  void closeAllReformat();
+  /**
+  * @brief  获取垂直切面参数
+  * @author liuzhaobang
+  * @date 2016-10-27
+  */
+  void getVerticalStoneSlot(double value);
 signals:
   void newStoneParms(QHash<QString, double>);
 protected slots:
@@ -146,6 +176,9 @@ private:
 	int m_lrTimerCount;//lr执行次数
 	int m_paTimerId;//pa方向旋转，计时器
 	int m_paTimerCount;//pa执行次数
+
+	int m_verticalTimerId;//垂直方向计时器
+	int m_verticalTimerCount;//垂直方向执行次数
 	QList<int> m_lrValueList;
 	QList<int> m_paValueList;
   vtkSlicerReformatLogic* m_reformatLogic;

@@ -92,7 +92,9 @@ public:
 	//获取当前切片的像素数据
 	QHash<QString, double> acqSliceData(vtkImageReslice* reslice,vtkMRMLSliceNode* sliceNode, vtkMRMLVolumeNode* volumeNode);
 	  //-------朱珊珊---
-	  QHash<QString, double> aqc(vtkMRMLVolumeNode* input, vtkMRMLMarkupsFiducialNode* markups);
+	  QHash<QString, double> aqcCircleData(vtkMRMLVolumeNode* input, vtkMRMLMarkupsFiducialNode* markups);
+	  //获取垂直切面的slice数据
+	  QHash<QString, double> acqSliceVerticalData(vtkMRMLVolumeNode* input, double offset, QString direction);
 	  //-------朱珊珊--------
 
 	  double max(double a[], int n);

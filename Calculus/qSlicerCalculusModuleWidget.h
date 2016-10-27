@@ -79,6 +79,12 @@ void updateAcqStoneButtonState();
 ///acquire the urinary calculi parameters
 void onAcqStoneBtnClicked();
 
+//结石垂直X轴方向采集参数
+void onX_VerticalAcqStoneBtnClicked();
+//结石垂直Y轴方向采集参数
+void onY_VerticalAcqStoneBtnClicked();
+//结石垂直Z轴方向采集参数
+void onZ_VerticalAcqStoneBtnClicked();
 /**
 * @brief 场景关闭事件
 * @author liuzhaobang

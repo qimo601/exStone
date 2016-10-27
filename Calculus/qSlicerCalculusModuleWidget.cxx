@@ -131,7 +131,13 @@ void qSlicerCalculusModuleWidget::setup()
   // set up buttons connection
   connect(d->acqStoneBtn, SIGNAL(clicked()),
 	  this, SLOT(onAcqStoneBtnClicked()));
-
+  connect(d->x_verticalAcqStoneBtn, SIGNAL(clicked()),
+	  this, SLOT(onX_VerticalAcqStoneBtnClicked()));
+  connect(d->y_verticalAcqStoneBtn, SIGNAL(clicked()),
+	  this, SLOT(onY_VerticalAcqStoneBtnClicked()));
+  connect(d->z_verticalAcqStoneBtn, SIGNAL(clicked()),
+	  this, SLOT(onZ_VerticalAcqStoneBtnClicked()));
+  
   // set up input&output&markups connection
   connect(d->inputVolumeMRMLNodeComboBox, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
 	  this, SLOT(onInputVolumeMRMLNodeChanged()));
@@ -200,16 +206,10 @@ void qSlicerCalculusModuleWidget::enter()
 void qSlicerCalculusModuleWidget::getParamsFromUi()
 {
 	Q_D(qSlicerCalculusModuleWidget);
-	vtkSlicerCalculusLogic::s_sliceThick = d->sliceThickSpinBox->value();
-	vtkSlicerCalculusLogic::s_uWater = d->uWaterSpinBox->value();
-	vtkSlicerCalculusLogic::s_materialThick = d->materialThickSpinBox->value();
-}
-void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
-{
-	Q_D(qSlicerCalculusModuleWidget);
-
-	getParamsFromUi();//获取界面参数
-
+	//获取界面三组参数
+	vtkSlicerCalculusLogic::s_sliceThick = d->sliceThickSpinBox->value();//层厚 任意角度采集参数 计算距离用
+	vtkSlicerCalculusLogic::s_uWater = d->uWaterSpinBox->value();//u水 计算平均密度、积分密度参数用
+	vtkSlicerCalculusLogic::s_materialThick = d->materialThickSpinBox->value();//材料厚度 计算平均密度、积分密度参数用
 
 
 	vtkMRMLNode *mrmlNode = this->mrmlScene()->GetNodeByID("vtkMRMLSliceNodeRed");
@@ -220,11 +220,60 @@ void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
 	d->reformatWidget->setVtkMRMLSliceNodeRed(vtkMRMLSliceNode::SafeDownCast(mrmlNode));
 	//设置VolumeMRMLScene
 	d->reformatWidget->setVtkMRMLScene(this->mrmlScene());
+}
+//结石任意角度采集参数
+void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
+{
+	Q_D(qSlicerCalculusModuleWidget);
 
-	d->reformatWidget->enableReformat(true);//允许变形
+	getParamsFromUi();//获取界面参数
+
+	d->reformatWidget->closeAllReformat();
+	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeRed");//允许Red变形
+	d->reformatWidget->randRotate();//开始自由采集
 
 
+}
+//结石垂直X轴方向采集参数
+void qSlicerCalculusModuleWidget::onX_VerticalAcqStoneBtnClicked()
+{
+	Q_D(qSlicerCalculusModuleWidget);
 
+	getParamsFromUi();//获取界面参数
+
+	//======业务程序=====//
+	d->reformatWidget->closeAllReformat();
+	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeYellow");//允许Red变形
+	//开始垂直采集
+	d->reformatWidget->verticalAcq();
+
+}
+//结石垂直Y轴方向采集参数
+void qSlicerCalculusModuleWidget::onY_VerticalAcqStoneBtnClicked()
+{
+	Q_D(qSlicerCalculusModuleWidget);
+
+	getParamsFromUi();//获取界面参数
+
+	//======业务程序=====//
+	d->reformatWidget->closeAllReformat();
+	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeGreen");//允许Red变形
+	//开始垂直采集
+	d->reformatWidget->verticalAcq();
+
+}
+//结石垂直Z轴方向采集参数
+void qSlicerCalculusModuleWidget::onZ_VerticalAcqStoneBtnClicked()
+{
+	Q_D(qSlicerCalculusModuleWidget);
+
+	getParamsFromUi();//获取界面参数
+
+	//======业务程序=====//
+	d->reformatWidget->closeAllReformat();
+	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeRed");//允许Red变形
+	//开始垂直采集
+	d->reformatWidget->verticalAcq();
 
 }
 void qSlicerCalculusModuleWidget::onInputVolumeMRMLNodeChanged()
@@ -232,6 +281,23 @@ void qSlicerCalculusModuleWidget::onInputVolumeMRMLNodeChanged()
 	Q_D(qSlicerCalculusModuleWidget);
 	Q_ASSERT(d->inputVolumeMRMLNodeComboBox);
 	updateAcqStoneButtonState();
+	getParamsFromUi();//获取界面参数和设置一些变量
+
+	if (d->inputVolumeMRMLNodeComboBox->currentNodeID() != "")
+	{
+		d->acqStoneBtn->setEnabled(true);
+		d->x_verticalAcqStoneBtn->setEnabled(true);
+		d->y_verticalAcqStoneBtn->setEnabled(true);
+		d->z_verticalAcqStoneBtn->setEnabled(true);
+	}
+	else
+	{
+		d->acqStoneBtn->setEnabled(false);
+		d->x_verticalAcqStoneBtn->setEnabled(false);
+		d->y_verticalAcqStoneBtn->setEnabled(false);
+		d->z_verticalAcqStoneBtn->setEnabled(false);
+	}
+
 	qDebug() << "onInputVolumeMRMLNodeChanged" << endl;
 }
 void qSlicerCalculusModuleWidget::updateAcqStoneButtonState()
@@ -290,7 +356,7 @@ void qSlicerCalculusModuleWidget::generateClicked()
 	Q_D(qSlicerCalculusModuleWidget);
 	vtkSlicerCalculusLogic *logic = d->logic();
 	QHash<QString, double> paramHash;
-	paramHash = logic->aqc(vtkMRMLVolumeNode::SafeDownCast(d->inputVolumeMRMLNodeComboBox_2->currentNode()), vtkMRMLMarkupsFiducialNode::SafeDownCast(d->markupsMRMLNodeComboBox->currentNode()));
+	paramHash = logic->aqcCircleData(vtkMRMLVolumeNode::SafeDownCast(d->inputVolumeMRMLNodeComboBox_2->currentNode()), vtkMRMLMarkupsFiducialNode::SafeDownCast(d->markupsMRMLNodeComboBox->currentNode()));
 
 	addTableWidgetRow(paramHash,d->tableblock);
 	d->saveButton->setEnabled(true);
