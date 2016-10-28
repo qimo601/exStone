@@ -23,7 +23,7 @@
 
 #ifndef __vtkSlicerCalculusLogic_h
 #define __vtkSlicerCalculusLogic_h
-
+#include "common.h"
 // Slicer includes
 #include "vtkSlicerModuleLogic.h"
 #include "vtkSlicerVolumesLogic.h"
@@ -36,8 +36,6 @@
 #include <cstdlib>
 
 #include "vtkSlicerCalculusModuleLogicExport.h"
-#include "TumorSegm/AdaptiveSegment3D.h"
-#include "TumorSegm/AppData.h"
 
 // VTK includes
 #include <vtkImageReslice.h>
@@ -121,8 +119,6 @@ private:
 	vtkSlicerCalculusLogic(const vtkSlicerCalculusLogic&); // Not implemented
 	void operator=(const vtkSlicerCalculusLogic&); // Not implemented
 
-	AdaptiveSegment3D* m_seg;
-	AppData m_gData;
 	//体数据的logic
 	vtkSlicerVolumesLogic* volumesLogic;
 	//剪切后的体数据

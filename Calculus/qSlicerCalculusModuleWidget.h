@@ -22,7 +22,7 @@
 #include "qSlicerAbstractModuleWidget.h"
 
 #include "qSlicerCalculusModuleExport.h"
-
+#include "Logic/common.h"
 //---------------朱珊珊添加
 //excel有关头文件
 #include <ActiveQt/qaxobject.h>

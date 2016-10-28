@@ -29,7 +29,7 @@
 // FooBar Widgets includes
 #include "qSlicerCalculusModuleWidgetsExport.h"
 #include<QTimerEvent>
-
+#include "common.h"
 class qSlicerCalculusReformatWidgetPrivate;
 class vtkMRMLNode;
 
