@@ -6,10 +6,8 @@ project(exStone)
 # Extension meta-information
 set(EXTENSION_HOMEPAGE "http://slicer.org/slicerWiki/index.php/Documentation/Nightly/Extensions/exStone")
 set(EXTENSION_CATEGORY "Examples")
-set(EXTENSION_CONTRIBUTORS "LiuZhaoBang (Sibet), John Doe (AnyWare Corp.)")
-set(EXTENSION_DESCRIPTION "This is an example of a simple extension
-
-Urinary calculi analysis module")
+set(EXTENSION_CONTRIBUTORS "LiuZhaoBang (Sibet)")
+set(EXTENSION_DESCRIPTION "This extension is a software for the analysis of the density of urinary stones. The exStone can achieved the segmentation of urinary calculi from CT Image, and  automaticly extract the  slice's parameters  in any angle of the  urinary stones volume   as well as perpendicular to the X\Y\Z axis. The CT maximum, minimum, average, average optical density and integral density of each slice of the stone were calculated. At finally,it can support export  parameters to the Excel file.")
 set(EXTENSION_ICONURL "http://www.example.com/Slicer/Extensions/exStone.png")
 set(EXTENSION_SCREENSHOTURLS "http://www.example.com/Slicer/Extensions/exStone/Screenshots/1.png")
 
