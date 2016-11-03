@@ -46,6 +46,7 @@ set(MODULE_TARGET_LIBRARIES
   vtkSlicerVolumesModuleLogic
   vtkSlicerCropVolumeModuleLogic
   vtkSlicerMarkupsModuleMRML
+  ${QT_QAXCONTAINER_LIBRARY}
   )
 
 set(MODULE_RESOURCES
