@@ -298,7 +298,7 @@ void qSlicerCalculusModuleWidget::onInputVolumeMRMLNodeChanged()
 		d->z_verticalAcqStoneBtn->setEnabled(false);
 	}
 
-	qDebug() << "onInputVolumeMRMLNodeChanged" << endl;
+	//qDebug() << "onInputVolumeMRMLNodeChanged" << endl;
 }
 void qSlicerCalculusModuleWidget::updateAcqStoneButtonState()
 {

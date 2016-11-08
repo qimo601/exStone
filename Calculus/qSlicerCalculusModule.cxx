@@ -121,25 +121,25 @@ void qSlicerCalculusModule::setup()
 
 	//获取其他module的logic
 	//获取体数据module，通过module的name获取
-	qSlicerAbstractCoreModule* volumesModule =
-		qSlicerCoreApplication::application()->moduleManager()->module("Volumes");
-	if (volumesModule)
-	{
-		//获取volumesModule的logic
-		vtkSlicerVolumesLogic* volumesLogic = vtkSlicerVolumesLogic::SafeDownCast(volumesModule->logic());
-		//设置当前module的体数据业务
-		moduleLogic->setVolumesLogic(volumesLogic);
-	}
+	//qSlicerAbstractCoreModule* volumesModule =
+	//	qSlicerCoreApplication::application()->moduleManager()->module("Volumes");
+	//if (volumesModule)
+	//{
+	//	//获取volumesModule的logic
+	//	vtkSlicerVolumesLogic* volumesLogic = vtkSlicerVolumesLogic::SafeDownCast(volumesModule->logic());
+	//	//设置当前module的体数据业务
+	//	moduleLogic->setVolumesLogic(volumesLogic);
+	//}
 
-	//获取剪切后体数据的logic
-	qSlicerAbstractCoreModule* cropVolumeModule =
-		qSlicerCoreApplication::application()->moduleManager()->module("CropVolume");
-	if (cropVolumeModule)
-	{
-		vtkSlicerCropVolumeLogic* cropVolumeLogic =
-			vtkSlicerCropVolumeLogic::SafeDownCast(cropVolumeModule->logic());
-		moduleLogic->setCropVolumeLogic(cropVolumeLogic);
-	}
+	////获取剪切后体数据的logic
+	//qSlicerAbstractCoreModule* cropVolumeModule =
+	//	qSlicerCoreApplication::application()->moduleManager()->module("CropVolume");
+	//if (cropVolumeModule)
+	//{
+	//	vtkSlicerCropVolumeLogic* cropVolumeLogic =
+	//		vtkSlicerCropVolumeLogic::SafeDownCast(cropVolumeModule->logic());
+	//	moduleLogic->setCropVolumeLogic(cropVolumeLogic);
+	//}
 
 
 
