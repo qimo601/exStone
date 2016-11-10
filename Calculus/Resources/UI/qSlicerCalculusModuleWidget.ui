@@ -65,27 +65,27 @@
           <widget class="QTableWidget" name="tableblock_2">
            <column>
             <property name="text">
-             <string>最大值</string>
+             <string>MAX</string>
             </property>
            </column>
            <column>
             <property name="text">
-             <string>最小值</string>
+             <string>MIN</string>
             </property>
            </column>
            <column>
             <property name="text">
-             <string>平均值</string>
+             <string>AVERAGE</string>
             </property>
            </column>
            <column>
             <property name="text">
-             <string>平均光密度值</string>
+             <string>AOD</string>
             </property>
            </column>
            <column>
             <property name="text">
-             <string>积分光密度值</string>
+             <string>IOD</string>
             </property>
            </column>
           </widget>
@@ -120,7 +120,7 @@
                </size>
               </property>
               <property name="text">
-               <string>清空结石参数</string>
+               <string>clear</string>
               </property>
              </widget>
             </item>
@@ -190,7 +190,10 @@
                </size>
               </property>
               <property name="text">
-               <string>任意角度切片层厚：</string>
+               <string>slice thicknesss:</string>
+              </property>
+              <property name="textFormat">
+               <enum>Qt::PlainText</enum>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -256,7 +259,7 @@
                </size>
               </property>
               <property name="text">
-               <string>u水：</string>
+               <string>u water：</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -294,32 +297,10 @@
                </size>
               </property>
               <property name="text">
-               <string>材料厚度：</string>
+               <string>material thickness:</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <widget class="QPushButton" name="x_verticalAcqStoneBtn">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>38</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>80</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>垂直X轴采集</string>
               </property>
              </widget>
             </item>
@@ -364,6 +345,28 @@
               </property>
               <property name="text">
                <string>垂直Z轴采集</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QPushButton" name="x_verticalAcqStoneBtn">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>38</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>80</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>垂直X轴采集</string>
               </property>
              </widget>
             </item>
@@ -459,27 +462,27 @@
        <widget class="QTableWidget" name="tableblock">
         <column>
          <property name="text">
-          <string>最大值</string>
+          <string>MAX</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>最小值</string>
+          <string>MIN</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>平均值</string>
+          <string>AVERAGE</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>平均光密度值</string>
+          <string>AOD</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>积分光密度值</string>
+          <string>IOD</string>
          </property>
         </column>
        </widget>
@@ -504,7 +507,7 @@
       <item row="5" column="0" colspan="2">
        <widget class="QPushButton" name="clearButton">
         <property name="text">
-         <string>清空床孔数据</string>
+         <string>clear</string>
         </property>
        </widget>
       </item>
