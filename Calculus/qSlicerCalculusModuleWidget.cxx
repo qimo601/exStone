@@ -113,7 +113,7 @@ qSlicerCalculusModuleWidget::qSlicerCalculusModuleWidget(QWidget* _parent)
   , d_ptr(new qSlicerCalculusModuleWidgetPrivate(*this))
 {
 
-
+	qDebug() << "void qSlicerCalculusModuleWidget::constuctor class.";
 }
 
 //-----------------------------------------------------------------------------
@@ -169,8 +169,11 @@ void qSlicerCalculusModuleWidget::setup()
   }
   //´«µÝ±¾moduleµÄlogic
   d->reformatWidget->setCalculusLogic(d->logic());
+  //d->reformatWidget->setupSlot();
 
   connect(d->reformatWidget, SIGNAL(newStoneParms(QHash<QString,double>)), this, SLOT(addStoneParmsSlot(QHash<QString,double>)));
+
+  qDebug() << "void qSlicerCalculusModuleWidget::setup()";
  
 }
 

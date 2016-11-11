@@ -64,7 +64,7 @@ public:
 	  vtkMRMLScene* getVtkMRMLScene();
 
 QHash<QString, double> m_stoneParamsHash;
-
+void setupSlot();
 
 protected:
   virtual void setup();

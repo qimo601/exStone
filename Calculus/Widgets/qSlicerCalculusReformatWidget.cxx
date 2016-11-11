@@ -39,6 +39,8 @@
 #include "vtkMRMLVolumeNode.h"
 #include "vtkMRMLSliceLayerLogic.h"
 
+#include <qSlicerCoreApplication.h>
+#include <qSlicerModuleManager.h>
 
 // VTK includes
 #include <vtkCamera.h>
@@ -338,7 +340,20 @@ qSlicerCalculusReformatWidget::qSlicerCalculusReformatWidget(
   QWidget* _parent) : Superclass( _parent ),
   d_ptr( new qSlicerCalculusReformatWidgetPrivate(*this) )
 {
-	setup();
+	
+	//****************Test ****************//
+	//qSlicerAbstractCoreModule* reformatModule =
+	//	qSlicerCoreApplication::application()->moduleManager()->module("Reformat");
+	//if (reformatModule)
+	//{
+	//	vtkSlicerReformatLogic* reformatLogic =
+	//		vtkSlicerReformatLogic::SafeDownCast(this->logic());
+	//	//获取Reformat module的logic
+	//	this->setReformatLogic(reformatLogic);
+	//}
+	//setup();
+	//****************Test ****************//
+
 	m_lrTimerId =0;//lr方向旋转，计时器
 	m_lrTimerCount=0;//lr执行次数
 
@@ -350,6 +365,7 @@ qSlicerCalculusReformatWidget::qSlicerCalculusReformatWidget(
 	m_vtkMRMLScene = 0;
 	m_vtkMRMLSliceNodeRed = 0;
 	m_vtkMRMLVolumeNode = 0;
+	qDebug() << "qSlicerCalculusReformatWidget construct class.";
 }
 
 //------------------------------------------------------------------------------
@@ -357,7 +373,10 @@ qSlicerCalculusReformatWidget::~qSlicerCalculusReformatWidget()
 {
 }
 
-
+void qSlicerCalculusReformatWidget::setupSlot()
+{
+	setup();
+}
 
 //------------------------------------------------------------------------------
 void qSlicerCalculusReformatWidget::setup()
@@ -365,6 +384,18 @@ void qSlicerCalculusReformatWidget::setup()
   Q_D(qSlicerCalculusReformatWidget);
   d->setupUi(this);
   this->Superclass::setup();
+
+  //****************Test ****************//
+  qSlicerAbstractCoreModule* reformatModule =
+	  qSlicerCoreApplication::application()->moduleManager()->module("Reformat");
+  if (reformatModule)
+  {
+	  vtkSlicerReformatLogic* reformatLogic =
+		  vtkSlicerReformatLogic::SafeDownCast(this->logic());
+	  //获取Reformat module的logic
+	  this->setReformatLogic(reformatLogic);
+  }
+  //****************Test ****************//
   // Populate the Linked menu
   d->setupReformatOptionsMenu();
 
