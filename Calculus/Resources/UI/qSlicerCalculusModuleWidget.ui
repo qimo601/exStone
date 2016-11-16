@@ -105,6 +105,242 @@
             <enum>QFrame::Raised</enum>
            </property>
            <layout class="QGridLayout" name="gridLayout">
+            <item row="0" column="6">
+             <widget class="QPushButton" name="acqStoneBtn">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>38</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>80</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>任意角度采集</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QDoubleSpinBox" name="sliceThickSpinBox">
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>38</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="suffix">
+               <string>mm</string>
+              </property>
+              <property name="minimum">
+               <double>1.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>20.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>5.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="6">
+             <widget class="QPushButton" name="y_verticalAcqStoneBtn">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>38</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>80</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>垂直Y轴采集</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLabel" name="label_5">
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>38</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>u water：</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="label_4">
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>38</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>slice thicknesss:</string>
+              </property>
+              <property name="textFormat">
+               <enum>Qt::PlainText</enum>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="6">
+             <widget class="QPushButton" name="z_verticalAcqStoneBtn">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>38</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>80</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>垂直Z轴采集</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="5">
+             <widget class="QPushButton" name="openBtn">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>38</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>80</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>开启</string>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2">
+             <widget class="QDoubleSpinBox" name="uWaterSpinBox">
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>38</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="decimals">
+               <number>5</number>
+              </property>
+              <property name="value">
+               <double>0.183000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="2">
+             <widget class="QDoubleSpinBox" name="materialThickSpinBox">
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>38</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="minimum">
+               <double>1.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>20.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="6">
+             <widget class="QPushButton" name="x_verticalAcqStoneBtn">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>38</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>80</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>垂直X轴采集</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QLabel" name="label_6">
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>38</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>material thickness:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
             <item row="4" column="5">
              <widget class="QPushButton" name="clearButton_2">
               <property name="minimumSize">
@@ -143,230 +379,6 @@
               </property>
               <property name="text">
                <string>save</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="5">
-             <widget class="QPushButton" name="acqStoneBtn">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>38</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>80</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>任意角度采集</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="label_4">
-              <property name="minimumSize">
-               <size>
-                <width>100</width>
-                <height>38</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>slice thicknesss:</string>
-              </property>
-              <property name="textFormat">
-               <enum>Qt::PlainText</enum>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <widget class="QDoubleSpinBox" name="sliceThickSpinBox">
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>38</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>50</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="suffix">
-               <string>mm</string>
-              </property>
-              <property name="minimum">
-               <double>1.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>20.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>5.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="3">
-             <widget class="QDoubleSpinBox" name="uWaterSpinBox">
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>38</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>50</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="decimals">
-               <number>5</number>
-              </property>
-              <property name="value">
-               <double>0.183000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="2">
-             <widget class="QLabel" name="label_5">
-              <property name="minimumSize">
-               <size>
-                <width>100</width>
-                <height>38</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>u water：</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="3">
-             <widget class="QDoubleSpinBox" name="materialThickSpinBox">
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>38</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>50</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="minimum">
-               <double>1.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>20.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="2">
-             <widget class="QLabel" name="label_6">
-              <property name="minimumSize">
-               <size>
-                <width>100</width>
-                <height>38</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>material thickness:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="3">
-             <widget class="QPushButton" name="y_verticalAcqStoneBtn">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>38</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>80</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>垂直Y轴采集</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="5">
-             <widget class="QPushButton" name="z_verticalAcqStoneBtn">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>38</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>80</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>垂直Z轴采集</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <widget class="QPushButton" name="x_verticalAcqStoneBtn">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>80</width>
-                <height>38</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>80</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>垂直X轴采集</string>
               </property>
              </widget>
             </item>

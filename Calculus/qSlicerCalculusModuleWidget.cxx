@@ -112,7 +112,7 @@ qSlicerCalculusModuleWidget::qSlicerCalculusModuleWidget(QWidget* _parent)
   : Superclass( _parent )
   , d_ptr(new qSlicerCalculusModuleWidgetPrivate(*this))
 {
-
+	m_enableReformat = false;//reformat窗口默认不可用
 	qDebug() << "void qSlicerCalculusModuleWidget::constuctor class.";
 }
 
@@ -169,9 +169,9 @@ void qSlicerCalculusModuleWidget::setup()
   }
   //传递本module的logic
   d->reformatWidget->setCalculusLogic(d->logic());
-  //d->reformatWidget->setupSlot();
-
   connect(d->reformatWidget, SIGNAL(newStoneParms(QHash<QString,double>)), this, SLOT(addStoneParmsSlot(QHash<QString,double>)));
+
+
 
   qDebug() << "void qSlicerCalculusModuleWidget::setup()";
  
@@ -223,12 +223,27 @@ void qSlicerCalculusModuleWidget::getParamsFromUi()
 	d->reformatWidget->setVtkMRMLSliceNodeRed(vtkMRMLSliceNode::SafeDownCast(mrmlNode));
 	//设置VolumeMRMLScene
 	d->reformatWidget->setVtkMRMLScene(this->mrmlScene());
+	
+
+}
+//开启Reformat窗口功能
+void qSlicerCalculusModuleWidget::on_openBtn_clicked()
+{
+	Q_D(qSlicerCalculusModuleWidget);
+	//每次采集都要判断一下是否Reformat窗口可用，不可用，需要重新初始化一下。只执行一次
+	if (!m_enableReformat)//后面在此加密码
+	{
+		d->reformatWidget->setupSlot();
+		m_enableReformat = true;
+
+		d->reformatWidget->enableReformatSelector();
+
+	}
 }
 //结石任意角度采集参数
 void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
-
 	getParamsFromUi();//获取界面参数
 
 	d->reformatWidget->closeAllReformat();
@@ -437,6 +452,8 @@ void qSlicerCalculusModuleWidget::clearButtonClicked()
 void qSlicerCalculusModuleWidget::clearButtonClicked_2()
 {
 	Q_D(qSlicerCalculusModuleWidget);
+	d->reformatWidget->setupSlot();
+
 	int counts = d->tableblock_2->rowCount();
 	for (int i = 0; i < counts; i++)
 	{

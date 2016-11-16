@@ -74,7 +74,8 @@ public slots:
 /// Update the selection node from the combo box
 void onInputVolumeMRMLNodeChanged();
 void updateAcqStoneButtonState();
-
+//开启Reformat窗口功能
+void on_openBtn_clicked();
 /// Display property button slots
 ///acquire the urinary calculi parameters
 void onAcqStoneBtnClicked();
@@ -102,6 +103,7 @@ void generateClicked();//点击生成按钮，将文档中数据导入QTablewidget
 void clearButtonClicked();//清空表格
 void clearButtonClicked_2();
 
+
 //---------------添加结束
 protected:
   QScopedPointer<qSlicerCalculusModuleWidgetPrivate> d_ptr;
@@ -112,6 +114,7 @@ protected:
 private:
   Q_DECLARE_PRIVATE(qSlicerCalculusModuleWidget);
   Q_DISABLE_COPY(qSlicerCalculusModuleWidget);
+  bool m_enableReformat;//Reformat窗口是否可用
 };
 
 //---------------朱珊珊添加
@@ -134,6 +137,8 @@ private:
 	QAxObject* m_sheets;
 	QAxObject* m_sheet;
 	bool m_closeExcelOnExit;
+
+	
 };
 
 

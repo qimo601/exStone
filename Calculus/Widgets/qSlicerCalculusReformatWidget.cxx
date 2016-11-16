@@ -149,7 +149,7 @@ void qSlicerCalculusReformatWidgetPrivate::updateUi()
 {
   this->updateVisibilityControllers();
   this->updateOffsetSlidersGroupBox();
-  this->updateOriginCoordinates();
+  this->updateOriginCoordinates();//Test failed
   this->updateOrientationGroupBox();
 }
 
@@ -267,7 +267,7 @@ void qSlicerCalculusReformatWidgetPrivate::updateOriginCoordinates()
   */
 
   // Update volumes origin coordinates
-  vtkMatrix4x4* sliceToRAS = this->MRMLSliceNode->GetSliceToRAS();
+ vtkMatrix4x4* sliceToRAS = this->MRMLSliceNode->GetSliceToRAS();
   this->InVolumeCoordinatesWidget->setCoordinates(sliceToRAS->GetElement(0,3),
                                                   sliceToRAS->GetElement(1,3),
                                                   sliceToRAS->GetElement(2,3));
@@ -340,7 +340,6 @@ qSlicerCalculusReformatWidget::qSlicerCalculusReformatWidget(
   QWidget* _parent) : Superclass( _parent ),
   d_ptr( new qSlicerCalculusReformatWidgetPrivate(*this) )
 {
-	
 	//****************Test ****************//
 	//qSlicerAbstractCoreModule* reformatModule =
 	//	qSlicerCoreApplication::application()->moduleManager()->module("Reformat");
@@ -366,6 +365,7 @@ qSlicerCalculusReformatWidget::qSlicerCalculusReformatWidget(
 	m_vtkMRMLSliceNodeRed = 0;
 	m_vtkMRMLVolumeNode = 0;
 	qDebug() << "qSlicerCalculusReformatWidget construct class.";
+	
 }
 
 //------------------------------------------------------------------------------
@@ -375,107 +375,99 @@ qSlicerCalculusReformatWidget::~qSlicerCalculusReformatWidget()
 
 void qSlicerCalculusReformatWidget::setupSlot()
 {
-	setup();
+	Q_D(qSlicerCalculusReformatWidget);
+	d->setupUi(this);
+	this->Superclass::setup();
+
+	// Populate the Linked menu
+	d->setupReformatOptionsMenu();
+
+	// Connect node selector with  itself
+	this->connect(d->VisibilityCheckBox,
+		SIGNAL(toggled(bool)),
+		this, SLOT(onSliceVisibilityChanged(bool)));
+	this->connect(d->ShowReformatWidgetToolButton,
+		SIGNAL(toggled(bool)),
+		this, SLOT(onReformatWidgetVisibilityChanged(bool)));
+
+	this->connect(d->SliceNodeSelector,
+		SIGNAL(currentNodeChanged(vtkMRMLNode*)),
+		SLOT(onNodeSelected(vtkMRMLNode*)));
+
+	// Connect Slice offset slider
+	this->connect(d->OffsetSlider, SIGNAL(valueChanged(double)),
+		this, SLOT(setSliceOffsetValue(double)), Qt::QueuedConnection);
+	this->connect(d->OffsetSlider, SIGNAL(valueIsChanging(double)),
+		this, SLOT(onTrackSliceOffsetValueChanged(double)),
+		Qt::QueuedConnection);
+	this->connect(d->OffsetSlider, SIGNAL(valueChanged(double)),
+		this, SLOT(getVerticalStoneSlot(double)));
+
+	// Add origin coordinate reference button to a button group
+	d->OriginCoordinateReferenceButtonGroup =
+		new QButtonGroup(d->OriginCoordinateReferenceButtonGroup);
+	d->OriginCoordinateReferenceButtonGroup->addButton(d->OnPlaneRadioButton,
+		qSlicerCalculusReformatWidget::ONPLANE);
+	d->OriginCoordinateReferenceButtonGroup->addButton(d->InVolumeRadioButton,
+		qSlicerCalculusReformatWidget::INVOLUME);
+
+	// Plane coordinate system is not supported for now
+	d->CoordinateReferenceGroupBox->setHidden(true);
+	d->InVolumeRadioButton->setChecked(true);
+	d->OnPlaneGroupBox->setHidden(true);
+
+	// Connect button group
+	this->connect(d->OriginCoordinateReferenceButtonGroup,
+		SIGNAL(buttonPressed(int)),
+		SLOT(onOriginCoordinateReferenceButtonPressed(int)));
+
+	// Connect World Coordinates of origin spinBoxes
+	this->connect(d->InVolumeCoordinatesWidget, SIGNAL(coordinatesChanged(double*)),
+		this, SLOT(setWorldPosition(double*)));
+
+	// Connect Orientation selector
+	this->connect(d->SliceOrientationSelector, SIGNAL(currentIndexChanged(QString)),
+		this, SLOT(onSliceOrientationChanged(QString)));
+
+	// Connect the recenter
+	this->connect(d->CenterPushButton, SIGNAL(pressed()),
+		this, SLOT(centerSliceNode()));
+
+	// Connect slice normal spinBoxes
+	this->connect(d->NormalCoordinatesWidget, SIGNAL(coordinatesChanged(double*)),
+		this, SLOT(setSliceNormal(double*)));
+
+	// Connect slice normal pushButtons
+	this->connect(d->NormalXPushButton, SIGNAL(pressed()),
+		this, SLOT(setNormalToAxisX()));
+	this->connect(d->NormalYPushButton, SIGNAL(pressed()),
+		this, SLOT(setNormalToAxisY()));
+	this->connect(d->NormalZPushButton, SIGNAL(pressed()),
+		this, SLOT(setNormalToAxisZ()));
+
+	QObject::connect(d->NormalToCameraCheckablePushButton, SIGNAL(clicked()),
+		this, SLOT(setNormalToCamera()));
+	QObject::connect(d->NormalToCameraCheckablePushButton,
+		SIGNAL(checkBoxToggled(bool)),
+		this, SLOT(onLockReformatWidgetToCamera(bool)));
+
+	// Connect Slice rotation sliders
+	this->connect(d->LRSlider, SIGNAL(valueChanged(double)),
+		this, SLOT(onSliderRotationChanged(double)));
+	this->connect(d->PASlider, SIGNAL(valueChanged(double)),
+		this, SLOT(onSliderRotationChanged(double)));
+	this->connect(d->ISSlider, SIGNAL(valueChanged(double)),
+		this, SLOT(onSliderRotationChanged(double)));
+	qDebug() << "void qSlicerCalculusReformatWidget::setupSlot()";
+
+
 }
 
 //------------------------------------------------------------------------------
 void qSlicerCalculusReformatWidget::setup()
 {
-  Q_D(qSlicerCalculusReformatWidget);
-  d->setupUi(this);
-  this->Superclass::setup();
-
-  //****************Test ****************//
-  qSlicerAbstractCoreModule* reformatModule =
-	  qSlicerCoreApplication::application()->moduleManager()->module("Reformat");
-  if (reformatModule)
-  {
-	  vtkSlicerReformatLogic* reformatLogic =
-		  vtkSlicerReformatLogic::SafeDownCast(this->logic());
-	  //获取Reformat module的logic
-	  this->setReformatLogic(reformatLogic);
-  }
-  //****************Test ****************//
-  // Populate the Linked menu
-  d->setupReformatOptionsMenu();
-
-  // Connect node selector with  itself
-  this->connect(d->VisibilityCheckBox,
-                   SIGNAL(toggled(bool)),
-                   this, SLOT(onSliceVisibilityChanged(bool)));
-  this->connect(d->ShowReformatWidgetToolButton,
-                   SIGNAL(toggled(bool)),
-                   this, SLOT(onReformatWidgetVisibilityChanged(bool)));
-
-  this->connect(d->SliceNodeSelector,
-                SIGNAL(currentNodeChanged(vtkMRMLNode*)),
-                SLOT(onNodeSelected(vtkMRMLNode*)));
-
-  // Connect Slice offset slider
-  this->connect(d->OffsetSlider, SIGNAL(valueChanged(double)),
-                this, SLOT(setSliceOffsetValue(double)), Qt::QueuedConnection);
-  this->connect(d->OffsetSlider, SIGNAL(valueIsChanging(double)),
-                this, SLOT(onTrackSliceOffsetValueChanged(double)),
-                Qt::QueuedConnection);
-  this->connect(d->OffsetSlider, SIGNAL(valueChanged(double)),
-	  this, SLOT(getVerticalStoneSlot(double)));
-
-  // Add origin coordinate reference button to a button group
-  d->OriginCoordinateReferenceButtonGroup =
-    new QButtonGroup(d->OriginCoordinateReferenceButtonGroup);
-  d->OriginCoordinateReferenceButtonGroup->addButton(d->OnPlaneRadioButton,
-    qSlicerCalculusReformatWidget::ONPLANE);
-  d->OriginCoordinateReferenceButtonGroup->addButton(d->InVolumeRadioButton,
-    qSlicerCalculusReformatWidget::INVOLUME);
-
-  // Plane coordinate system is not supported for now
-  d->CoordinateReferenceGroupBox->setHidden(true);
-  d->InVolumeRadioButton->setChecked(true);
-  d->OnPlaneGroupBox->setHidden(true);
-
-  // Connect button group
-  this->connect(d->OriginCoordinateReferenceButtonGroup,
-                SIGNAL(buttonPressed(int)),
-                SLOT(onOriginCoordinateReferenceButtonPressed(int)));
-
-  // Connect World Coordinates of origin spinBoxes
-  this->connect(d->InVolumeCoordinatesWidget, SIGNAL(coordinatesChanged(double*)),
-                this, SLOT(setWorldPosition(double*)));
-
-  // Connect Orientation selector
-  this->connect(d->SliceOrientationSelector, SIGNAL(currentIndexChanged(QString)),
-                this, SLOT(onSliceOrientationChanged(QString)));
-
-  // Connect the recenter
-  this->connect(d->CenterPushButton, SIGNAL(pressed()),
-                this, SLOT(centerSliceNode()));
-
-  // Connect slice normal spinBoxes
-  this->connect(d->NormalCoordinatesWidget, SIGNAL(coordinatesChanged(double*)),
-                this, SLOT(setSliceNormal(double*)));
-
-  // Connect slice normal pushButtons
-  this->connect(d->NormalXPushButton, SIGNAL(pressed()),
-                this, SLOT(setNormalToAxisX()));
-  this->connect(d->NormalYPushButton, SIGNAL(pressed()),
-                this, SLOT(setNormalToAxisY()));
-  this->connect(d->NormalZPushButton, SIGNAL(pressed()),
-                this, SLOT(setNormalToAxisZ()));
-
-  QObject::connect(d->NormalToCameraCheckablePushButton, SIGNAL(clicked()),
-                   this, SLOT(setNormalToCamera()));
-  QObject::connect(d->NormalToCameraCheckablePushButton,
-                   SIGNAL(checkBoxToggled(bool)),
-                   this, SLOT(onLockReformatWidgetToCamera(bool)));
-
-  // Connect Slice rotation sliders
-  this->connect(d->LRSlider, SIGNAL(valueChanged(double)),
-                this, SLOT(onSliderRotationChanged(double)));
-  this->connect(d->PASlider, SIGNAL(valueChanged(double)),
-                this, SLOT(onSliderRotationChanged(double)));
-  this->connect(d->ISSlider, SIGNAL(valueChanged(double)),
-                this, SLOT(onSliderRotationChanged(double)));
-  qDebug() << "void qSlicerCalculusReformatWidget::setup()";
+	
+	qDebug() << "void qSlicerCalculusReformatWidget::setup()";
 }
 //------------------------------------------------------------------------------
 //自定义 设置ReformatLogic
@@ -559,8 +551,8 @@ void qSlicerCalculusReformatWidget::onNodeSelected(vtkMRMLNode* node)
     this, SLOT(onMRMLSliceNodeModified(vtkObject*)));
 
   d->MRMLSliceNode = sliceNode;
-  d->MRMLSliceLogic =
-    this->logic()->GetMRMLApplicationLogic()->GetSliceLogic(d->MRMLSliceNode);
+  /*d->MRMLSliceLogic =
+    this->logic()->GetMRMLApplicationLogic()->GetSliceLogic(d->MRMLSliceNode);*/
 
   d->updateUi();
 }
@@ -1201,3 +1193,14 @@ void qSlicerCalculusReformatWidget::getVerticalStoneSlot(double value)
 	//采集切面参数
 	getSliceVerticalRawData(value);
 }
+/**
+* @brief  采集之前要激活Reformat的下拉框
+* @author liuzhaobang
+* @date 2016-10-27
+*/
+void qSlicerCalculusReformatWidget::enableReformatSelector()
+{
+	//集成防止test failed。可以让Reformat的下拉框正常显示。
+	if (this->m_vtkMRMLScene != NULL)
+		emit  mrmlSceneChanged(this->m_vtkMRMLScene);
+}	

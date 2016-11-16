@@ -63,9 +63,14 @@ public:
   void setVtkMRMLScene(vtkMRMLScene* scene);
 	  vtkMRMLScene* getVtkMRMLScene();
 
-QHash<QString, double> m_stoneParamsHash;
-void setupSlot();
-
+	QHash<QString, double> m_stoneParamsHash;
+	void setupSlot();
+	/**
+	* @brief  采集之前要激活Reformat的下拉框
+	* @author liuzhaobang
+	* @date 2016-10-27
+	*/
+	void enableReformatSelector();
 protected:
   virtual void setup();
   virtual void setMRMLScene(vtkMRMLScene*);
