@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8.9)
 
 project(exStone)
-
 #-----------------------------------------------------------------------------
 # Extension meta-information
 set(EXTENSION_HOMEPAGE "http://slicer.org/slicerWiki/index.php/Documentation/Nightly/Extensions/exStone")
