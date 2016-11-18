@@ -46,7 +46,7 @@
 #include "qSlicerCalculusReformatWidget.h"
 #include "vtkSlicerReformatLogic.h"
 
-//--------------朱珊珊添加-------------------------------
+//--------------add by zhushanshan-------------------------------
 #include "vtkMRMLScalarVolumeNode.h"
 #include "vtkMRMLScene.h"
 #include "vtkMRMLSelectionNode.h"
@@ -74,7 +74,7 @@
 #include <QTableWidgetItem>
 using namespace std;
 class QAxObject;
-//-------------------添加结束--------------------------------------
+//-------------------add end--------------------------------------
 //-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_ExtensionTemplate
 class qSlicerCalculusModuleWidgetPrivate: public Ui_qSlicerCalculusModuleWidget
@@ -112,7 +112,7 @@ qSlicerCalculusModuleWidget::qSlicerCalculusModuleWidget(QWidget* _parent)
   : Superclass( _parent )
   , d_ptr(new qSlicerCalculusModuleWidgetPrivate(*this))
 {
-	m_enableReformat = false;//reformat窗口默认不可用
+	m_enableReformat = false;//reformat window,defalut false
 	qDebug() << "void qSlicerCalculusModuleWidget::constuctor class.";
 }
 
@@ -143,20 +143,20 @@ void qSlicerCalculusModuleWidget::setup()
 	  this, SLOT(onInputVolumeMRMLNodeChanged()));
   //connect(this, SIGNAL(mrmlSceneChanged(vtkMRMLScene*)), d->reformatWidget, SIGNAL(d->reformatWidget->mrmlSceneChanged(vtkMRMLScene*)));
 
-  //--------------朱珊珊添加的程序----------------------------
+  //--------------add by zhushanshan----------------------------
   connect(d->inputVolumeMRMLNodeComboBox_2, SIGNAL(currentNodeChanged(vtkMRMLNode*)), this, SLOT(InputVolumeMRMLNodeChanged()));
 
   connect(d->markupsMRMLNodeComboBox, SIGNAL(currentNodeChanged(vtkMRMLNode*)), this, SLOT(onMarkupsMRMLNodeChanged()));
 
-  connect(d->generateButton, SIGNAL(clicked()), this, SLOT(generateClicked()));// 当点击生成按钮时，调用生成文件的函数，文件导入窗口表格中)Clicked()
+  connect(d->generateButton, SIGNAL(clicked()), this, SLOT(generateClicked()));
 
-  connect(d->saveButton, SIGNAL(clicked()), this, SLOT(saveClicked()));//按 下保存按钮，将表格数据输出到excel里
-  connect(d->saveButton_2, SIGNAL(clicked()), this, SLOT(saveClicked_2()));//按 下保存按钮，将表格数据输出到excel里
+  connect(d->saveButton, SIGNAL(clicked()), this, SLOT(saveClicked()));
+  connect(d->saveButton_2, SIGNAL(clicked()), this, SLOT(saveClicked_2()));
 
   connect(d->clearButton, SIGNAL(clicked()), this, SLOT(clearButtonClicked()));
   connect(d->clearButton_2, SIGNAL(clicked()), this, SLOT(clearButtonClicked_2()));
 
-  //--------------------添加结束-------------------------
+  //--------------------and end-------------------------
 
   qSlicerAbstractCoreModule* reformatModule =
 	  qSlicerCoreApplication::application()->moduleManager()->module("Reformat");
@@ -164,10 +164,10 @@ void qSlicerCalculusModuleWidget::setup()
   {
 	  vtkSlicerReformatLogic* reformatLogic =
 		  vtkSlicerReformatLogic::SafeDownCast(reformatModule->logic());
-	  //获取Reformat module的logic
+	  //get Reformat module logic
 	  d->reformatWidget->setReformatLogic(reformatLogic);
   }
-  //传递本module的logic
+  //set module logic
   d->reformatWidget->setCalculusLogic(d->logic());
   connect(d->reformatWidget, SIGNAL(newStoneParms(QHash<QString,double>)), this, SLOT(addStoneParmsSlot(QHash<QString,double>)));
 
@@ -205,33 +205,33 @@ void qSlicerCalculusModuleWidget::enter()
 	this->Superclass::enter();
 }
 //-----------------------------------------------------------------------------
-//获取界面参数
+//get params from ui
 void qSlicerCalculusModuleWidget::getParamsFromUi()
 {
 	Q_D(qSlicerCalculusModuleWidget);
-	//获取界面三组参数
-	vtkSlicerCalculusLogic::s_sliceThick = d->sliceThickSpinBox->value();//层厚 任意角度采集参数 计算距离用
-	vtkSlicerCalculusLogic::s_uWater = d->uWaterSpinBox->value();//u水 计算平均密度、积分密度参数用
-	vtkSlicerCalculusLogic::s_materialThick = d->materialThickSpinBox->value();//材料厚度 计算平均密度、积分密度参数用
-
+	//get three params
+	vtkSlicerCalculusLogic::s_sliceThick = d->sliceThickSpinBox->value();
+	vtkSlicerCalculusLogic::s_uWater = d->uWaterSpinBox->value();
+	vtkSlicerCalculusLogic::s_materialThick = d->materialThickSpinBox->value();
 
 	vtkMRMLNode *mrmlNode = this->mrmlScene()->GetNodeByID("vtkMRMLSliceNodeRed");
 
-	//设置VolumeMRMLNode,暂时没用
+	//no use
 	d->reformatWidget->setVtkMRMLVolumeNode(vtkMRMLVolumeNode::SafeDownCast(d->inputVolumeMRMLNodeComboBox->currentNode()));
-	//设置VolumeMRMLNode,暂时没用
+	//no use
 	d->reformatWidget->setVtkMRMLSliceNodeRed(vtkMRMLSliceNode::SafeDownCast(mrmlNode));
-	//设置VolumeMRMLScene
+	//set VolumeMRMLScene
 	d->reformatWidget->setVtkMRMLScene(this->mrmlScene());
 	
 
 }
-//开启Reformat窗口功能
+
+//open reforamt window
 void qSlicerCalculusModuleWidget::on_openBtn_clicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
-	//每次采集都要判断一下是否Reformat窗口可用，不可用，需要重新初始化一下。只执行一次
-	if (!m_enableReformat)//后面在此加密码
+	//make sure the m_enableReformat  only once
+	if (!m_enableReformat)
 	{
 		d->reformatWidget->setupSlot();
 		m_enableReformat = true;
@@ -240,57 +240,49 @@ void qSlicerCalculusModuleWidget::on_openBtn_clicked()
 
 	}
 }
-//结石任意角度采集参数
 void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
-	getParamsFromUi();//获取界面参数
+	getParamsFromUi();
 
 	d->reformatWidget->closeAllReformat();
-	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeRed");//允许Red变形
-	d->reformatWidget->randRotate();//开始自由采集
+	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeRed");
+	d->reformatWidget->randRotate();
 
 
 }
-//结石垂直X轴方向采集参数
+
 void qSlicerCalculusModuleWidget::onX_VerticalAcqStoneBtnClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
 
-	getParamsFromUi();//获取界面参数
+	getParamsFromUi();
 
-	//======业务程序=====//
 	d->reformatWidget->closeAllReformat();
-	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeYellow");//允许Red变形
-	//开始垂直采集
+	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeYellow");
 	d->reformatWidget->verticalAcq();
 
 }
-//结石垂直Y轴方向采集参数
 void qSlicerCalculusModuleWidget::onY_VerticalAcqStoneBtnClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
 
-	getParamsFromUi();//获取界面参数
+	getParamsFromUi();
 
-	//======业务程序=====//
 	d->reformatWidget->closeAllReformat();
-	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeGreen");//允许Red变形
-	//开始垂直采集
+	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeGreen");
 	d->reformatWidget->verticalAcq();
 
 }
-//结石垂直Z轴方向采集参数
+
 void qSlicerCalculusModuleWidget::onZ_VerticalAcqStoneBtnClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
 
-	getParamsFromUi();//获取界面参数
+	getParamsFromUi();
 
-	//======业务程序=====//
 	d->reformatWidget->closeAllReformat();
-	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeRed");//允许Red变形
-	//开始垂直采集
+	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeRed");
 	d->reformatWidget->verticalAcq();
 
 }
@@ -299,7 +291,7 @@ void qSlicerCalculusModuleWidget::onInputVolumeMRMLNodeChanged()
 	Q_D(qSlicerCalculusModuleWidget);
 	Q_ASSERT(d->inputVolumeMRMLNodeComboBox);
 	updateAcqStoneButtonState();
-	getParamsFromUi();//获取界面参数和设置一些变量
+	getParamsFromUi();
 
 	if (d->inputVolumeMRMLNodeComboBox->currentNodeID() != "")
 	{
@@ -336,16 +328,16 @@ void qSlicerCalculusModuleWidget::onEndCloseEvent()
 {
 	Q_D(qSlicerCalculusModuleWidget);
 	vtkSmartPointer<vtkSlicerCalculusLogic> logic = d->logic();
-	//----------------------朱珊珊添加---------------------
+	//----------------------add by zhushanshan---------------------
 	d->generateButton->setEnabled(true);
 	d->markupsMRMLNodeComboBox->setEnabled(true);
-//----------------------添加结束---------------------
+//----------------------add end---------------------
 	//logic->reset(vtkMRMLMarkupsFiducialNode::SafeDownCast(d->markupsMRMLNodeComboBox->currentNode()), 0);
 	//d->acqStoneBtn->setEnabled(true);
 	cout << "close scene!" << endl;
 
 }
-//----------------------朱珊珊添加---------------------
+//----------------------add by zhushanshan---------------------
 void qSlicerCalculusModuleWidget::InputVolumeMRMLNodeChanged()
 {
 	Q_D(qSlicerCalculusModuleWidget);
@@ -386,7 +378,7 @@ void qSlicerCalculusModuleWidget::addStoneParmsSlot(QHash<QString,double> hash)
 	addTableWidgetRow(hash,d->tableblock_2);
 	d->saveButton_2->setEnabled(true);
 }
-//在tableWidget里添加一行参数
+//tableWidget add row
 void qSlicerCalculusModuleWidget::addTableWidgetRow(QHash<QString,double> paramHash,QTableWidget* widget)
 {
 	int counts = widget->rowCount();
@@ -394,7 +386,7 @@ void qSlicerCalculusModuleWidget::addTableWidgetRow(QHash<QString,double> paramH
 	QString a, b, c,e,f;
 	a = QString::number(paramHash.value("max"));
 	b = QString::number(paramHash.value("min"));
-	c = QString::number(paramHash.value("average"));//将double数字转为qstring形式
+	c = QString::number(paramHash.value("average"));//double to qstring
 	e = QString::number(paramHash.value("AOD"));
 	f = QString::number(paramHash.value("IOD"));
 	qDebug() << b << endl;
@@ -406,7 +398,7 @@ void qSlicerCalculusModuleWidget::addTableWidgetRow(QHash<QString,double> paramH
 	/*qDebug() << paramHash.value("max") << endl;
 	*/
 }
-////将数据源从文档中转移到excel中,可以实现将输入的数组变为QString型，然后将数组数据输出到excel
+////save tablewidget to excel
 void qSlicerCalculusModuleWidget::saveClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
@@ -423,7 +415,7 @@ void qSlicerCalculusModuleWidget::saveClicked()
 	//const QString fileName = "E:\\kaka14.xlsx";
 	//excel.SaveAs(fileName);
 }
-////将数据源从文档中转移到excel中,可以实现将输入的数组变为QString型，然后将数组数据输出到excel
+////save tablewidget to excel
 void qSlicerCalculusModuleWidget::saveClicked_2()
 {
 	Q_D(qSlicerCalculusModuleWidget);
@@ -484,10 +476,10 @@ ExcelExportHelper::ExcelExportHelper(bool closeExcelOnExit)
 	m_sheet = m_sheets->querySubObject("Add");
 }
 
-void ExcelExportHelper::SetCellValue(int lineIndex, int columnIndex, const QString& value)//此处函数是将数据写入excel表格中的
+void ExcelExportHelper::SetCellValue(int lineIndex, int columnIndex, const QString& value)
 {
 	QAxObject *cell = m_sheet->querySubObject("Cells(int,int)", lineIndex, columnIndex);
-	cell->setProperty("Value", value);//即将运行的下一步，就出错了
+	cell->setProperty("Value", value);
 	delete cell;
 }
 ExcelExportHelper::~ExcelExportHelper()
@@ -513,4 +505,4 @@ ExcelExportHelper::~ExcelExportHelper()
 	delete m_workbooks;
 	delete m_excelApplication;
 }
-//----------------------添加结束---------------------
+//----------------------add end ---------------------

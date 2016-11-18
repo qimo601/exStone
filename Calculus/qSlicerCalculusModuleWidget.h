@@ -23,19 +23,18 @@
 
 #include "qSlicerCalculusModuleExport.h"
 #include "Logic/common.h"
-//---------------朱珊珊添加
-//excel有关头文件
+//excel
 #include <ActiveQt/qaxobject.h>
 #include <ActiveQt/qaxbase.h>
 #include <Qtcore/qstring.h>
-//与窗口有关的头文件
+//GUI
 #include <QDialog>
 #include <QtCore/QVariant>
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <QLayout>
 #include <QtGui/QApplication>  
-//与tableWidget有关的类
+//tableWidget
 #include <QTableWidget>  
 #include <QTableWidgetItem>
 #include <QDialog>
@@ -43,7 +42,7 @@
 #include <QApplication>
 class QLabel;
 class QPushButton;
-//--------------------添加结束-----------------
+//--------------------add end-----------------
 class qSlicerCalculusModuleWidgetPrivate;
 class vtkMRMLNode;
 
@@ -61,10 +60,10 @@ public:
   typedef qSlicerAbstractModuleWidget Superclass;
   qSlicerCalculusModuleWidget(QWidget *parent=0);
   virtual ~qSlicerCalculusModuleWidget();
-  //在tableWidget里添加一行参数
+  //tableWidget add one row
   void addTableWidgetRow(QHash<QString, double> paramHash, QTableWidget* widget);
   //-----------------------------------------------------------------------------
-  //获取界面参数
+  //get ui params
   void getParamsFromUi();
 signals:
   void clicked();
@@ -74,37 +73,33 @@ public slots:
 /// Update the selection node from the combo box
 void onInputVolumeMRMLNodeChanged();
 void updateAcqStoneButtonState();
-//开启Reformat窗口功能
+//open Reformat window
 void on_openBtn_clicked();
 /// Display property button slots
 ///acquire the urinary calculi parameters
 void onAcqStoneBtnClicked();
 
-//结石垂直X轴方向采集参数
+//stone vertical x axial
 void onX_VerticalAcqStoneBtnClicked();
-//结石垂直Y轴方向采集参数
+//stone vertical y axial
 void onY_VerticalAcqStoneBtnClicked();
-//结石垂直Z轴方向采集参数
+//stone vertical z axial
 void onZ_VerticalAcqStoneBtnClicked();
-/**
-* @brief 场景关闭事件
-* @author liuzhaobang
-* @date 2016-10-14
-*/
+//
 void onEndCloseEvent();
 void addStoneParmsSlot(QHash<QString, double> hash);
-//---------------朱珊珊添加
+//---------------add by zhushanshan
 void InputVolumeMRMLNodeChanged();
 void onMarkupsMRMLNodeChanged();
 void updategenerateButtonState();
-void saveClicked(); //点击保存按钮，发出保存信号
-void saveClicked_2(); //点击保存按钮，发出保存信号
-void generateClicked();//点击生成按钮，将文档中数据导入QTablewidget
-void clearButtonClicked();//清空表格
+void saveClicked(); //save excel bed acq
+void saveClicked_2(); //save excel auto acq
+void generateClicked();//params to QTablewidget
+void clearButtonClicked();//clear table
 void clearButtonClicked_2();
 
 
-//---------------添加结束
+//---------------add end---
 protected:
   QScopedPointer<qSlicerCalculusModuleWidgetPrivate> d_ptr;
 
@@ -114,10 +109,10 @@ protected:
 private:
   Q_DECLARE_PRIVATE(qSlicerCalculusModuleWidget);
   Q_DISABLE_COPY(qSlicerCalculusModuleWidget);
-  bool m_enableReformat;//Reformat窗口是否可用
+  bool m_enableReformat;//Reformat window use
 };
 
-//---------------朱珊珊添加
+//---------------by zhushanshan
 class ExcelExportHelper
 {
 public:
@@ -142,5 +137,5 @@ private:
 };
 
 
-//---------------添加结束
+//---------------add end---
 #endif

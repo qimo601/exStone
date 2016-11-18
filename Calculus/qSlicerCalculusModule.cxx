@@ -108,13 +108,13 @@ QStringList qSlicerCalculusModule::dependencies() const
 }
 
 //-----------------------------------------------------------------------------
-//初始化接口
+//init interface
 void qSlicerCalculusModule::setup()
 {
 
 
 	this->Superclass::setup();
-	//获取本module的logic
+	//get modulelogic
 	vtkSlicerCalculusLogic* moduleLogic = vtkSlicerCalculusLogic::SafeDownCast(this->logic());
 	
 	QStringList namesList = qSlicerCoreApplication::application()->moduleManager()->modulesNames();
