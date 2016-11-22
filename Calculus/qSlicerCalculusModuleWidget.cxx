@@ -18,6 +18,8 @@
 #include <QDebug>
 #include <QMouseEvent>
 #include <QToolTip>
+#include <QMessageBox>
+#include "qt_windows.h"
 // SlicerQt includes
 #include "qSlicerCalculusModuleWidget.h"
 #include "ui_qSlicerCalculusModuleWidget.h"
@@ -384,11 +386,17 @@ void qSlicerCalculusModuleWidget::addTableWidgetRow(QHash<QString,double> paramH
 	int counts = widget->rowCount();
 	widget->insertRow(counts);
 	QString a, b, c,e,f;
-	a = QString::number(paramHash.value("max"));
-	b = QString::number(paramHash.value("min"));
-	c = QString::number(paramHash.value("average"));//double to qstring
-	e = QString::number(paramHash.value("AOD"));
-	f = QString::number(paramHash.value("IOD"));
+	//Test failed
+	a.setNum(paramHash.value("max"));
+	b.setNum(paramHash.value("min"));
+	c.setNum(paramHash.value("average"));//double to qstring
+	e.setNum(paramHash.value("AOD"));
+	f.setNum(paramHash.value("IOD"));
+	//a = QString::number(paramHash.value("max"));
+	//b = QString::number(paramHash.value("min"));
+	//c = QString::number(paramHash.value("average"));//double to qstring
+	//e = QString::number(paramHash.value("AOD"));
+	//f = QString::number(paramHash.value("IOD"));
 	qDebug() << b << endl;
 	widget->setItem(counts, 0, new QTableWidgetItem(a));
 	widget->setItem(counts, 1, new QTableWidgetItem(b));
@@ -424,7 +432,7 @@ void qSlicerCalculusModuleWidget::saveClicked_2()
 	{
 		for (int j = 0; j < (d->tableblock_2->columnCount()); j++)
 		{
-			QString str = d->tableblock_2->item((i), (j))->text();
+			QString str = d->tableblock_2->item(i,j)->text();
 			qDebug() << str << endl;
 			excel.SetCellValue(i+1, j+1+8, str);
 		}
@@ -435,6 +443,8 @@ void qSlicerCalculusModuleWidget::saveClicked_2()
 void qSlicerCalculusModuleWidget::clearButtonClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
+
+
 	int counts = d->tableblock->rowCount();
 	for (int i = 0; i < counts; i++)
 	{
@@ -462,6 +472,12 @@ ExcelExportHelper::ExcelExportHelper(bool closeExcelOnExit)
 	m_workbooks = nullptr;
 	m_excelApplication = nullptr;
 
+	/*HRESULT r = OleInitialize(0);
+	if (r != S_OK && r != S_FALSE)
+	{
+		qDebug("Qt: Could not initialize OLE (error %x)", (unsigned int)r);
+	}*/
+
 	m_excelApplication = new QAxObject("Excel.Application", 0);
 
 	if (m_excelApplication == nullptr)
@@ -476,11 +492,12 @@ ExcelExportHelper::ExcelExportHelper(bool closeExcelOnExit)
 	m_sheet = m_sheets->querySubObject("Add");
 }
 
-void ExcelExportHelper::SetCellValue(int lineIndex, int columnIndex, const QString& value)
+void ExcelExportHelper::SetCellValue(int lineIndex, int columnIndex, QString value)
 {
 	QAxObject *cell = m_sheet->querySubObject("Cells(int,int)", lineIndex, columnIndex);
 	cell->setProperty("Value", value);
 	delete cell;
+	qDebug() << "lineIndex:" << lineIndex << "columnIndex:" << columnIndex << "Value:" << value;
 }
 ExcelExportHelper::~ExcelExportHelper()
 {
@@ -504,5 +521,7 @@ ExcelExportHelper::~ExcelExportHelper()
 	delete m_workbook;
 	delete m_workbooks;
 	delete m_excelApplication;
+
+	//OleUninitialize();
 }
 //----------------------add end ---------------------

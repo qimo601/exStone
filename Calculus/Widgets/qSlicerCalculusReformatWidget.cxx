@@ -990,17 +990,32 @@ void qSlicerCalculusReformatWidget::randRotate()
 	{
 		value = getRand(-200, 200);
 		m_lrValueList.append(value);
-
-
+		
 		value = getRand(-200, 200);
 		m_paValueList.append(value);
-
 		
 	}
+	//Test
+	cout << "m_lrValueList:"<<endl;
+	for (int i = 0; i < 16; i++)
+	{
+		cout << " "	<< m_lrValueList.at(i);
+
+	}
+	cout << endl;
+
+	cout << "m_paValueList:" << endl;
+	for (int i = 0; i < 16; i++)
+	{
+		cout << " " << m_paValueList.at(i);
+
+	}
+	cout << endl;
+
 
 	m_lrTimerId = startTimer(1000);
 
-	m_paTimerId = startTimer(1000);
+	//m_paTimerId = startTimer(1000);
 }
 /**
 * @brief 定时器事件
@@ -1037,7 +1052,7 @@ void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 		{
 			rotate("PA", m_paValueList[m_paTimerCount]);
 			m_paTimerCount++;
-			qDebug() << "qSlicerCalculusReformatWidget::timerEvent,m_paTimerCount:" << m_paTimerCount;
+			//qDebug() << "qSlicerCalculusReformatWidget::timerEvent,m_paTimerCount:" << m_paTimerCount;
 
 		}
 
@@ -1058,7 +1073,7 @@ void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 		{
 			verticalAcqUi();//垂直采集
 			m_verticalTimerCount++;
-			qDebug() << "qSlicerCalculusReformatWidget::timerEvent,m_verticalTimerCount:" << m_verticalTimerCount;
+			//qDebug() << "qSlicerCalculusReformatWidget::timerEvent,m_verticalTimerCount:" << m_verticalTimerCount;
 
 		}
 
@@ -1099,12 +1114,16 @@ void qSlicerCalculusReformatWidget::getSliceRawData()
 
 
 	
-	
+	m_stoneParamsHash.clear();
 	//获取单帧切片数据
 	if (m_calculusLogic)
 		m_stoneParamsHash = m_calculusLogic->acqSliceData(reslice.GetPointer(), m_vtkMRMLSliceNodeRed, m_vtkMRMLVolumeNode);
-	if (m_stoneParamsHash.size()>0)
+	if (m_stoneParamsHash.size() > 0)
+	{
 		emit newStoneParms(m_stoneParamsHash);
+		//qDebug() << "m_stoneParamsHash" << " average=" << m_stoneParamsHash.value("average") << " AOD=" << m_stoneParamsHash.value("AOD") << " IOD="<< m_stoneParamsHash.value("IOD");
+	}
+
 
 }
 
@@ -1118,9 +1137,9 @@ void qSlicerCalculusReformatWidget::getSliceVerticalRawData(double offset)
 	Q_D(qSlicerCalculusReformatWidget);
 	QString direction;
 	QString nodeID;
-	//选择R窗口
-	nodeID = d->SliceNodeSelector->currentNodeID();
-	qDebug() << "nodeID:" << nodeID;
+	//Test===failed  不支持“=”，必须append函数
+	nodeID.append(d->SliceNodeSelector->currentNodeID());
+	//qDebug() << "nodeID:" << nodeID;
 	if (nodeID == "vtkMRMLSliceNodeRed")
 	{
 		direction = "Z";
@@ -1133,11 +1152,15 @@ void qSlicerCalculusReformatWidget::getSliceVerticalRawData(double offset)
 	{
 		direction = "Y";
 	}
+	m_stoneParamsHash.clear();
 	//获取单帧切片数据
 	if (m_calculusLogic)
 		m_stoneParamsHash = m_calculusLogic->acqSliceVerticalData(m_vtkMRMLVolumeNode, offset, direction);
-	if (m_stoneParamsHash.size()>0)
+	if (m_stoneParamsHash.size() > 0)
+	{
 		emit newStoneParms(m_stoneParamsHash);
+	}
+
 }
 /**
 * @brief 垂直采集

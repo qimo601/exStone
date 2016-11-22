@@ -165,7 +165,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 	normal[2] = sliceToRAS->GetElement(2, 2);
 	normal[3] = 1;
 
-	qDebug() << "normal:" << normal[0] << " " << normal[1] << " " << normal[2] << " " << normal[3];
+	//qDebug() << "normal:" << normal[0] << " " << normal[1] << " " << normal[2] << " " << normal[3];
 
 
 	double origin[4];//法向量
@@ -174,7 +174,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 	origin[2] = sliceToRAS->GetElement(2, 3);
 	origin[3] = 1;
 
-	qDebug() << "origin:" << origin[0] << " " << origin[1] << " " << origin[2] << " " << origin[3];
+	//qDebug() << "origin:" << origin[0] << " " << origin[1] << " " << origin[2] << " " << origin[3];
 
 	//计算平面方程
 
@@ -272,12 +272,12 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 			result[3] = resultPoint[3];
 			result[4] = point[4];
 			resultPointList.append(result);
-			qDebug() << "distance" << distance << " resultPointijk:" << result[0] << " " << result[1] << " " << result[2] << " " << result[3] << " " << result[4];
+			//qDebug() << "distance" << distance << " resultPointijk:" << result[0] << " " << result[1] << " " << result[2] << " " << result[3] << " " << result[4];
 
 		}
 		rasPointList.append(rasPoint);
 	}
-	qDebug() << "rasPointList size" << rasPointList.size() << " resultPointList size:" << resultPointList.size()<<endl;
+	//qDebug() << "rasPointList size" << rasPointList.size() << " resultPointList size:" << resultPointList.size()<<endl;
 
 
 	double* sliceDataDouble;
@@ -317,36 +317,36 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 		delete[] p;
 	}
 
-	std::cout << "sliceToRAS:" << std::endl;
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			std::cout << " [" << i << "][" << j << "] " << sliceToRAS->GetElement(i, j);
-		}
-		std::cout << std::endl;
-	}
+	//std::cout << "sliceToRAS:" << std::endl;
+	//for (int i = 0; i < 4; i++)
+	//{
+	//	for (int j = 0; j < 4; j++)
+	//	{
+	//		std::cout << " [" << i << "][" << j << "] " << sliceToRAS->GetElement(i, j);
+	//	}
+	//	std::cout << std::endl;
+	//}
 
-	//reslice->SetResliceAxes(resliceAxes);
-	std::cout << "RAS to IJK:" << std::endl;
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			std::cout << " [" << i << "][" << j << "] " << RASToIJKMatrix->GetElement(i, j);
-		}
-		std::cout << std::endl;
-	}
+	////reslice->SetResliceAxes(resliceAxes);
+	//std::cout << "RAS to IJK:" << std::endl;
+	//for (int i = 0; i < 4; i++)
+	//{
+	//	for (int j = 0; j < 4; j++)
+	//	{
+	//		std::cout << " [" << i << "][" << j << "] " << RASToIJKMatrix->GetElement(i, j);
+	//	}
+	//	std::cout << std::endl;
+	//}
 
-	std::cout << "IJK to RAS:" << std::endl;
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			std::cout << " [" << i << "][" << j << "] " << IJKToRASMatrix->GetElement(i, j);
-		}
-		std::cout << std::endl;
-	}
+	//std::cout << "IJK to RAS:" << std::endl;
+	//for (int i = 0; i < 4; i++)
+	//{
+	//	for (int j = 0; j < 4; j++)
+	//	{
+	//		std::cout << " [" << i << "][" << j << "] " << IJKToRASMatrix->GetElement(i, j);
+	//	}
+	//	std::cout << std::endl;
+	//}
 
 
 
@@ -474,11 +474,11 @@ QHash<QString, double> vtkSlicerCalculusLogic::aqcCircleData(vtkMRMLVolumeNode* 
 	int* dims = outputImageData->GetDimensions();//原始图像维数
 	double origin[3];
 	outputImageData->GetOrigin(origin);
-	qDebug() << "o" << origin[0] << " " << origin[1] << " " << origin[2];
+	//qDebug() << "o" << origin[0] << " " << origin[1] << " " << origin[2];
 
 	double spaceing[3];
 	outputImageData->GetSpacing(spaceing);
-	qDebug() << "像素间隔:" << spaceing[0] << " " << spaceing[1] << "" << spaceing[2] << endl;
+	//qDebug() << "像素间隔:" << spaceing[0] << " " << spaceing[1] << "" << spaceing[2] << endl;
 
 	//int dims[3]s;
 	//outputImageData->GetDimensions(dims);
@@ -655,7 +655,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::aqcCircleData(vtkMRMLVolumeNode* 
 	circleParamsHash.insert("average", aver(pixelsegmentation, counter));
 	circleParamsHash.insert("AOD", AOD(pixelsegmentation, counter, vtkSlicerCalculusLogic::s_uWater, vtkSlicerCalculusLogic::s_materialThick));
 	circleParamsHash.insert("IOD", IOD(pixelsegmentation, counter, vtkSlicerCalculusLogic::s_uWater, vtkSlicerCalculusLogic::s_materialThick));
-	qDebug() << circleParamsHash.value("max") << endl;
+	//qDebug() << circleParamsHash.value("max") << endl;
 	return circleParamsHash;
 
 

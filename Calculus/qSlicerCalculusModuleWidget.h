@@ -120,8 +120,8 @@ public:
 	ExcelExportHelper& operator=(const ExcelExportHelper& other) = delete;
 
 	ExcelExportHelper(bool closeExcelOnExit = false);
-	void SetCellValue(int lineIndex, int columnIndex, const QString& value);
-	void SaveAs(const QString& fileName);
+	void SetCellValue(int lineIndex, int columnIndex, QString value);
+	void SaveAs(QString fileName);
 
 	~ExcelExportHelper();
 
