@@ -24,8 +24,6 @@
 #include "qSlicerCalculusModuleExport.h"
 #include "Logic/common.h"
 //excel
-#include <ActiveQt/qaxobject.h>
-#include <ActiveQt/qaxbase.h>
 #include <Qtcore/qstring.h>
 //GUI
 #include <QDialog>
@@ -34,6 +32,7 @@
 #include <qpushbutton.h>
 #include <QLayout>
 #include <QtGui/QApplication>  
+#include <QFile>
 //tableWidget
 #include <QTableWidget>  
 #include <QTableWidgetItem>
@@ -116,24 +115,15 @@ private:
 class ExcelExportHelper
 {
 public:
-	ExcelExportHelper(const ExcelExportHelper& other) = delete;
-	ExcelExportHelper& operator=(const ExcelExportHelper& other) = delete;
-
-	ExcelExportHelper(bool closeExcelOnExit = false);
-	void SetCellValue(int lineIndex, int columnIndex, QString value);
-	void SaveAs(QString fileName);
-
+	ExcelExportHelper();
 	~ExcelExportHelper();
-
-private:
-	QAxObject* m_excelApplication;
-	QAxObject* m_workbooks;
-	QAxObject* m_workbook;
-	QAxObject* m_sheets;
-	QAxObject* m_sheet;
-	bool m_closeExcelOnExit;
-
+	void Open(QString fileName);
+	void SetCellValue(QString value);
 	
+private:
+	QFile* m_file;
+	QString m_fileName;
+	QString m_path;
 };
 
 

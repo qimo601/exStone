@@ -413,12 +413,13 @@ void qSlicerCalculusModuleWidget::saveClicked()
 	ExcelExportHelper excel;
 	for (int i = 0; i < (d->tableblock->rowCount()); i++)
 	{
+		QString line;
 		for (int j = 0; j < (d->tableblock->columnCount() ); j++)
 		{
 			QString str = d->tableblock->item((i ), (j ))->text();
-			qDebug() << str << endl;
-			excel.SetCellValue(i+1, j+1, str);
+			line = line + str + ",";
 		}
+		excel.SetCellValue(line);
 	}
 	//const QString fileName = "E:\\kaka14.xlsx";
 	//excel.SaveAs(fileName);
@@ -430,13 +431,15 @@ void qSlicerCalculusModuleWidget::saveClicked_2()
 	ExcelExportHelper excel;
 	for (int i = 0; i < (d->tableblock_2->rowCount()); i++)
 	{
+		QString line;
 		for (int j = 0; j < (d->tableblock_2->columnCount()); j++)
 		{
 			QString str = d->tableblock_2->item(i,j)->text();
-			qDebug() << str << endl;
-			excel.SetCellValue(i+1, j+1+8, str);
+			line = line + str + ",";			
 		}
+		excel.SetCellValue(line);
 	}
+	
 	//const QString fileName = "E:\\kaka14.xlsx";
 	//excel.SaveAs(fileName);
 }
@@ -462,66 +465,32 @@ void qSlicerCalculusModuleWidget::clearButtonClicked_2()
 		d->tableblock_2->removeRow(d->tableblock_2->rowCount()-1);
 	}
 }
-ExcelExportHelper::ExcelExportHelper(bool closeExcelOnExit)
+ExcelExportHelper::ExcelExportHelper()
 {
-	m_closeExcelOnExit = closeExcelOnExit;
-	m_excelApplication = nullptr;
-	m_sheet = nullptr;
-	m_sheets = nullptr;
-	m_workbook = nullptr;
-	m_workbooks = nullptr;
-	m_excelApplication = nullptr;
-
-	/*HRESULT r = OleInitialize(0);
-	if (r != S_OK && r != S_FALSE)
-	{
-		qDebug("Qt: Could not initialize OLE (error %x)", (unsigned int)r);
-	}*/
-
-	m_excelApplication = new QAxObject("Excel.Application", 0);
-
-	if (m_excelApplication == nullptr)
-		throw invalid_argument("Failed to initialize interop with Excel (probably Excel is not installed)");
-
-	m_excelApplication->dynamicCall("SetVisible(bool)", false); // hide excel
-	m_excelApplication->setProperty("DisplayAlerts", 1); // disable alerts
-
-	m_workbooks = m_excelApplication->querySubObject("Workbooks");
-	m_workbook = m_workbooks->querySubObject("Add");
-	m_sheets = m_workbook->querySubObject("Worksheets");
-	m_sheet = m_sheets->querySubObject("Add");
-}
-
-void ExcelExportHelper::SetCellValue(int lineIndex, int columnIndex, QString value)
-{
-	QAxObject *cell = m_sheet->querySubObject("Cells(int,int)", lineIndex, columnIndex);
-	cell->setProperty("Value", value);
-	delete cell;
-	qDebug() << "lineIndex:" << lineIndex << "columnIndex:" << columnIndex << "Value:" << value;
+	QDateTime dateTime;
+	m_fileName = dateTime.date().toString("yyyy-MM-dd") + "_" + dateTime.time().toString("HHmmss");
+	m_path = "C://Users//Administrator//Desktop//%1.csv";
+	m_path.arg("%1", m_fileName);
+	m_file = new QFile(m_path);
+	Open(m_path);
 }
 ExcelExportHelper::~ExcelExportHelper()
 {
-	if (m_excelApplication != nullptr)
-	{
-		if (!m_closeExcelOnExit)
-		{
-			m_excelApplication->setProperty("DisplayAlerts", 1);
-			m_excelApplication->dynamicCall("SetVisible(bool)", true);
-		}
-
-		if (m_workbook != nullptr && m_closeExcelOnExit)
-		{
-			m_workbook->dynamicCall("Close (Boolean)", true);
-			m_excelApplication->dynamicCall("Quit (void)");
-		}
-	}
-
-	delete m_sheet;
-	delete m_sheets;
-	delete m_workbook;
-	delete m_workbooks;
-	delete m_excelApplication;
-
-	//OleUninitialize();
+	m_file->close();
+	delete m_file;
 }
+void ExcelExportHelper::SetCellValue( QString value)
+{
+	QTextStream out(m_file);
+	out << value << "\n";
+	qDebug() << "Test:" << value;
+}
+void ExcelExportHelper::Open(QString fileName)
+{
+	if (!m_file->open(QIODevice::WriteOnly | QIODevice::Text))
+	{
+		qDebug() << "Failed,ExcelExportHelper::open " << m_path;
+	}
+}
+
 //----------------------add end ---------------------
