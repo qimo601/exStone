@@ -949,12 +949,18 @@ void qSlicerCalculusReformatWidget::rotate(QString direction, double value)
 {
 	Q_D(qSlicerCalculusReformatWidget);
 	if (direction == "LR")
+	{
 		d->LRSlider->setValue(value);
+	}
 	else if (direction == "PA")
+	{
 		d->PASlider->setValue(value);
+	}
+		
 	else if (direction == "IS")
+	{
 		d->ISSlider->setValue(value);
-
+	}
 	getSliceRawData();
 
 }
@@ -1121,7 +1127,7 @@ void qSlicerCalculusReformatWidget::getSliceRawData()
 	if (m_stoneParamsHash.size() > 0)
 	{
 		emit newStoneParms(m_stoneParamsHash);
-		//qDebug() << "m_stoneParamsHash" << " average=" << m_stoneParamsHash.value("average") << " AOD=" << m_stoneParamsHash.value("AOD") << " IOD="<< m_stoneParamsHash.value("IOD");
+		qDebug() << "m_stoneParamsHash" << " average=" << m_stoneParamsHash.value("average") << " AOD=" << m_stoneParamsHash.value("AOD") << " IOD="<< m_stoneParamsHash.value("IOD");
 	}
 
 

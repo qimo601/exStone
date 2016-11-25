@@ -310,9 +310,12 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 		double* p = pointList.at(index);
 		delete[] p;
 	}
+	qDebug() << "resultPointList.size():" << resultPointList.size();
 	//ÊÍ·ÅËùÓÐµã
 	for (int index = 0; index < resultPointList.size(); index++)
 	{
+		double* result = resultPointList.at(index);
+		qDebug() << "index : " <<index <<" "<< result[0] << " " << result[1] << " " << result[2] << " " << result[3] << " " << result[4];
 		double* p = resultPointList.at(index);
 		delete[] p;
 	}
@@ -367,7 +370,7 @@ double vtkSlicerCalculusLogic::max(double a[], int n)
 	{
 		if (a[i]>max) max = a[i];
 	}
-	cout << max << endl;
+	//cout << max << endl;
 	return max;
 }
 double vtkSlicerCalculusLogic::min(double a[], int n)
@@ -379,7 +382,7 @@ double vtkSlicerCalculusLogic::min(double a[], int n)
 	{
 		if (a[i] < min) min = a[i];
 	}
-	cout << min << endl;
+	//cout << min << endl;
 	return  min;
 }
 
@@ -390,12 +393,12 @@ double vtkSlicerCalculusLogic::aver(double a[], int n)
 	for (i = 0; i < n; i++)
 		r += a[i];
 	r /= (double)n;
-	cout << r << endl;
+	//cout <<"aver:"<< setprecision(10) << r << endl;
 	return r;
 }
 //--------------------------------------------------------------
 //»ñÈ¡Ô²µÄÏñËØÊý¾Ý 
-QHash<QString, double> vtkSlicerCalculusLogic::aqcCircleData(vtkMRMLVolumeNode* input, vtkMRMLMarkupsFiducialNode* markups)//vtkMRMLScalarVolumeNode,·µ»ØÖµÊÇÖ¸ÕëµÄº¯Êý
+QHash<QString, double> vtkSlicerCalculusLogic::aqcCircleData(vtkMRMLVolumeNode* input)//vtkMRMLScalarVolumeNode,·µ»ØÖµÊÇÖ¸ÕëµÄº¯Êý
 {
 	/*vtkNew<vtkImageData> outputImageData;
 	outputImageData->DeepCopy(input->GetImageData());*/
@@ -404,71 +407,72 @@ QHash<QString, double> vtkSlicerCalculusLogic::aqcCircleData(vtkMRMLVolumeNode* 
 	//»ù×¼µãÊýÁ¿¼ì²â
 	vtkSmartPointer<vtkMatrix4x4> RASToIJKMatrix = vtkSmartPointer<vtkMatrix4x4>::New();//4*4¾ØÕó
 	input->GetRASToIJKMatrix(RASToIJKMatrix);//×ø±êÏµ×ª»»
-	int markupNum = markups->GetNumberOfFiducials();
-	qDebug() << markupNum << endl;
-	vector<float> position;  //temp variance to store points' IJK 3 coordinates´æ´¢ÈýÎ¬×ø±ê
+	
+	//************************ÆÁ±Î marks****************************//
+	//int markupNum = markups->GetNumberOfFiducials();
+	//qDebug() << markupNum << endl;
+	//vector<float> position;  //temp variance to store points' IJK 3 coordinates´æ´¢ÈýÎ¬×ø±ê
 
-	vector<float> worldposition;  //temp variance to store points' World 3 coordinates
+	//vector<float> worldposition;  //temp variance to store points' World 3 coordinates
 
-	vector<vector <float> > points;  //vector to store sorted markup points in IJK coordinate
+	//vector<vector <float> > points;  //vector to store sorted markup points in IJK coordinate
 
-	vector<vector <float> > worldpoints;
-	if (markupNum != 4)//
-		qDebug() << "error No markupNum =4";
-	else
-	{
-		for (int i = 0; i < markupNum; i++)
-		{
-			double pos[4];//ËÄ¸öµã
-			markups->GetNthFiducialWorldCoordinates(i, pos);//µÃµ½Ã¿¸öµãµÄ×ø±ê
-			cout << "WorldPOS:" << pos[0] << ";" << pos[1] << ";" << pos[2] << ";" << pos[3] << endl;//ËÄ¸öµãµÄ×ø±ê
-			float temp[4];
-			std::copy(pos, pos + 4, temp);
-			float* ijkpos = RASToIJKMatrix->MultiplyPoint(temp);
-			cout << "IJKPOS:" << ijkpos[0] << ";" << ijkpos[1] << ";" << ijkpos[2] << ";" << ijkpos[3] << endl;//IJK×ø±êÏµÏÂµÄÎ»ÖÃ×ø±ê
-			for (int j = 0; j < 3; j++)
-			{
-				position.push_back(ijkpos[j]);
-				worldposition.push_back(temp[j]);
-			}
-			if (i == 0)
-			{
-				points.push_back(position);
-				worldpoints.push_back(worldposition);
-			}
-			else
-			{
-				int j;
-				for (j = 0; j<points.size(); j++)
-				{
-					if (points.at(j).at(2)>position.at(2))
-						break;
-				}
-				if (j == points.size())
-				{
-					points.push_back(position);
-					worldpoints.push_back(worldposition);
-				}
-				else
-				{
-					points.insert(points.begin() + j, position);
-					worldpoints.insert(worldpoints.begin() + j, worldposition);
-				}
-			}
-			position.clear();
-			worldposition.clear();
-		}
-	}
-
-	vector<float> star_first = points.front();
-	vector<float> star_last = points.back();
-	vector<float> box1 = points.at(1);
-	vector<float> box2 = points.at(2);
-
-	cout << "POINTS[0]:" << star_first[0] << ";" << star_first[1] << ";" << star_first[2] << endl;
-	cout << "POINTS[1]:" << box1[0] << ";" << box1[1] << ";" << box1[2] << endl;
-	cout << "POINTS[2]:" << box2[0] << ";" << box2[1] << ";" << box2[2] << endl;
-	cout << "POINTS[3]:" << star_last[0] << ";" << star_last[1] << ";" << star_last[2] << endl;//pointsÊÇËÄ¸ö±ê¼Çµã×ø±ê£¬ÊÇÊ¸Á¿
+	//vector<vector <float> > worldpoints;
+	//if (markupNum != 4)//
+	//	qDebug() << "error No markupNum =4";
+	//else
+	//{
+	//	for (int i = 0; i < markupNum; i++)
+	//	{
+	//		double pos[4];//ËÄ¸öµã
+	//		markups->GetNthFiducialWorldCoordinates(i, pos);//µÃµ½Ã¿¸öµãµÄ×ø±ê
+	//		//cout << "WorldPOS:" << pos[0] << ";" << pos[1] << ";" << pos[2] << ";" << pos[3] << endl;//ËÄ¸öµãµÄ×ø±ê
+	//		float temp[4];
+	//		std::copy(pos, pos + 4, temp);
+	//		float* ijkpos = RASToIJKMatrix->MultiplyPoint(temp);
+	//		//cout << "IJKPOS:" << ijkpos[0] << ";" << ijkpos[1] << ";" << ijkpos[2] << ";" << ijkpos[3] << endl;//IJK×ø±êÏµÏÂµÄÎ»ÖÃ×ø±ê
+	//		for (int j = 0; j < 3; j++)
+	//		{
+	//			position.push_back(ijkpos[j]);
+	//			worldposition.push_back(temp[j]);
+	//		}
+	//		if (i == 0)
+	//		{
+	//			points.push_back(position);
+	//			worldpoints.push_back(worldposition);
+	//		}
+	//		else
+	//		{
+	//			int j;
+	//			for (j = 0; j<points.size(); j++)
+	//			{
+	//				if (points.at(j).at(2)>position.at(2))
+	//					break;
+	//			}
+	//			if (j == points.size())
+	//			{
+	//				points.push_back(position);
+	//				worldpoints.push_back(worldposition);
+	//			}
+	//			else
+	//			{
+	//				points.insert(points.begin() + j, position);
+	//				worldpoints.insert(worldpoints.begin() + j, worldposition);
+	//			}
+	//		}
+	//		position.clear();
+	//		worldposition.clear();
+	//	}
+	//}
+	//vector<float> star_first = points.front();
+	//vector<float> star_last = points.back();
+	//vector<float> box1 = points.at(1);
+	//vector<float> box2 = points.at(2);
+	//************************ÆÁ±Î marks****************************//
+	//cout << "POINTS[0]:" << star_first[0] << ";" << star_first[1] << ";" << star_first[2] << endl;
+	//cout << "POINTS[1]:" << box1[0] << ";" << box1[1] << ";" << box1[2] << endl;
+	//cout << "POINTS[2]:" << box2[0] << ";" << box2[1] << ";" << box2[2] << endl;
+	//cout << "POINTS[3]:" << star_last[0] << ";" << star_last[1] << ";" << star_last[2] << endl;//pointsÊÇËÄ¸ö±ê¼Çµã×ø±ê£¬ÊÇÊ¸Á¿
 
 	vtkImageData* outputImageData = input->GetImageData();//µÃµ½ÊäÈëÌåÊý¾ÝµÄImagedata
 	int* dims = outputImageData->GetDimensions();//Ô­Ê¼Í¼ÏñÎ¬Êý
@@ -523,11 +527,11 @@ QHash<QString, double> vtkSlicerCalculusLogic::aqcCircleData(vtkMRMLVolumeNode* 
 			}
 			else
 				pixel[x + dims[0] * y] = 0;
-			std::cout << pixel[x + dims[0] * y] << " ";
+			//std::cout << pixel[x + dims[0] * y] << " ";
 
 			//}
 		}
-		std::cout << std::endl;
+		//std::cout << std::endl;
 
 	}
 	/*	std::cout << std::endl;
@@ -606,7 +610,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::aqcCircleData(vtkMRMLVolumeNode* 
 		iDiffRec = abs(iMeanGrayValue2 - iMeanGrayValue1);
 	}
 	iThrehold = (iThrehold / 255)*(a - b) + b;
-	cout << "The Threshold of this Image in imgIteration is:" << iThrehold << endl;
+	//cout << "The Threshold of this Image in imgIteration is:" << iThrehold << endl;
 	//-------------------------
 	int counter = 0;
 	for (int i = 0; i < dims[1]; i++)//ÐÐ30
@@ -641,7 +645,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::aqcCircleData(vtkMRMLVolumeNode* 
 		if (pixel[j])
 		{
 			pixelsegmentation[i] = pixel[j];
-			std::cout << pixelsegmentation[i] << " ";
+			//std::cout << pixelsegmentation[i] << " ";
 			i++;
 			continue;//½áÊøÕû¸öÑ­»·£¬continue½áÊøµ¥´ÎÑ­»·
 		}
@@ -671,9 +675,12 @@ double vtkSlicerCalculusLogic::AOD(double a[], int n, double m, double d)//n ÏñË
 		r = ((a[i] / 1000)*m + m)*d;
 		a[i] = log10(exp(r));//Ã¿Ò»µãÖ¸Êý
 	}
-	//cout << aver(a, n) << endl;
+	//cout << "AOD:" << setprecision(10) << aver(a, n) << endl;
 	return aver(a, n);
 }
+/*
+OD = lg e (CT/1000*uË® + uË®)*x
+*/
 double vtkSlicerCalculusLogic::IOD(double a[], int n, double m, double d)
 {
 	double r = 0;
@@ -684,7 +691,7 @@ double vtkSlicerCalculusLogic::IOD(double a[], int n, double m, double d)
 		a[i] = log10(exp(r));//Ã¿Ò»µãÖ¸Êý
 		sum += a[i];//ÇóºÍ
 	}
-	//cout << sum << endl;
+	//cout <<"IOD:"<<setprecision(10) << sum << endl;
 	return sum;
 }
 

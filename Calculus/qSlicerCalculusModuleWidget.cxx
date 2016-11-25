@@ -148,8 +148,6 @@ void qSlicerCalculusModuleWidget::setup()
   //--------------add by zhushanshan----------------------------
   connect(d->inputVolumeMRMLNodeComboBox_2, SIGNAL(currentNodeChanged(vtkMRMLNode*)), this, SLOT(InputVolumeMRMLNodeChanged()));
 
-  connect(d->markupsMRMLNodeComboBox, SIGNAL(currentNodeChanged(vtkMRMLNode*)), this, SLOT(onMarkupsMRMLNodeChanged()));
-
   connect(d->generateButton, SIGNAL(clicked()), this, SLOT(generateClicked()));
 
   connect(d->saveButton, SIGNAL(clicked()), this, SLOT(saveClicked()));
@@ -332,7 +330,6 @@ void qSlicerCalculusModuleWidget::onEndCloseEvent()
 	vtkSmartPointer<vtkSlicerCalculusLogic> logic = d->logic();
 	//----------------------add by zhushanshan---------------------
 	d->generateButton->setEnabled(true);
-	d->markupsMRMLNodeComboBox->setEnabled(true);
 //----------------------add end---------------------
 	//logic->reset(vtkMRMLMarkupsFiducialNode::SafeDownCast(d->markupsMRMLNodeComboBox->currentNode()), 0);
 	//d->acqStoneBtn->setEnabled(true);
@@ -347,12 +344,6 @@ void qSlicerCalculusModuleWidget::InputVolumeMRMLNodeChanged()
 	updategenerateButtonState();
 	qDebug() << "InputVolumeMRMLNodeChanged" << endl;
 }
-void qSlicerCalculusModuleWidget::onMarkupsMRMLNodeChanged()
-{
-	Q_D(qSlicerCalculusModuleWidget);
-	Q_ASSERT(d->markupsMRMLNodeComboBox);
-	qDebug() << "onMarkupsMRMLNodeChanged" << endl;
-}
 void qSlicerCalculusModuleWidget::updategenerateButtonState()
 {
 
@@ -362,13 +353,17 @@ void qSlicerCalculusModuleWidget::updategenerateButtonState()
 		d->generateButton->setToolTip("Input volume is required to do the segmentation.");
 		d->generateButton->setEnabled(true);
 	}
+	else
+	{
+		d->generateButton->setEnabled(false);
+	}
 }
 void qSlicerCalculusModuleWidget::generateClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
 	vtkSlicerCalculusLogic *logic = d->logic();
 	QHash<QString, double> paramHash;
-	paramHash = logic->aqcCircleData(vtkMRMLVolumeNode::SafeDownCast(d->inputVolumeMRMLNodeComboBox_2->currentNode()), vtkMRMLMarkupsFiducialNode::SafeDownCast(d->markupsMRMLNodeComboBox->currentNode()));
+	paramHash = logic->aqcCircleData(vtkMRMLVolumeNode::SafeDownCast(d->inputVolumeMRMLNodeComboBox_2->currentNode()));
 
 	addTableWidgetRow(paramHash,d->tableblock);
 	d->saveButton->setEnabled(true);
@@ -410,45 +405,83 @@ void qSlicerCalculusModuleWidget::addTableWidgetRow(QHash<QString,double> paramH
 void qSlicerCalculusModuleWidget::saveClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
-	ExcelExportHelper excel;
-	for (int i = 0; i < (d->tableblock->rowCount()); i++)
+	int counts = d->tableblock->rowCount();
+	if (counts == 0)
 	{
-		QString line;
-		for (int j = 0; j < (d->tableblock->columnCount() ); j++)
-		{
-			QString str = d->tableblock->item((i ), (j ))->text();
-			line = line + str + ",";
-		}
-		excel.SetCellValue(line);
+		QMessageBox msgBox;
+		msgBox.setText("Error");
+		QString content1 = "No data need to save.";
+		QString content;
+		content.append(content1);
+		msgBox.setInformativeText(content);
+		msgBox.setIcon(QMessageBox::Warning);
+		msgBox.setStandardButtons(QMessageBox::Ok);
+		msgBox.setDefaultButton(QMessageBox::Ok);
+		int ret = msgBox.exec();
 	}
-	//const QString fileName = "E:\\kaka14.xlsx";
-	//excel.SaveAs(fileName);
+	else
+	{
+		ExcelExportHelper excel;
+		for (int i = 0; i < (d->tableblock->rowCount()); i++)
+		{
+			QString line;
+			for (int j = 0; j < (d->tableblock->columnCount() ); j++)
+			{
+				QString str = d->tableblock->item((i ), (j ))->text();
+				line = line + str + ",";
+			}
+			excel.SetCellValue(line);
+		}
+	
+		//const QString fileName = "E:\\kaka14.xlsx";
+		//excel.SaveAs(fileName);
+	}
+
 }
 ////save tablewidget to excel
 void qSlicerCalculusModuleWidget::saveClicked_2()
 {
 	Q_D(qSlicerCalculusModuleWidget);
-	ExcelExportHelper excel;
-	for (int i = 0; i < (d->tableblock_2->rowCount()); i++)
+	int counts = d->tableblock_2->rowCount();
+
+	if (counts == 0)
 	{
-		QString line;
-		for (int j = 0; j < (d->tableblock_2->columnCount()); j++)
+		QMessageBox msgBox;
+		msgBox.setText("Error");
+		QString content1 = "No data need to save.";
+		QString content;
+		content.append(content1);
+		msgBox.setInformativeText(content);
+		msgBox.setIcon(QMessageBox::Warning);
+		msgBox.setStandardButtons(QMessageBox::Ok);
+		msgBox.setDefaultButton(QMessageBox::Ok);
+		int ret = msgBox.exec();
+	}
+	else
+	{
+		ExcelExportHelper excel;
+		for (int i = 0; i < (d->tableblock_2->rowCount()); i++)
 		{
-			QString str = d->tableblock_2->item(i,j)->text();
-			line = line + str + ",";			
+			QString line;
+			for (int j = 0; j < (d->tableblock_2->columnCount()); j++)
+			{
+				QString str = d->tableblock_2->item(i, j)->text();
+				line = line + str + ",";
+			}
+			excel.SetCellValue(line);
 		}
-		excel.SetCellValue(line);
+
+		//const QString fileName = "E:\\kaka14.xlsx";
+		//excel.SaveAs(fileName);
 	}
 	
-	//const QString fileName = "E:\\kaka14.xlsx";
-	//excel.SaveAs(fileName);
 }
 void qSlicerCalculusModuleWidget::clearButtonClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
-
-
+	
 	int counts = d->tableblock->rowCount();
+
 	for (int i = 0; i < counts; i++)
 	{
 		d->tableblock->removeRow(d->tableblock->rowCount()-1);
@@ -468,22 +501,93 @@ void qSlicerCalculusModuleWidget::clearButtonClicked_2()
 ExcelExportHelper::ExcelExportHelper()
 {
 	QDateTime dateTime;
-	m_fileName = dateTime.date().toString("yyyy-MM-dd") + "_" + dateTime.time().toString("HHmmss");
-	m_path = "C://Users//Administrator//Desktop//%1.csv";
-	m_path.arg("%1", m_fileName);
+	QDateTime dateTime1 =  dateTime.currentDateTime();
+	m_fileName = dateTime1.date().toString("yyyy-MM-dd") + "_" + dateTime1.time().toString("HHmmss");
+	QString m_path1 = "C:\\Users\\Administrator\\Desktop\\%1.csv";
+	m_path.append(m_path1.arg(m_fileName));
 	m_file = new QFile(m_path);
 	Open(m_path);
+
+	qDebug() << "Test m_fileName:" << m_fileName<< "Test m_path:" << m_path;
 }
 ExcelExportHelper::~ExcelExportHelper()
 {
 	m_file->close();
 	delete m_file;
+	QMessageBox msgBox;
+	msgBox.setText("Excel file");
+	QString content1 = "parmas have saved here, %1";
+	QString content;
+	content.append(content1.arg(m_path));
+	msgBox.setInformativeText(content);
+	msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Save | QMessageBox::Cancel);
+	msgBox.setDefaultButton(QMessageBox::Ok);
+	int ret = msgBox.exec();
+	QString fileName;
+	switch (ret) {
+	case QMessageBox::Save:
+	{
+							  // Save was clicked
+							  QFileDialog *fd = new QFileDialog();
+							  fd->setWindowTitle("Save As");
+							  fd->setAcceptMode(QFileDialog::AcceptSave);
+							  fd->setFileMode(QFileDialog::AnyFile); 
+							  //fd->setViewMode(QFileDialog::Detail);
+							  fd->setGeometry(10, 30, 600, 400);
+							  fd->setDirectory("../USBData");
+							  QStringList nameFilters;
+							  nameFilters << "Excel files (*.csv *.CSV)";
+							  fd->setNameFilters(nameFilters);
+
+							  QStringList fileNamesList;
+							  if (fd->exec() == QDialog::Accepted) {
+								  fileNamesList = fd->selectedFiles();
+							  }
+
+
+							  fileName = fileNamesList.at(0).toLocal8Bit().constData();
+
+							  //!--- ¸´ÖÆÎÄ¼þ  
+							  fileName.append(".csv");
+							  bool copy_error = m_file->copy(m_path, fileName);
+							  QString con;
+							  if (copy_error)
+							  {
+								  con = "saved successed.";
+							  }
+							  else
+							  {
+								  con = "saved failed.";
+							  }
+							  QMessageBox msg;
+							  msg.setText("reuslt:");
+							  msg.setInformativeText(con);
+							  msg.setStandardButtons(QMessageBox::Ok);
+							  msg.setDefaultButton(QMessageBox::Ok);
+							  msg.exec();
+
+							  delete fd;
+							  break;
+	}
+	case QMessageBox::Discard:
+		// Don't Save was clicked
+		break;
+	case QMessageBox::Cancel:
+		// Cancel was clicked
+		break;
+	default:
+		// should never be reached
+		break;
+	}
+
+	
+
 }
 void ExcelExportHelper::SetCellValue( QString value)
 {
 	QTextStream out(m_file);
 	out << value << "\n";
-	qDebug() << "Test:" << value;
+	qDebug() << "Test Cell Value:" << value;
 }
 void ExcelExportHelper::Open(QString fileName)
 {

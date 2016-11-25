@@ -89,7 +89,6 @@ void onEndCloseEvent();
 void addStoneParmsSlot(QHash<QString, double> hash);
 //---------------add by zhushanshan
 void InputVolumeMRMLNodeChanged();
-void onMarkupsMRMLNodeChanged();
 void updategenerateButtonState();
 void saveClicked(); //save excel bed acq
 void saveClicked_2(); //save excel auto acq
