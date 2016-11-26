@@ -350,7 +350,7 @@ qSlicerCalculusReformatWidget::qSlicerCalculusReformatWidget(
 	//	//获取Reformat module的logic
 	//	this->setReformatLogic(reformatLogic);
 	//}
-	//setup();
+	setup();
 	//****************Test ****************//
 
 	m_lrTimerId =0;//lr方向旋转，计时器
@@ -466,7 +466,7 @@ void qSlicerCalculusReformatWidget::setupSlot()
 //------------------------------------------------------------------------------
 void qSlicerCalculusReformatWidget::setup()
 {
-	
+	//setupSlot();
 	qDebug() << "void qSlicerCalculusReformatWidget::setup()";
 }
 //------------------------------------------------------------------------------
@@ -551,8 +551,8 @@ void qSlicerCalculusReformatWidget::onNodeSelected(vtkMRMLNode* node)
     this, SLOT(onMRMLSliceNodeModified(vtkObject*)));
 
   d->MRMLSliceNode = sliceNode;
-  /*d->MRMLSliceLogic =
-    this->logic()->GetMRMLApplicationLogic()->GetSliceLogic(d->MRMLSliceNode);*/
+  d->MRMLSliceLogic =
+    this->logic()->GetMRMLApplicationLogic()->GetSliceLogic(d->MRMLSliceNode);
 
   d->updateUi();
 }
@@ -1046,6 +1046,7 @@ void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 		{
 			m_lrTimerCount = 0;
 			killTimer(m_lrTimerId);
+			m_lrTimerId=0;
 			m_lrValueList.clear();
 
 		}
@@ -1066,6 +1067,7 @@ void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 		{
 			m_paTimerCount = 0;
 			killTimer(m_paTimerId);
+			m_paTimerId = 0;
 			m_paValueList.clear();
 		}
 	}
@@ -1087,6 +1089,7 @@ void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 		{
 			m_verticalTimerCount = 0;
 			killTimer(m_verticalTimerId);
+			m_verticalTimerId = 0;
 		}
 	}
 }
@@ -1123,11 +1126,13 @@ void qSlicerCalculusReformatWidget::getSliceRawData()
 	m_stoneParamsHash.clear();
 	//获取单帧切片数据
 	if (m_calculusLogic)
-		m_stoneParamsHash = m_calculusLogic->acqSliceData(reslice.GetPointer(), m_vtkMRMLSliceNodeRed, m_vtkMRMLVolumeNode);
-	if (m_stoneParamsHash.size() > 0)
 	{
-		emit newStoneParms(m_stoneParamsHash);
-		qDebug() << "m_stoneParamsHash" << " average=" << m_stoneParamsHash.value("average") << " AOD=" << m_stoneParamsHash.value("AOD") << " IOD="<< m_stoneParamsHash.value("IOD");
+		m_stoneParamsHash = m_calculusLogic->acqSliceData(reslice.GetPointer(), m_vtkMRMLSliceNodeRed, m_vtkMRMLVolumeNode);
+		if (m_stoneParamsHash.size() > 0)
+		{
+			emit newStoneParms(m_stoneParamsHash);
+			//qDebug() << "m_stoneParamsHash" << " average=" << m_stoneParamsHash.value("average") << " AOD=" << m_stoneParamsHash.value("AOD") << " IOD=" << m_stoneParamsHash.value("IOD");
+		}
 	}
 
 
@@ -1161,10 +1166,12 @@ void qSlicerCalculusReformatWidget::getSliceVerticalRawData(double offset)
 	m_stoneParamsHash.clear();
 	//获取单帧切片数据
 	if (m_calculusLogic)
-		m_stoneParamsHash = m_calculusLogic->acqSliceVerticalData(m_vtkMRMLVolumeNode, offset, direction);
-	if (m_stoneParamsHash.size() > 0)
 	{
-		emit newStoneParms(m_stoneParamsHash);
+		m_stoneParamsHash = m_calculusLogic->acqSliceVerticalData(m_vtkMRMLVolumeNode, offset, direction);
+		if (m_stoneParamsHash.size() > 0)
+		{
+			emit newStoneParms(m_stoneParamsHash);
+		}
 	}
 
 }
@@ -1219,8 +1226,12 @@ void qSlicerCalculusReformatWidget::closeAllReformat()
 */
 void qSlicerCalculusReformatWidget::getVerticalStoneSlot(double value)
 {
-	//采集切面参数
-	getSliceVerticalRawData(value);
+	//只有开启了垂直采集，才能执行。特别是防止单点采集的时候
+	if (m_verticalTimerId != 0)
+	{
+		//采集切面参数
+		getSliceVerticalRawData(value);
+	}
 }
 /**
 * @brief  采集之前要激活Reformat的下拉框

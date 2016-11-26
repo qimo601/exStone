@@ -135,6 +135,8 @@ void qSlicerCalculusModuleWidget::setup()
 	  this, SLOT(onAcqStoneBtnClicked()));
   connect(d->x_verticalAcqStoneBtn, SIGNAL(clicked()),
 	  this, SLOT(onX_VerticalAcqStoneBtnClicked()));
+  connect(d->singleAcqStoneBtn, SIGNAL(clicked()),
+	  this, SLOT(onSingleAcqStoneBtnClicked()));
   connect(d->y_verticalAcqStoneBtn, SIGNAL(clicked()),
 	  this, SLOT(onY_VerticalAcqStoneBtnClicked()));
   connect(d->z_verticalAcqStoneBtn, SIGNAL(clicked()),
@@ -252,6 +254,16 @@ void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
 
 }
 
+void qSlicerCalculusModuleWidget::onSingleAcqStoneBtnClicked()
+{
+	Q_D(qSlicerCalculusModuleWidget);
+	getParamsFromUi();
+	d->reformatWidget->closeAllReformat();
+	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeRed");
+	d->reformatWidget->getSliceRawData();
+
+
+}
 void qSlicerCalculusModuleWidget::onX_VerticalAcqStoneBtnClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
@@ -296,6 +308,7 @@ void qSlicerCalculusModuleWidget::onInputVolumeMRMLNodeChanged()
 	if (d->inputVolumeMRMLNodeComboBox->currentNodeID() != "")
 	{
 		d->acqStoneBtn->setEnabled(true);
+		d->singleAcqStoneBtn->setEnabled(true);
 		d->x_verticalAcqStoneBtn->setEnabled(true);
 		d->y_verticalAcqStoneBtn->setEnabled(true);
 		d->z_verticalAcqStoneBtn->setEnabled(true);
@@ -303,6 +316,7 @@ void qSlicerCalculusModuleWidget::onInputVolumeMRMLNodeChanged()
 	else
 	{
 		d->acqStoneBtn->setEnabled(false);
+		d->singleAcqStoneBtn->setEnabled(false);
 		d->x_verticalAcqStoneBtn->setEnabled(false);
 		d->y_verticalAcqStoneBtn->setEnabled(false);
 		d->z_verticalAcqStoneBtn->setEnabled(false);
@@ -490,7 +504,6 @@ void qSlicerCalculusModuleWidget::clearButtonClicked()
 void qSlicerCalculusModuleWidget::clearButtonClicked_2()
 {
 	Q_D(qSlicerCalculusModuleWidget);
-	d->reformatWidget->setupSlot();
 
 	int counts = d->tableblock_2->rowCount();
 	for (int i = 0; i < counts; i++)
@@ -543,6 +556,8 @@ ExcelExportHelper::~ExcelExportHelper()
 							  if (fd->exec() == QDialog::Accepted) {
 								  fileNamesList = fd->selectedFiles();
 							  }
+							  else
+								  break;
 
 
 							  fileName = fileNamesList.at(0).toLocal8Bit().constData();

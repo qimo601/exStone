@@ -320,6 +320,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 		delete[] p;
 	}
 
+	qDebug() << "m_stoneParamsHash:" << " average=" << circleParamsHash.value("average") << " AOD=" << circleParamsHash.value("AOD") << " IOD=" << circleParamsHash.value("IOD");
 	//std::cout << "sliceToRAS:" << std::endl;
 	//for (int i = 0; i < 4; i++)
 	//{

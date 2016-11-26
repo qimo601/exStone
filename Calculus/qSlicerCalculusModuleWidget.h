@@ -77,7 +77,7 @@ void on_openBtn_clicked();
 /// Display property button slots
 ///acquire the urinary calculi parameters
 void onAcqStoneBtnClicked();
-
+void onSingleAcqStoneBtnClicked();
 //stone vertical x axial
 void onX_VerticalAcqStoneBtnClicked();
 //stone vertical y axial
