@@ -232,6 +232,29 @@ void qSlicerCalculusModuleWidget::getParamsFromUi()
 void qSlicerCalculusModuleWidget::on_openBtn_clicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
+
+	bool ok;
+	QString text = QInputDialog::getText(this, tr("Input your password."),
+		tr("Password:"), QLineEdit::Normal,"", &ok);
+	if (ok && !text.isEmpty())
+		qDebug() << "input:" << text;
+	if (!verificationPassword(text))
+	{
+		QMessageBox msgBox;
+		msgBox.setText("Error");
+		QString content1 = "Incorrect Password or license is out of date";
+		QString content;
+		content.append(content1);
+		msgBox.setInformativeText(content);
+		msgBox.setIcon(QMessageBox::Warning);
+		msgBox.setStandardButtons(QMessageBox::Ok);
+		msgBox.setDefaultButton(QMessageBox::Ok);
+		int ret = msgBox.exec();
+
+		return;
+	}
+
+
 	//make sure the m_enableReformat  only once
 	if (!m_enableReformat)
 	{
@@ -241,6 +264,73 @@ void qSlicerCalculusModuleWidget::on_openBtn_clicked()
 		d->reformatWidget->enableReformatSelector();
 
 	}
+
+}
+//set new password
+void qSlicerCalculusModuleWidget::setPassword()
+{
+	Q_D(qSlicerCalculusModuleWidget);
+	QFile file("key");
+	if (!file.open(QIODevice::WriteOnly))
+		return;
+
+	QDataStream out(&file);
+	out.setVersion(QDataStream::Qt_4_8);
+	QString description = "sibet liuzhaobang";
+	QString password = "Stone";
+	QDate date(2016, 12, 30);
+	QDateTime dateTime(date);
+	
+	QByteArray by1;
+	by1.append(password);
+	QCryptographicHash *hash = new QCryptographicHash(QCryptographicHash::Md5);
+	hash->addData(by1);
+	QByteArray by2 = hash->result();
+	 
+	out << description << by2 << dateTime;
+	file.close();
+}
+//read this password
+QString qSlicerCalculusModuleWidget::readPassword()
+{
+	Q_D(qSlicerCalculusModuleWidget);
+	QFile file("key");
+	if (!file.open(QIODevice::ReadOnly))
+		return 0;
+
+	QDataStream in(&file);
+	in.setVersion(QDataStream::Qt_4_8);
+	QString description;
+	QString password;
+	QDateTime datetime;
+	QByteArray by1;
+	in >> description >> by1 >> datetime;
+
+	qDebug() << "description:" << description << "password:" << password << "DateTime:" << datetime;
+	file.close();
+
+	return password;
+}
+//verification password
+bool qSlicerCalculusModuleWidget::verificationPassword(QString password)
+{
+	Q_D(qSlicerCalculusModuleWidget);
+	//make sure the m_enableReformat  only once
+	if (password == "stone")
+	{
+		QDateTime dateTime1;
+		QDateTime dateTime2 = dateTime1.currentDateTime();
+		QDate date(2016,12,30);
+		QDateTime dateTime3(date);
+		if (dateTime2 < dateTime3)
+			return true;
+		else
+			return false;
+	}
+	else
+		return false;
+
+
 }
 void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
 {
@@ -354,7 +444,7 @@ void qSlicerCalculusModuleWidget::onEndCloseEvent()
 void qSlicerCalculusModuleWidget::InputVolumeMRMLNodeChanged()
 {
 	Q_D(qSlicerCalculusModuleWidget);
-	Q_ASSERT(d->inputVolumeMRMLNodeComboBox);
+	Q_ASSERT(d->inputVolumeMRMLNodeComboBox_2);
 	updategenerateButtonState();
 	qDebug() << "InputVolumeMRMLNodeChanged" << endl;
 }
@@ -362,7 +452,7 @@ void qSlicerCalculusModuleWidget::updategenerateButtonState()
 {
 
 	Q_D(qSlicerCalculusModuleWidget);
-	if (d->inputVolumeMRMLNodeComboBox->currentNode())
+	if (d->inputVolumeMRMLNodeComboBox_2->currentNodeID() != "")
 	{
 		d->generateButton->setToolTip("Input volume is required to do the segmentation.");
 		d->generateButton->setEnabled(true);

@@ -74,6 +74,12 @@ void onInputVolumeMRMLNodeChanged();
 void updateAcqStoneButtonState();
 //open Reformat window
 void on_openBtn_clicked();
+//set new password
+void setPassword();
+//read this password
+QString readPassword();
+//verification password
+bool verificationPassword(QString password);
 /// Display property button slots
 ///acquire the urinary calculi parameters
 void onAcqStoneBtnClicked();
