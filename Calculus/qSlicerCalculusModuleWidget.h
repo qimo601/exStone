@@ -120,7 +120,7 @@ private:
 class ExcelExportHelper
 {
 public:
-	ExcelExportHelper();
+	ExcelExportHelper(QString type=QString(""));
 	~ExcelExportHelper();
 	void Open(QString fileName);
 	void SetCellValue(QString value);

@@ -129,6 +129,12 @@ void qSlicerCalculusModuleWidget::setup()
   Q_D(qSlicerCalculusModuleWidget);
   d->setupUi(this);
   this->Superclass::setup();
+  //ÆÁ±Î¾«¼ò°æ
+  //d->CTKCollapsibleButton_3->setVisible(false);
+  //d->singleAcqStoneBtn->setVisible(false);
+  //d->x_verticalAcqStoneBtn->setVisible(false);
+  //d->y_verticalAcqStoneBtn->setVisible(false);
+  //d->z_verticalAcqStoneBtn->setVisible(false);
 
   // set up buttons connection
   connect(d->acqStoneBtn, SIGNAL(clicked()),
@@ -337,6 +343,7 @@ void qSlicerCalculusModuleWidget::onAcqStoneBtnClicked()
 	Q_D(qSlicerCalculusModuleWidget);
 	getParamsFromUi();
 
+	d->fileNameComboBox->setCurrentIndex(0);
 	d->reformatWidget->closeAllReformat();
 	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeRed");
 	d->reformatWidget->randRotate();
@@ -348,6 +355,7 @@ void qSlicerCalculusModuleWidget::onSingleAcqStoneBtnClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
 	getParamsFromUi();
+	d->fileNameComboBox->setCurrentIndex(1);
 	d->reformatWidget->closeAllReformat();
 	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeRed");
 	d->reformatWidget->getSliceRawData();
@@ -359,7 +367,7 @@ void qSlicerCalculusModuleWidget::onX_VerticalAcqStoneBtnClicked()
 	Q_D(qSlicerCalculusModuleWidget);
 
 	getParamsFromUi();
-
+	d->fileNameComboBox->setCurrentIndex(2);
 	d->reformatWidget->closeAllReformat();
 	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeYellow");
 	d->reformatWidget->verticalAcq();
@@ -370,7 +378,7 @@ void qSlicerCalculusModuleWidget::onY_VerticalAcqStoneBtnClicked()
 	Q_D(qSlicerCalculusModuleWidget);
 
 	getParamsFromUi();
-
+	d->fileNameComboBox->setCurrentIndex(3);
 	d->reformatWidget->closeAllReformat();
 	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeGreen");
 	d->reformatWidget->verticalAcq();
@@ -382,7 +390,7 @@ void qSlicerCalculusModuleWidget::onZ_VerticalAcqStoneBtnClicked()
 	Q_D(qSlicerCalculusModuleWidget);
 
 	getParamsFromUi();
-
+	d->fileNameComboBox->setCurrentIndex(4);
 	d->reformatWidget->closeAllReformat();
 	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeRed");
 	d->reformatWidget->verticalAcq();
@@ -465,6 +473,7 @@ void qSlicerCalculusModuleWidget::updategenerateButtonState()
 void qSlicerCalculusModuleWidget::generateClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
+	d->fileNameComboBox->setCurrentIndex(5);
 	vtkSlicerCalculusLogic *logic = d->logic();
 	QHash<QString, double> paramHash;
 	paramHash = logic->aqcCircleData(vtkMRMLVolumeNode::SafeDownCast(d->inputVolumeMRMLNodeComboBox_2->currentNode()));
@@ -525,7 +534,8 @@ void qSlicerCalculusModuleWidget::saveClicked()
 	}
 	else
 	{
-		ExcelExportHelper excel;
+		QString fileNameType = d->fileNameComboBox->currentText();
+		ExcelExportHelper excel(fileNameType);
 		for (int i = 0; i < (d->tableblock->rowCount()); i++)
 		{
 			QString line;
@@ -563,7 +573,8 @@ void qSlicerCalculusModuleWidget::saveClicked_2()
 	}
 	else
 	{
-		ExcelExportHelper excel;
+		QString fileNameType = d->fileNameComboBox->currentText();
+		ExcelExportHelper excel(fileNameType);
 		for (int i = 0; i < (d->tableblock_2->rowCount()); i++)
 		{
 			QString line;
@@ -601,13 +612,22 @@ void qSlicerCalculusModuleWidget::clearButtonClicked_2()
 		d->tableblock_2->removeRow(d->tableblock_2->rowCount()-1);
 	}
 }
-ExcelExportHelper::ExcelExportHelper()
+ExcelExportHelper::ExcelExportHelper(QString type)
 {
 	QDateTime dateTime;
 	QDateTime dateTime1 =  dateTime.currentDateTime();
 	m_fileName = dateTime1.date().toString("yyyy-MM-dd") + "_" + dateTime1.time().toString("HHmmss");
-	QString m_path1 = "C:\\Users\\Administrator\\Desktop\\%1.csv";
-	m_path.append(m_path1.arg(m_fileName));
+	QString m_path1;
+	if (type == "")
+	{
+		m_path1 = "C:\\Users\\Administrator\\Desktop\\%1.csv";
+		m_path.append(m_path1.arg(m_fileName));
+	}
+	else
+	{
+		m_path1 = "C:\\Users\\Administrator\\Desktop\\%1_%2.csv";
+		m_path.append(m_path1.arg(type).arg(m_fileName));
+	}
 	m_file = new QFile(m_path);
 	Open(m_path);
 
@@ -700,6 +720,14 @@ void ExcelExportHelper::Open(QString fileName)
 	{
 		qDebug() << "Failed,ExcelExportHelper::open " << m_path;
 	}
+
+	QTextStream out(m_file);
+	QString value = "MAX,";
+	value += "MIN,";
+	value += "AVERAGE,";
+	value += "AOD,";
+	value += "IOD";
+	out << value << "\n";
 }
 
 //----------------------add end ---------------------
