@@ -90,6 +90,7 @@ void onX_VerticalAcqStoneBtnClicked();
 void onY_VerticalAcqStoneBtnClicked();
 //stone vertical z axial
 void onZ_VerticalAcqStoneBtnClicked();
+void oncontinueAcqStoneBtnClicked();
 //
 void onEndCloseEvent();
 void addStoneParmsSlot(QHash<QString, double> hash);

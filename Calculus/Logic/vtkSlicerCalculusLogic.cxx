@@ -185,7 +185,8 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 
 
 	//得到所有>0点IJK坐标
-	vtkImageData* orgimage = reslice->GetImageDataInput(0);
+	//vtkImageData* orgimage = reslice->GetImageDataInput(0);
+	vtkImageData* orgimage = volumeNode->GetImageData();
 
 	//尺寸长宽高
 	int* dims = orgimage->GetDimensions();
@@ -196,31 +197,24 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 	int column = dims[0];
 	int li = dims[2];
 
-	uint16* pixel = new uint16[row*column *li]();
-	uint16* q = pixel;
+	qint16* pixel = new qint16[row*column *li]();
+	qint16* q = pixel;
 	int t = 0;
-	QString fileName = "before";
-	QByteArray array = fileName.toLocal8Bit();
-	FILE* file = fopen(array.data(), "wb");
-	if (!file)
+	QFile m_file("before.txt");
+
+	if (!m_file.open(QIODevice::WriteOnly | QIODevice::Text))
 	{
-		qDebug() << fileName << "数据文件打开失败！\n";
+		qDebug() << "Failed,acqSliceData::create file before. ";
 	}
 	for (int k = 0; k < li; k++)
 	{
-		/*QString fileName = QString("before-%1").arg(k);
-		QByteArray array = fileName.toLocal8Bit();
-		FILE* file = fopen(array.data(), "wb");
-		if (!file)
-		{
-		qDebug() << fileName << "数据文件打开失败！\n";
-		}*/
+		
 		for (int j = 0; j < row; j++)
 		{
 			for (int i = 0; i < column; i++)
 			{
 
-				uint16* p = (uint16*)(orgimage->GetScalarPointer(i, j, k));
+				qint16* p = (qint16*)(orgimage->GetScalarPointer(i, j, k));
 				q[i + j*column + k*row*column] = *p;
 				if (*p >0)
 				{
@@ -235,6 +229,11 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 					point[4] = *p;
 
 					pointList.append(point);
+
+
+					QTextStream out(&m_file);
+					QString value = "";
+					out << " p[" << i << "][" << j << "]" << "[" << k << "]" << *p << "  t=" << t <<"\n";
 				}
 
 
@@ -245,8 +244,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 
 	}
 
-	fwrite(pixel, sizeof(uint16), column *row*li, file);
-	fclose(file);
+
 
 	//将所有点转换成RAS坐标
 
@@ -430,7 +428,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::aqcCircleData(vtkMRMLVolumeNode* 
 			for (int i = 0; i < column; i++)
 			{
 
-				uint16* p = (uint16*)(outputImageData->GetScalarPointer(i, j, k));
+				qint16* p = (qint16*)(outputImageData->GetScalarPointer(i, j, k));
 				if (*p >0)
 				{
 
@@ -816,8 +814,8 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceVerticalData(vtkMRMLVolum
 		intOffset = ijkPoint[1];
 	if (direction == "Z")
 		intOffset = ijkPoint[2];
-	uint16* pixel = new uint16[row*column *li]();
-	uint16* q = pixel;
+	qint16* pixel = new qint16[row*column *li]();
+	qint16* q = pixel;
 	int index = 0;//有效方向
 	int t = 0;
 	for (int k = 0; k < li; k++)
@@ -828,7 +826,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceVerticalData(vtkMRMLVolum
 			for (int i = 0; i < column; i++)
 			{
 
-				uint16* p = (uint16*)(orgimage->GetScalarPointer(i, j, k));
+				qint16* p = (qint16*)(orgimage->GetScalarPointer(i, j, k));
 				q[i + j*column + k*row*column] = *p;
 				if (*p >0)
 				{

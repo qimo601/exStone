@@ -135,6 +135,8 @@ void qSlicerCalculusModuleWidget::setup()
   //d->x_verticalAcqStoneBtn->setVisible(false);
   //d->y_verticalAcqStoneBtn->setVisible(false);
   //d->z_verticalAcqStoneBtn->setVisible(false);
+  //d->continueAcqStoneBtn->setVisible(false);
+  
 
   // set up buttons connection
   connect(d->acqStoneBtn, SIGNAL(clicked()),
@@ -147,7 +149,9 @@ void qSlicerCalculusModuleWidget::setup()
 	  this, SLOT(onY_VerticalAcqStoneBtnClicked()));
   connect(d->z_verticalAcqStoneBtn, SIGNAL(clicked()),
 	  this, SLOT(onZ_VerticalAcqStoneBtnClicked()));
-  
+  connect(d->continueAcqStoneBtn, SIGNAL(clicked()),
+	  this, SLOT(oncontinueAcqStoneBtnClicked()));
+
   // set up input&output&markups connection
   connect(d->inputVolumeMRMLNodeComboBox, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
 	  this, SLOT(onInputVolumeMRMLNodeChanged()));
@@ -396,6 +400,18 @@ void qSlicerCalculusModuleWidget::onZ_VerticalAcqStoneBtnClicked()
 	d->reformatWidget->verticalAcq();
 
 }
+void qSlicerCalculusModuleWidget::oncontinueAcqStoneBtnClicked()
+{
+	Q_D(qSlicerCalculusModuleWidget);
+
+	getParamsFromUi();
+	d->fileNameComboBox->setCurrentIndex(5);
+	d->reformatWidget->closeAllReformat();
+	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeRed");
+	d->reformatWidget->continueAcq();
+
+}
+
 void qSlicerCalculusModuleWidget::onInputVolumeMRMLNodeChanged()
 {
 	Q_D(qSlicerCalculusModuleWidget);
@@ -410,6 +426,7 @@ void qSlicerCalculusModuleWidget::onInputVolumeMRMLNodeChanged()
 		d->x_verticalAcqStoneBtn->setEnabled(true);
 		d->y_verticalAcqStoneBtn->setEnabled(true);
 		d->z_verticalAcqStoneBtn->setEnabled(true);
+		d->continueAcqStoneBtn->setEnabled(true);
 	}
 	else
 	{
@@ -418,6 +435,7 @@ void qSlicerCalculusModuleWidget::onInputVolumeMRMLNodeChanged()
 		d->x_verticalAcqStoneBtn->setEnabled(false);
 		d->y_verticalAcqStoneBtn->setEnabled(false);
 		d->z_verticalAcqStoneBtn->setEnabled(false);
+		d->continueAcqStoneBtn->setEnabled(false);
 	}
 
 	//qDebug() << "onInputVolumeMRMLNodeChanged" << endl;
@@ -617,15 +635,22 @@ ExcelExportHelper::ExcelExportHelper(QString type)
 	QDateTime dateTime;
 	QDateTime dateTime1 =  dateTime.currentDateTime();
 	m_fileName = dateTime1.date().toString("yyyy-MM-dd") + "_" + dateTime1.time().toString("HHmmss");
+	
+	QString path = "D:\\SlicerExcelData";
+	QDir dir(path);
+	if (!dir.exists())
+	{
+		dir.mkdir("D:\\SlicerExcelData");
+	}
 	QString m_path1;
 	if (type == "")
 	{
-		m_path1 = "C:\\Users\\Administrator\\Desktop\\%1.csv";
+		m_path1 = "D:\\SlicerExcelData\\%1.csv";
 		m_path.append(m_path1.arg(m_fileName));
 	}
 	else
 	{
-		m_path1 = "C:\\Users\\Administrator\\Desktop\\%1_%2.csv";
+		m_path1 = "D:\\SlicerExcelData\\%1_%2.csv";
 		m_path.append(m_path1.arg(type).arg(m_fileName));
 	}
 	m_file = new QFile(m_path);
@@ -657,7 +682,7 @@ ExcelExportHelper::~ExcelExportHelper()
 							  fd->setFileMode(QFileDialog::AnyFile); 
 							  //fd->setViewMode(QFileDialog::Detail);
 							  fd->setGeometry(10, 30, 600, 400);
-							  fd->setDirectory("../USBData");
+							  fd->setDirectory("D:\\SlicerExcelData");
 							  QStringList nameFilters;
 							  nameFilters << "Excel files (*.csv *.CSV)";
 							  fd->setNameFilters(nameFilters);

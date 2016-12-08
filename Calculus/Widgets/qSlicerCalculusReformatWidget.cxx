@@ -361,6 +361,8 @@ qSlicerCalculusReformatWidget::qSlicerCalculusReformatWidget(
 
 	m_verticalTimerId=0;//垂直方向计时器
 	m_verticalTimerCount=0;//垂直方向执行次数
+	m_continueTimerId = 0;//连续采集计时器
+	m_continueTimerCount = 0;//连续采集执行次数
 	m_vtkMRMLScene = 0;
 	m_vtkMRMLSliceNodeRed = 0;
 	m_vtkMRMLVolumeNode = 0;
@@ -1092,6 +1094,27 @@ void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 			m_verticalTimerId = 0;
 		}
 	}
+	//连续定时器
+	else if (event->timerId() == m_continueTimerId)
+	{
+		double value = d->OffsetSlider->value();
+		double singleStep = d->OffsetSlider->singleStep();
+		double maximum = d->OffsetSlider->maximum();
+		if ((value + singleStep) <= maximum)//超出最大值
+		{
+			verticalAcqUi();//仍然用这个函数，垂直采集
+			m_continueTimerCount++;
+			//qDebug() << "qSlicerCalculusReformatWidget::timerEvent,m_verticalTimerCount:" << m_verticalTimerCount;
+
+		}
+
+		else
+		{
+			m_continueTimerCount = 0;
+			killTimer(m_continueTimerId);
+			m_continueTimerId = 0;
+		}
+	}
 }
 
 /**
@@ -1192,6 +1215,23 @@ void qSlicerCalculusReformatWidget::verticalAcq()
 
 }
 /**
+* @brief 连续采集
+* @author liuzhaobang
+* @date 2016-10-27
+*/
+void qSlicerCalculusReformatWidget::continueAcq()
+{
+	Q_D(qSlicerCalculusReformatWidget);
+	//垂直采集初始化
+	double max = d->OffsetSlider->maximum();
+	double min = d->OffsetSlider->minimum();
+	d->OffsetSlider->setValue(min);//设置从当前的最小值开始
+
+	m_continueTimerId = startTimer(1000);//准备开启定时器
+
+}
+
+/**
 * @brief 通过界面垂直采集
 * @author liuzhaobang
 * @date 2016-10-27
@@ -1231,6 +1271,11 @@ void qSlicerCalculusReformatWidget::getVerticalStoneSlot(double value)
 	{
 		//采集切面参数
 		getSliceVerticalRawData(value);
+	}
+	else if (m_continueTimerId != 0)
+	{
+		//采集切面参数
+		getSliceRawData();
 	}
 }
 /**

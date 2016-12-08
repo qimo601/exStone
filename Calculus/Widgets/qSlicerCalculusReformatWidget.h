@@ -131,6 +131,7 @@ public slots:
   * @date 2016-10-27
   */
   void verticalAcq();
+  void continueAcq();
   /**
   * @brief 通过界面垂直采集
   * @author liuzhaobang
@@ -184,6 +185,8 @@ private:
 
 	int m_verticalTimerId;//垂直方向计时器
 	int m_verticalTimerCount;//垂直方向执行次数
+	int m_continueTimerId ;//连续采集计时器
+	int m_continueTimerCount;//连续采集执行次数
 	QList<int> m_lrValueList;
 	QList<int> m_paValueList;
   vtkSlicerReformatLogic* m_reformatLogic;
