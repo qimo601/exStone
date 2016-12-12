@@ -405,7 +405,7 @@ void qSlicerCalculusModuleWidget::oncontinueAcqStoneBtnClicked()
 	Q_D(qSlicerCalculusModuleWidget);
 
 	getParamsFromUi();
-	d->fileNameComboBox->setCurrentIndex(5);
+	d->fileNameComboBox->setCurrentIndex(6);
 	d->reformatWidget->closeAllReformat();
 	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeRed");
 	d->reformatWidget->continueAcq();
