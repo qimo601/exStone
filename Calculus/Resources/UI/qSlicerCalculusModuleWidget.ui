@@ -274,7 +274,7 @@
                </size>
               </property>
               <property name="text">
-               <string>垂直X轴采集</string>
+               <string>⊥X（矢状状）</string>
               </property>
              </widget>
             </item>
@@ -331,7 +331,7 @@
                </size>
               </property>
               <property name="text">
-               <string>垂直Y轴采集</string>
+               <string>⊥Y（冠状）</string>
               </property>
              </widget>
             </item>
@@ -397,7 +397,7 @@
                </size>
               </property>
               <property name="text">
-               <string>垂直Z轴采集</string>
+               <string>⊥Z（轴状）</string>
               </property>
              </widget>
             </item>
@@ -421,17 +421,22 @@
               </item>
               <item>
                <property name="text">
-                <string>X轴采集</string>
+                <string>⊥X（矢状状）</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>Y轴采集</string>
+                <string>⊥Y（冠状）</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>Z轴采集</string>
+                <string>⊥Z（轴状）</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>连续采集</string>
                </property>
               </item>
               <item>
@@ -441,7 +446,7 @@
               </item>
               <item>
                <property name="text">
-                <string>连续采集</string>
+                <string>骨骼采集</string>
                </property>
               </item>
              </widget>
@@ -577,10 +582,17 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0" colspan="2">
+      <item row="5" column="0" colspan="2">
        <widget class="QPushButton" name="clearButton">
         <property name="text">
          <string>clear</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0" colspan="2">
+       <widget class="QPushButton" name="generateButton_2">
+        <property name="text">
+         <string>骨骼采集</string>
         </property>
        </widget>
       </item>

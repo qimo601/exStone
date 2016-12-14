@@ -100,6 +100,7 @@ void updategenerateButtonState();
 void saveClicked(); //save excel bed acq
 void saveClicked_2(); //save excel auto acq
 void generateClicked();//params to QTablewidget
+void generateClicked_2();
 void clearButtonClicked();//clear table
 void clearButtonClicked_2();
 

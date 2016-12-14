@@ -258,7 +258,6 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 		double* rasPoint = IJKToRASMatrix->MultiplyDoublePoint(point);
 		double distance = qAbs(A*rasPoint[0] + B*rasPoint[1] + C*rasPoint[2] + d) / qSqrt(A*A + B*B + C*C);
 		double dis = vtkSlicerCalculusLogic::s_sliceThick/2;//一半层厚
-		qDebug() << "dis:"<<dis;
 		if (distance < dis)//distance有变化，但是坐标值输出看不出变化
 		{
 			//qDebug() << "m1:" << m1 << " ijkPoint :" << point[0] << " " << point[1] << " " << point[2] << " " << point[3] <<  ""<< point[4];
@@ -272,7 +271,10 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 			result[3] = resultPoint[3];
 			result[4] = point[4];
 			resultPointList.append(result);
-			//qDebug() << "distance" << distance << " resultPointijk:" << result[0] << " " << result[1] << " " << result[2] << " " << result[3] << " " << result[4];
+			/*qDebug() << "normal:" << normal[0] << " " << normal[1] << " " << normal[2] << " " << normal[3];
+			qDebug() << "origin:" << origin[0] << " " << origin[1] << " " << origin[2] << " " << origin[3];
+			qDebug() << "distance:" << distance << "RAS:" << rasPoint[0] << " " << rasPoint[1] << " " << rasPoint[2] << "A:" << A << "B:" << B << "C:" << C << "d:" << d << "dis:" << dis;
+			qDebug() << " resultPointijk:" << result[0] << " " << result[1] << " " << result[2] << " " << result[3] << " " << result[4];*/
 
 		}
 		rasPointList.append(rasPoint);
@@ -315,7 +317,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 	for (int index = 0; index < resultPointList.size(); index++)
 	{
 		double* result = resultPointList.at(index);
-		qDebug() << "index : " <<index <<" "<< result[0] << " " << result[1] << " " << result[2] << " " << result[3] << " " << result[4];
+		//qDebug() << "index : " <<index <<" "<< result[0] << " " << result[1] << " " << result[2] << " " << result[3] << " " << result[4];
 		double* p = resultPointList.at(index);
 		delete[] p;
 	}

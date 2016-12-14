@@ -131,12 +131,12 @@ void qSlicerCalculusModuleWidget::setup()
   this->Superclass::setup();
   //ÆÁ±Î¾«¼ò°æ
   //d->CTKCollapsibleButton_3->setVisible(false);
-  //d->singleAcqStoneBtn->setVisible(false);
-  //d->x_verticalAcqStoneBtn->setVisible(false);
-  //d->y_verticalAcqStoneBtn->setVisible(false);
-  //d->z_verticalAcqStoneBtn->setVisible(false);
-  //d->continueAcqStoneBtn->setVisible(false);
-  
+ /* d->singleAcqStoneBtn->setVisible(false);
+  d->x_verticalAcqStoneBtn->setVisible(false);
+  d->y_verticalAcqStoneBtn->setVisible(false);
+  d->z_verticalAcqStoneBtn->setVisible(false);
+  d->continueAcqStoneBtn->setVisible(false);
+  d->generateButton_2->setVisible(false);*/
 
   // set up buttons connection
   connect(d->acqStoneBtn, SIGNAL(clicked()),
@@ -161,7 +161,7 @@ void qSlicerCalculusModuleWidget::setup()
   connect(d->inputVolumeMRMLNodeComboBox_2, SIGNAL(currentNodeChanged(vtkMRMLNode*)), this, SLOT(InputVolumeMRMLNodeChanged()));
 
   connect(d->generateButton, SIGNAL(clicked()), this, SLOT(generateClicked()));
-
+  connect(d->generateButton_2, SIGNAL(clicked()), this, SLOT(generateClicked_2()));
   connect(d->saveButton, SIGNAL(clicked()), this, SLOT(saveClicked()));
   connect(d->saveButton_2, SIGNAL(clicked()), this, SLOT(saveClicked_2()));
 
@@ -287,7 +287,7 @@ void qSlicerCalculusModuleWidget::setPassword()
 	QDataStream out(&file);
 	out.setVersion(QDataStream::Qt_4_8);
 	QString description = "sibet liuzhaobang";
-	QString password = "Stone";
+	QString password = "ct";
 	QDate date(2016, 12, 30);
 	QDateTime dateTime(date);
 	
@@ -326,7 +326,7 @@ bool qSlicerCalculusModuleWidget::verificationPassword(QString password)
 {
 	Q_D(qSlicerCalculusModuleWidget);
 	//make sure the m_enableReformat  only once
-	if (password == "stone")
+	if (password == "ct")
 	{
 		QDateTime dateTime1;
 		QDateTime dateTime2 = dateTime1.currentDateTime();
@@ -405,7 +405,7 @@ void qSlicerCalculusModuleWidget::oncontinueAcqStoneBtnClicked()
 	Q_D(qSlicerCalculusModuleWidget);
 
 	getParamsFromUi();
-	d->fileNameComboBox->setCurrentIndex(6);
+	d->fileNameComboBox->setCurrentIndex(5);
 	d->reformatWidget->closeAllReformat();
 	d->reformatWidget->enableReformat(true, "vtkMRMLSliceNodeRed");
 	d->reformatWidget->continueAcq();
@@ -482,16 +482,19 @@ void qSlicerCalculusModuleWidget::updategenerateButtonState()
 	{
 		d->generateButton->setToolTip("Input volume is required to do the segmentation.");
 		d->generateButton->setEnabled(true);
+		d->generateButton_2->setEnabled(true);
 	}
 	else
 	{
 		d->generateButton->setEnabled(false);
+		d->generateButton_2->setEnabled(false);
+
 	}
 }
 void qSlicerCalculusModuleWidget::generateClicked()
 {
 	Q_D(qSlicerCalculusModuleWidget);
-	d->fileNameComboBox->setCurrentIndex(5);
+	d->fileNameComboBox->setCurrentIndex(6);
 	vtkSlicerCalculusLogic *logic = d->logic();
 	QHash<QString, double> paramHash;
 	paramHash = logic->aqcCircleData(vtkMRMLVolumeNode::SafeDownCast(d->inputVolumeMRMLNodeComboBox_2->currentNode()));
@@ -499,6 +502,18 @@ void qSlicerCalculusModuleWidget::generateClicked()
 	addTableWidgetRow(paramHash,d->tableblock);
 	d->saveButton->setEnabled(true);
 	
+}
+void qSlicerCalculusModuleWidget::generateClicked_2()
+{
+	Q_D(qSlicerCalculusModuleWidget);
+	d->fileNameComboBox->setCurrentIndex(7);
+	vtkSlicerCalculusLogic *logic = d->logic();
+	QHash<QString, double> paramHash;
+	paramHash = logic->aqcCircleData(vtkMRMLVolumeNode::SafeDownCast(d->inputVolumeMRMLNodeComboBox_2->currentNode()));
+
+	addTableWidgetRow(paramHash, d->tableblock);
+	d->saveButton->setEnabled(true);
+
 }
 void qSlicerCalculusModuleWidget::addStoneParmsSlot(QHash<QString,double> hash)
 {
