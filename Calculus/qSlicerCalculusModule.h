@@ -22,11 +22,8 @@
 #include "qSlicerLoadableModule.h"
 
 #include "qSlicerCalculusModuleExport.h"
+
 #include "Logic/common.h"
-//#include <qt_windows.h>
-//#include <string>
-//#include <iostream>
-//#include <tchar.h>
 
 class qSlicerCalculusModulePrivate;
 

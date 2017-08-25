@@ -18,7 +18,7 @@
 // Qt includes
 #include <QDebug>
 #include <QtPlugin>
-#include<qtextcodec.h>
+
 // Slicer includes
 #include <qSlicerCoreApplication.h>
 #include <qSlicerModuleManager.h>

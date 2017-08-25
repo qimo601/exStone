@@ -15,11 +15,16 @@
 
 ==============================================================================*/
 // Qt includes
+#include <QCryptographicHash>
+#include <QDate>
+#include <QDateTime>
 #include <QDebug>
 #include <QMouseEvent>
 #include <QToolTip>
 #include <QMessageBox>
-#include "qt_windows.h"
+#include <QFileDialog>
+#include <QInputDialog>
+
 // SlicerQt includes
 #include "qSlicerCalculusModuleWidget.h"
 #include "ui_qSlicerCalculusModuleWidget.h"
@@ -64,16 +69,9 @@
 // vtkSlicerCalculusLogic includes
 #include "vtkSlicerCalculusLogic.h"
 //-----------------------
-#include <ActiveQt/qaxobject.h>
-#include <ActiveQt/qaxbase.h>
-#include <QtGui>
 
-#include <Qtcore/qstring.h>
-#include <Qtcore/QFile>
 #include <stdexcept>
 
-#include <QTableWidget>  
-#include <QTableWidgetItem>
 using namespace std;
 class QAxObject;
 //-------------------add end--------------------------------------
