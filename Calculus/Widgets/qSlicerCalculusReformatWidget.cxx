@@ -771,7 +771,6 @@ onSliceOrientationChanged(const QString& orientation)
 #endif
 
   d->MRMLSliceNode->SetOrientation(orientation.toLatin1());
-  d->MRMLSliceNode->SetOrientationString(orientation.toLatin1());
 }
 
 //------------------------------------------------------------------------------
