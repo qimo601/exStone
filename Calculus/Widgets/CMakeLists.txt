@@ -23,7 +23,6 @@ set(${KIT}_UI_SRCS
   )
 
 set(${KIT}_RESOURCES
-  ../Resources/UI/qSlicer${MODULE_NAME}ReformatWidget.ui
   )
 
 set(${KIT}_TARGET_LIBRARIES
