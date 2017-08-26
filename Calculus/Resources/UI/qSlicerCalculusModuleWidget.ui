@@ -639,7 +639,7 @@
   <customwidget>
    <class>qSlicerCalculusReformatWidget</class>
    <extends>QWidget</extends>
-   <header>qslicercalculusreformatwidget.h</header>
+   <header>qSlicerCalculusReformatWidget.h</header>
    <container>1</container>
    <slots>
     <slot>onMRMLSceneChanged(vtkMRMLScene*)</slot>
