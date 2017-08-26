@@ -130,10 +130,9 @@ vtkSlicerCropVolumeLogic* vtkSlicerCalculusLogic::getCropVolumeLogic()
 
 
 
-QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* reslice, vtkMRMLSliceNode* sliceNode, vtkMRMLVolumeNode* volumeNode)
+QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(
+  vtkImageReslice* vtkNotUsed(reslice), vtkMRMLSliceNode* sliceNode, vtkMRMLVolumeNode* volumeNode)
 {
-
-
 
 	vtkSmartPointer<vtkMatrix4x4> sliceToRAS = sliceNode->GetSliceToRAS();//slice原点和法向量矩阵
 	vtkSmartPointer<vtkMatrix4x4> RASToIJKMatrix = vtkSmartPointer<vtkMatrix4x4>::New();//4*4矩阵
@@ -298,7 +297,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 	//释放所有点
 	for (int index = 0; index < resultPointList.size(); index++)
 	{
-		double* result = resultPointList.at(index);
+		//double* result = resultPointList.at(index);
 		//qDebug() << "index : " <<index <<" "<< result[0] << " " << result[1] << " " << result[2] << " " << result[3] << " " << result[4];
 		double* p = resultPointList.at(index);
 		delete[] p;

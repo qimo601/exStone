@@ -114,13 +114,11 @@ QStringList qSlicerCalculusModule::dependencies() const
 //init interface
 void qSlicerCalculusModule::setup()
 {
-
-
 	this->Superclass::setup();
 	//get modulelogic
-	vtkSlicerCalculusLogic* moduleLogic = vtkSlicerCalculusLogic::SafeDownCast(this->logic());
+	//vtkSlicerCalculusLogic* moduleLogic = vtkSlicerCalculusLogic::SafeDownCast(this->logic());
 	
-	QStringList namesList = qSlicerCoreApplication::application()->moduleManager()->modulesNames();
+	//QStringList namesList = qSlicerCoreApplication::application()->moduleManager()->modulesNames();
 
 	//获取其他module的logic
 	//获取体数据module，通过module的name获取
@@ -143,9 +141,6 @@ void qSlicerCalculusModule::setup()
 	//		vtkSlicerCropVolumeLogic::SafeDownCast(cropVolumeModule->logic());
 	//	moduleLogic->setCropVolumeLogic(cropVolumeLogic);
 	//}
-
-
-
 }
 
 //-----------------------------------------------------------------------------

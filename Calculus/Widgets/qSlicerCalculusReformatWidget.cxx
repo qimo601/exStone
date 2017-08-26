@@ -347,22 +347,22 @@ qSlicerCalculusReformatWidget::qSlicerCalculusReformatWidget(
 	//{
 	//	vtkSlicerReformatLogic* reformatLogic =
 	//		vtkSlicerReformatLogic::SafeDownCast(this->logic());
-	//	//获取Reformat module的logic
+	//	//\BB\F1取Reformat module\B5\C4logic
 	//	this->setReformatLogic(reformatLogic);
 	//}
 	setup();
 	//****************Test ****************//
 
-	m_lrTimerId =0;//lr方向旋转，计时器
-	m_lrTimerCount=0;//lr执行次数
+	m_lrTimerId =0;//lr\B7\BD\CF\F2\D0\FD转\A3\AC\BC\C6时\C6\F7
+	m_lrTimerCount=0;//lr执\D0写\CE\CA\FD
 
-	m_paTimerId=0;//pa方向旋转，计时器
-	m_paTimerCount=0;//pa执行次数
+	m_paTimerId=0;//pa\B7\BD\CF\F2\D0\FD转\A3\AC\BC\C6时\C6\F7
+	m_paTimerCount=0;//pa执\D0写\CE\CA\FD
 
-	m_verticalTimerId=0;//垂直方向计时器
-	m_verticalTimerCount=0;//垂直方向执行次数
-	m_continueTimerId = 0;//连续采集计时器
-	m_continueTimerCount = 0;//连续采集执行次数
+	m_verticalTimerId=0;//\B4\B9直\B7\BD\CF\F2\BC\C6时\C6\F7
+	m_verticalTimerCount=0;//\B4\B9直\B7\BD\CF\F2执\D0写\CE\CA\FD
+	m_continueTimerId = 0;//\C1\AC\D0\F8\B2杉\AF\BC\C6时\C6\F7
+	m_continueTimerCount = 0;//\C1\AC\D0\F8\B2杉\AF执\D0写\CE\CA\FD
 	m_vtkMRMLScene = 0;
 	m_vtkMRMLSliceNodeRed = 0;
 	m_vtkMRMLVolumeNode = 0;
@@ -472,24 +472,24 @@ void qSlicerCalculusReformatWidget::setup()
 	qDebug() << "void qSlicerCalculusReformatWidget::setup()";
 }
 //------------------------------------------------------------------------------
-//自定义 设置ReformatLogic
+//\D7远\A8\D2\E5 \C9\E8\D6\C3ReformatLogic
 void qSlicerCalculusReformatWidget::setReformatLogic(vtkSlicerReformatLogic* logic)
 {
 	m_reformatLogic = logic;
 }
 //------------------------------------------------------------------------------
-//自定义 返回当前的logic，覆盖父类qSlicerAbstractModuleRepresentation 的logic
+//\D7远\A8\D2\E5 \B7\B5\BB氐\B1前\B5\C4logic\A3\AC\B8\B2\B8歉\B8\C0\E0qSlicerAbstractModuleRepresentation \B5\C4logic
 vtkMRMLAbstractLogic* qSlicerCalculusReformatWidget::logic()
 {
 	return vtkMRMLAbstractLogic::SafeDownCast(m_reformatLogic);
 }
 //------------------------------------------------------------------------------
-//自定义 设置本module的Logic
+//\D7远\A8\D2\E5 \C9\E8\D6帽\BEmodule\B5\C4Logic
 void qSlicerCalculusReformatWidget::setCalculusLogic(vtkSlicerCalculusLogic* logic)
 {
 	m_calculusLogic = logic;
 }
-//自定义 获取本module的Logic
+//\D7远\A8\D2\E5 \BB\F1取\B1\BEmodule\B5\C4Logic
 vtkSlicerCalculusLogic* qSlicerCalculusReformatWidget::getCalculusLogic()
 {
 	return m_calculusLogic;
@@ -885,7 +885,7 @@ void qSlicerCalculusReformatWidget::onEndCloseEvent()
 	cout << "close scene!" << endl;
 
 }
-//传递qSlicerCalculusModuleWidget的mrmlSceneChanged(vtkMRMLScene*)信号
+//\B4\AB\B5\DDqSlicerCalculusModuleWidget\B5\C4mrmlSceneChanged(vtkMRMLScene*)\D0藕\C5
 void qSlicerCalculusReformatWidget::onMRMLSceneChanged(vtkMRMLScene* scene)
 {
 	//Q_D(qSlicerCalculusReformatWidget);
@@ -898,9 +898,9 @@ void qSlicerCalculusReformatWidget::onMRMLSceneChanged(vtkMRMLScene* scene)
 
 //------------------------------------------------------------------------------
 /**
-* @brief 允许当前的窗口变形
+* @brief \D4\CA\D0\ED\B5\B1前\B5拇\B0\BF诒\E4\D0\CE
 * @param direction
-*	//选择窗口 SliceNodeSelector的 NodeID值
+*	//选\D4翊翱\DA SliceNodeSelector\B5\C4 NodeID值
 	//"vtkMRMLSliceNodeRed"
 	// "vtkMRMLSliceNodeYellow"
 	//"vtkMRMLSliceNodeGreen"
@@ -911,7 +911,7 @@ void qSlicerCalculusReformatWidget::onMRMLSceneChanged(vtkMRMLScene* scene)
 void qSlicerCalculusReformatWidget::enableReformat(bool enable,QString direction)
 {
 	Q_D(qSlicerCalculusReformatWidget);
-	//选择窗口 SliceNodeSelector的 NodeID值
+	//选\D4翊翱\DA SliceNodeSelector\B5\C4 NodeID值
 	//"vtkMRMLSliceNodeRed"
 	// "vtkMRMLSliceNodeYellow"
 	//"vtkMRMLSliceNodeGreen"
@@ -921,17 +921,17 @@ void qSlicerCalculusReformatWidget::enableReformat(bool enable,QString direction
 	
 	if (enable)
 	{
-		if (!d->ShowReformatWidgetToolButton->isChecked())//允许变形
+		if (!d->ShowReformatWidgetToolButton->isChecked())//\D4\CA\D0\ED\B1\E4\D0\CE
 			d->ShowReformatWidgetToolButton->toggle();
-		if (!d->VisibilityCheckBox->isChecked())//允许可见
+		if (!d->VisibilityCheckBox->isChecked())//\D4\CA\D0\ED\BF杉\FB
 			d->VisibilityCheckBox->toggle();
 		
 	}
 	else
 	{
-		if (d->ShowReformatWidgetToolButton->isChecked())//关闭变形
+		if (d->ShowReformatWidgetToolButton->isChecked())//\B9乇毡\E4\D0\CE
 			d->ShowReformatWidgetToolButton->toggle();
-		if (d->VisibilityCheckBox->isChecked())//关闭可见
+		if (d->VisibilityCheckBox->isChecked())//\B9乇湛杉\FB
 			d->VisibilityCheckBox->toggle();
 	}
 
@@ -940,9 +940,9 @@ void qSlicerCalculusReformatWidget::enableReformat(bool enable,QString direction
 
 //------------------------------------------------------------------------------
 /**
-* @brief 旋转
+* @brief \D0\FD转
 * @param QString direction,"LR" "PA" "IS"
-* @param double value: 旋转角度
+* @param double value: \D0\FD转\BD嵌\C8
 * @author liuzhaobang
 * @date 2016-10-14
 */
@@ -967,7 +967,7 @@ void qSlicerCalculusReformatWidget::rotate(QString direction, double value)
 }
 //------------------------------------------------------------------------------
 /**
-* @brief 随机函数
+* @brief \CB\E6\BB\FA\BA\AF\CA\FD
 * @param int min, int max
 * @author liuzhaobang
 * @date 2016-10-14
@@ -977,7 +977,7 @@ int qSlicerCalculusReformatWidget::getRand(int min, int max)
 	return min + qrand() % (max - min);
 }
 /**
-* @brief 随机旋转
+* @brief \CB\E6\BB\FA\D0\FD转
 * @param int min, int max
 * @author liuzhaobang
 * @date 2016-10-14
@@ -985,14 +985,14 @@ int qSlicerCalculusReformatWidget::getRand(int min, int max)
 void qSlicerCalculusReformatWidget::randRotate()
 {
 	Q_D(qSlicerCalculusReformatWidget);
-	//随机函数种子初始化，运行一次软件只初始化这一次，保证随机性不重复。
+	//\CB\E6\BB\FA\BA\AF\CA\FD\D6\D6\D7映\F5始\BB\AF\A3\AC\D4\CB\D0\D0一\B4\CE\C8\ED\BC\FE只\B3\F5始\BB\AF\D5\E2一\B4危\AC\B1\A3证\CB\E6\BB\FA\D0圆\BB\D6馗\B4\A1\A3
 	QTime t;
 	t = QTime::currentTime();
 	qsrand(t.msec() + t.second() * 1000);
 	int value = 0;
 	m_lrValueList.clear();
 	m_paValueList.clear();
-	//任意旋转
+	//\C8\CE\D2\E2\D0\FD转
 	for (int i = 0; i < 16; i++)
 	{
 		value = getRand(-200, 200);
@@ -1025,7 +1025,7 @@ void qSlicerCalculusReformatWidget::randRotate()
 	//m_paTimerId = startTimer(1000);
 }
 /**
-* @brief 定时器事件
+* @brief \B6\A8时\C6\F7\CA录\FE
 * @author liuzhaobang
 * @date 2016-10-14
 */
@@ -1036,7 +1036,7 @@ void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 	{
 
 		if (m_lrTimerCount < m_lrValueList.count())
-		//if (m_lrTimerCount < 1)//临时一次
+		//if (m_lrTimerCount < 1)//\C1\D9时一\B4\CE
 		{
 			rotate("LR", m_lrValueList[m_lrTimerCount]);
 			m_lrTimerCount++;
@@ -1072,15 +1072,15 @@ void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 			m_paValueList.clear();
 		}
 	}
-	//垂直定时器
+	//\B4\B9直\B6\A8时\C6\F7
 	else if (event->timerId() == m_verticalTimerId)
 	{
 		double value = d->OffsetSlider->value();
 		double singleStep = d->OffsetSlider->singleStep();
 		double maximum = d->OffsetSlider->maximum();
-		if ((value + singleStep) <= maximum)//超出最大值
+		if ((value + singleStep) <= maximum)//\B3\AC\B3\F6\D7\EE\B4\F3值
 		{
-			verticalAcqUi();//垂直采集
+			verticalAcqUi();//\B4\B9直\B2杉\AF
 			m_verticalTimerCount++;
 			//qDebug() << "qSlicerCalculusReformatWidget::timerEvent,m_verticalTimerCount:" << m_verticalTimerCount;
 
@@ -1093,15 +1093,15 @@ void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 			m_verticalTimerId = 0;
 		}
 	}
-	//连续定时器
+	//\C1\AC\D0\F8\B6\A8时\C6\F7
 	else if (event->timerId() == m_continueTimerId)
 	{
 		double value = d->OffsetSlider->value();
 		double singleStep = d->OffsetSlider->singleStep();
 		double maximum = d->OffsetSlider->maximum();
-		if ((value + singleStep) <= maximum)//超出最大值
+		if ((value + singleStep) <= maximum)//\B3\AC\B3\F6\D7\EE\B4\F3值
 		{
-			verticalAcqUi();//仍然用这个函数，垂直采集
+			verticalAcqUi();//\C8\D4然\D3\C3\D5\E2\B8\F6\BA\AF\CA\FD\A3\AC\B4\B9直\B2杉\AF
 			m_continueTimerCount++;
 			//qDebug() << "qSlicerCalculusReformatWidget::timerEvent,m_verticalTimerCount:" << m_verticalTimerCount;
 
@@ -1117,7 +1117,7 @@ void qSlicerCalculusReformatWidget::timerEvent(QTimerEvent *event)
 }
 
 /**
-* @brief 获取当切片数据
+* @brief \BB\F1取\B5\B1\C7\D0片\CA\FD\BE\DD
 * @author liuzhaobang
 * @date 2016-10-14
 */
@@ -1125,7 +1125,7 @@ void qSlicerCalculusReformatWidget::getSliceRawData()
 {
 	Q_D(qSlicerCalculusReformatWidget);
 
-	//获得最新的节点数据
+	//\BB\F1\B5\C3\D7\EE\D0碌慕诘\E3\CA\FD\BE\DD
 	vtkMRMLNode *mrmlNode = this->m_vtkMRMLScene->GetNodeByID("vtkMRMLSliceNodeRed");
 	m_vtkMRMLSliceNodeRed = vtkMRMLSliceNode::SafeDownCast(mrmlNode);
 	d->MRMLSliceLogic =
@@ -1146,7 +1146,7 @@ void qSlicerCalculusReformatWidget::getSliceRawData()
 
 	
 	m_stoneParamsHash.clear();
-	//获取单帧切片数据
+	//\BB\F1取\B5\A5帧\C7\D0片\CA\FD\BE\DD
 	if (m_calculusLogic)
 	{
 		m_stoneParamsHash = m_calculusLogic->acqSliceData(reslice.GetPointer(), m_vtkMRMLSliceNodeRed, m_vtkMRMLVolumeNode);
@@ -1161,7 +1161,7 @@ void qSlicerCalculusReformatWidget::getSliceRawData()
 }
 
 /**
-* @brief 获取垂直切片数据
+* @brief \BB\F1取\B4\B9直\C7\D0片\CA\FD\BE\DD
 * @author liuzhaobang
 * @date 2016-10-14
 */
@@ -1170,7 +1170,7 @@ void qSlicerCalculusReformatWidget::getSliceVerticalRawData(double offset)
 	Q_D(qSlicerCalculusReformatWidget);
 	QString direction;
 	QString nodeID;
-	//Test===failed  不支持“=”，必须append函数
+	//Test===failed  \B2\BB支\B3帧\B0=\A1\B1\A3\AC\B1\D8\D0\EBappend\BA\AF\CA\FD
 	nodeID.append(d->SliceNodeSelector->currentNodeID());
 	//qDebug() << "nodeID:" << nodeID;
 	if (nodeID == "vtkMRMLSliceNodeRed")
@@ -1186,7 +1186,7 @@ void qSlicerCalculusReformatWidget::getSliceVerticalRawData(double offset)
 		direction = "Y";
 	}
 	m_stoneParamsHash.clear();
-	//获取单帧切片数据
+	//\BB\F1取\B5\A5帧\C7\D0片\CA\FD\BE\DD
 	if (m_calculusLogic)
 	{
 		m_stoneParamsHash = m_calculusLogic->acqSliceVerticalData(m_vtkMRMLVolumeNode, offset, direction);
@@ -1198,40 +1198,38 @@ void qSlicerCalculusReformatWidget::getSliceVerticalRawData(double offset)
 
 }
 /**
-* @brief 垂直采集
+* @brief \B4\B9直\B2杉\AF
 * @author liuzhaobang
 * @date 2016-10-27
 */
 void qSlicerCalculusReformatWidget::verticalAcq()
 {
 	Q_D(qSlicerCalculusReformatWidget);
-	//垂直采集初始化
-	double max = d->OffsetSlider->maximum();
+	//\B4\B9直\B2杉\AF\B3\F5始\BB\AF
 	double min = d->OffsetSlider->minimum();
-	d->OffsetSlider->setValue(min);//设置从当前的最小值开始
+	d->OffsetSlider->setValue(min);//\C9\E8\D6么拥\B1前\B5\C4\D7\EE小值\BF\AA始
 
-	m_verticalTimerId = startTimer(1000);//准备开启定时器
+	m_verticalTimerId = startTimer(1000);//准\B1\B8\BF\AA\C6\F4\B6\A8时\C6\F7
 
 }
 /**
-* @brief 连续采集
+* @brief \C1\AC\D0\F8\B2杉\AF
 * @author liuzhaobang
 * @date 2016-10-27
 */
 void qSlicerCalculusReformatWidget::continueAcq()
 {
 	Q_D(qSlicerCalculusReformatWidget);
-	//垂直采集初始化
-	double max = d->OffsetSlider->maximum();
+	//\B4\B9直\B2杉\AF\B3\F5始\BB\AF
 	double min = d->OffsetSlider->minimum();
-	d->OffsetSlider->setValue(min);//设置从当前的最小值开始
+	d->OffsetSlider->setValue(min);//\C9\E8\D6么拥\B1前\B5\C4\D7\EE小值\BF\AA始
 
-	m_continueTimerId = startTimer(1000);//准备开启定时器
+	m_continueTimerId = startTimer(1000);//准\B1\B8\BF\AA\C6\F4\B6\A8时\C6\F7
 
 }
 
 /**
-* @brief 通过界面垂直采集
+* @brief 通\B9\FD\BD\E7\C3娲怪盶B2杉\AF
 * @author liuzhaobang
 * @date 2016-10-27
 */
@@ -1244,13 +1242,13 @@ void qSlicerCalculusReformatWidget::verticalAcqUi()
 }
 
 /**
-* @brief 关闭所有reformat窗口
+* @brief \B9乇\D5\CB\F9\D3\D0reformat\B4\B0\BF\DA
 * @author liuzhaobang
 * @date 2016-10-27
 */
 void qSlicerCalculusReformatWidget::closeAllReformat()
 {
-	//选择窗口 SliceNodeSelector的 NodeID值
+	//选\D4翊翱\DA SliceNodeSelector\B5\C4 NodeID值
 	//"vtkMRMLSliceNodeRed"
 	// "vtkMRMLSliceNodeYellow"
 	//"vtkMRMLSliceNodeGreen"
@@ -1259,32 +1257,32 @@ void qSlicerCalculusReformatWidget::closeAllReformat()
 	enableReformat(false, "vtkMRMLSliceNodeGreen");
 }
 /**
-* @brief  获取垂直切面参数
+* @brief  \BB\F1取\B4\B9直\C7\D0\C3\E6\B2\CE\CA\FD
 * @author liuzhaobang
 * @date 2016-10-27
 */
 void qSlicerCalculusReformatWidget::getVerticalStoneSlot(double value)
 {
-	//只有开启了垂直采集，才能执行。特别是防止单点采集的时候
+	//只\D3锌\AA\C6\F4\C1舜\B9直\B2杉\AF\A3\AC\B2\C5\C4\DC执\D0小\A3\CC乇\F0\CA欠\C0止\B5\A5\B5\E3\B2杉\AF\B5\C4时\BA\F2
 	if (m_verticalTimerId != 0)
 	{
-		//采集切面参数
+		//\B2杉\AF\C7\D0\C3\E6\B2\CE\CA\FD
 		getSliceVerticalRawData(value);
 	}
 	else if (m_continueTimerId != 0)
 	{
-		//采集切面参数
+		//\B2杉\AF\C7\D0\C3\E6\B2\CE\CA\FD
 		getSliceRawData();
 	}
 }
 /**
-* @brief  采集之前要激活Reformat的下拉框
+* @brief  \B2杉\AF之前要\BC\A4\BB\EEReformat\B5\C4\CF\C2\C0\AD\BF\F2
 * @author liuzhaobang
 * @date 2016-10-27
 */
 void qSlicerCalculusReformatWidget::enableReformatSelector()
 {
-	//集成防止test failed。可以让Reformat的下拉框正常显示。
+	//\BC\AF\B3煞\C0止test failed\A1\A3\BF\C9\D2\D4\C8\C3Reformat\B5\C4\CF\C2\C0\AD\BF\F2\D5\FD\B3\A3\CF\D4示\A1\A3
 	if (this->m_vtkMRMLScene != NULL)
 		emit  mrmlSceneChanged(this->m_vtkMRMLScene);
 }	

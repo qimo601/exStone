@@ -257,7 +257,7 @@ void qSlicerCalculusModuleWidget::on_openBtn_clicked()
 		msgBox.setIcon(QMessageBox::Warning);
 		msgBox.setStandardButtons(QMessageBox::Ok);
 		msgBox.setDefaultButton(QMessageBox::Ok);
-		int ret = msgBox.exec();
+		/* int ret = */msgBox.exec();
 
 		return;
 	}
@@ -561,7 +561,7 @@ void qSlicerCalculusModuleWidget::saveClicked()
 		msgBox.setIcon(QMessageBox::Warning);
 		msgBox.setStandardButtons(QMessageBox::Ok);
 		msgBox.setDefaultButton(QMessageBox::Ok);
-		int ret = msgBox.exec();
+		/* int ret = */msgBox.exec();
 	}
 	else
 	{
@@ -600,7 +600,7 @@ void qSlicerCalculusModuleWidget::saveClicked_2()
 		msgBox.setIcon(QMessageBox::Warning);
 		msgBox.setStandardButtons(QMessageBox::Ok);
 		msgBox.setDefaultButton(QMessageBox::Ok);
-		int ret = msgBox.exec();
+		/* int ret = */msgBox.exec();
 	}
 	else
 	{
@@ -754,6 +754,7 @@ void ExcelExportHelper::SetCellValue( QString value)
 }
 void ExcelExportHelper::Open(QString fileName)
 {
+  Q_UNUSED(fileName);
 	if (!m_file->open(QIODevice::WriteOnly | QIODevice::Text))
 	{
 		qDebug() << "Failed,ExcelExportHelper::open " << m_path;
