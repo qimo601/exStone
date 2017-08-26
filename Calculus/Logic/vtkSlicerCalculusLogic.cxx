@@ -37,6 +37,7 @@
 
 // STD includes
 #include <cassert>
+#include <cmath>
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
@@ -237,7 +238,7 @@ QHash<QString, double> vtkSlicerCalculusLogic::acqSliceData(vtkImageReslice* res
 	{
 		double*point = pointList.at(m1);
 		double* rasPoint = IJKToRASMatrix->MultiplyDoublePoint(point);
-		double distance = qAbs(A*rasPoint[0] + B*rasPoint[1] + C*rasPoint[2] + d) / qSqrt(A*A + B*B + C*C);
+		double distance = qAbs(A*rasPoint[0] + B*rasPoint[1] + C*rasPoint[2] + d) / sqrt(A*A + B*B + C*C);
 		double dis = vtkSlicerCalculusLogic::s_sliceThick/2;//一半层厚
 		if (distance < dis)//distance有变化，但是坐标值输出看不出变化
 		{
