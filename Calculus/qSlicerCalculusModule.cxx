@@ -18,7 +18,7 @@
 // Qt includes
 #include <QDebug>
 #include <QtPlugin>
-#include<qtextcodec.h>
+
 // Slicer includes
 #include <qSlicerCoreApplication.h>
 #include <qSlicerModuleManager.h>
@@ -36,7 +36,10 @@
 #include "qSlicerCalculusModuleWidget.h"
 
 //-----------------------------------------------------------------------------
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+#include <QtPlugin>
 Q_EXPORT_PLUGIN2(qSlicerCalculusModule, qSlicerCalculusModule);
+#endif
 
 //-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_ExtensionTemplate
@@ -111,13 +114,11 @@ QStringList qSlicerCalculusModule::dependencies() const
 //init interface
 void qSlicerCalculusModule::setup()
 {
-
-
 	this->Superclass::setup();
 	//get modulelogic
-	vtkSlicerCalculusLogic* moduleLogic = vtkSlicerCalculusLogic::SafeDownCast(this->logic());
+	//vtkSlicerCalculusLogic* moduleLogic = vtkSlicerCalculusLogic::SafeDownCast(this->logic());
 	
-	QStringList namesList = qSlicerCoreApplication::application()->moduleManager()->modulesNames();
+	//QStringList namesList = qSlicerCoreApplication::application()->moduleManager()->modulesNames();
 
 	//获取其他module的logic
 	//获取体数据module，通过module的name获取
@@ -140,9 +141,6 @@ void qSlicerCalculusModule::setup()
 	//		vtkSlicerCropVolumeLogic::SafeDownCast(cropVolumeModule->logic());
 	//	moduleLogic->setCropVolumeLogic(cropVolumeLogic);
 	//}
-
-
-
 }
 
 //-----------------------------------------------------------------------------

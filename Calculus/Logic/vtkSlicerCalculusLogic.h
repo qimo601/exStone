@@ -23,53 +23,32 @@
 
 #ifndef __vtkSlicerCalculusLogic_h
 #define __vtkSlicerCalculusLogic_h
+
 #include "common.h"
+
 // Slicer includes
 #include "vtkSlicerModuleLogic.h"
 #include "vtkSlicerVolumesLogic.h"
 #include "vtkSlicerCropVolumeLogic.h"
+
 // MRML includes
 #include "vtkMRMLScalarVolumeNode.h"
 #include "vtkMRMLSliceNode.h"
 
-// STD includes
-#include <cstdlib>
-
-#include "vtkSlicerCalculusModuleLogicExport.h"
-
 // VTK includes
 #include <vtkImageReslice.h>
 
-//----------------朱珊珊添加----------------------
-// Slicer includes
-#include "vtkMRMLMarkupsFiducialNode.h"
-#include "vtkMRMLMarkupsNode.h"
-#include "vtkSlicerMarkupsLogic.h"
+// Qt includes
+#include <QHash>
+#include <QString>
+
+// STD includes
+#include <cstdio>
 #include <cstdlib>
-#include "vtkSlicerCalculusModuleLogicExport.h"
-//--------------与excel有关的头文件
-#include <ActiveQt/qaxobject.h>
-#include <ActiveQt/qaxbase.h>
-#include <Qtcore/qstring.h>
-#include "vtkPoints.h"
-class QLabel;
-class QPushButton;
-#include <vtkIOStream.h>
 #include <string>
-#include <stdlib.h>
-#include <stdio.h>
-//与tableWidget有关的类
-#include <QTableWidget>  
-#include <QTableWidgetItem>
-#include <QDialog>
-#include <QAction>
-#include <QApplication>
-//excel有关头文件
-#include <ActiveQt/qaxobject.h>
-#include <ActiveQt/qaxbase.h>
-#include <Qtcore/qstring.h>
-using namespace std;
-//----------------添加结束---------------------------------
+
+#include "vtkSlicerCalculusModuleLogicExport.h"
+
 
 /// \ingroup Slicer_QtModules_ExtensionTemplate
 class VTK_SLICER_CALCULUS_MODULE_LOGIC_EXPORT vtkSlicerCalculusLogic :
@@ -81,6 +60,7 @@ public:
 	static vtkSlicerCalculusLogic *New();
 	vtkTypeMacro(vtkSlicerCalculusLogic, vtkSlicerModuleLogic);
 	void PrintSelf(ostream& os, vtkIndent indent);
+
 	//设置当前体数据的logic
 	void setVolumesLogic(vtkSlicerVolumesLogic* logic);
 	vtkSlicerVolumesLogic* getVolumesLogic();

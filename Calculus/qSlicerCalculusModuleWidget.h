@@ -22,23 +22,22 @@
 #include "qSlicerAbstractModuleWidget.h"
 
 #include "qSlicerCalculusModuleExport.h"
+
 #include "Logic/common.h"
-//excel
-#include <Qtcore/qstring.h>
-//GUI
-#include <QDialog>
-#include <QtCore/QVariant>
-#include <qlabel.h>
-#include <qpushbutton.h>
-#include <QLayout>
-#include <QtGui/QApplication>  
-#include <QFile>
-//tableWidget
-#include <QTableWidget>  
-#include <QTableWidgetItem>
-#include <QDialog>
+
+// Qt includes
 #include <QAction>
 #include <QApplication>
+#include <QDialog>
+#include <QFile>
+#include <QLabel>
+#include <QLayout>
+#include <QPushButton>
+#include <QString>
+#include <QTableWidget>  
+#include <QTableWidgetItem>
+#include <QVariant>
+
 class QLabel;
 class QPushButton;
 //--------------------add end-----------------
