@@ -461,7 +461,7 @@ void qSlicerCalculusModuleWidget::onEndCloseEvent()
 //----------------------add end---------------------
 	//logic->reset(vtkMRMLMarkupsFiducialNode::SafeDownCast(d->markupsMRMLNodeComboBox->currentNode()), 0);
 	//d->acqStoneBtn->setEnabled(true);
-	cout << "close scene!" << endl;
+	std::cout << "close scene!" << std::endl;
 
 }
 //----------------------add by zhushanshan---------------------

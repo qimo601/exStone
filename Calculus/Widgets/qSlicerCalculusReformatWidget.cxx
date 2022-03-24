@@ -19,6 +19,7 @@
 ==============================================================================*/
 
 // QT includes
+#include <QButtonGroup>
 #include <QMenu>
 #include <QString>
 #include <QDebug>
@@ -882,7 +883,7 @@ void qSlicerCalculusReformatWidget::onEndCloseEvent()
 	//vtkSmartPointer<vtkSlicerReformatLogic> logic = d->logic();
 	//logic->reset(vtkMRMLMarkupsFiducialNode::SafeDownCast(d->markupsMRMLNodeComboBox->currentNode()), 0);
 	//d->acqStoneBtn->setEnabled(true);
-	cout << "close scene!" << endl;
+	std::cout << "close scene!" << std::endl;
 
 }
 //\B4\AB\B5\DDqSlicerCalculusModuleWidget\B5\C4mrmlSceneChanged(vtkMRMLScene*)\D0ź\C5
@@ -1003,21 +1004,21 @@ void qSlicerCalculusReformatWidget::randRotate()
 		
 	}
 	//Test
-	cout << "m_lrValueList:"<<endl;
+	std::cout << "m_lrValueList:"<< std::endl;
 	for (int i = 0; i < 16; i++)
 	{
 		cout << " "	<< m_lrValueList.at(i);
 
 	}
-	cout << endl;
+	std::cout << std::endl;
 
-	cout << "m_paValueList:" << endl;
+	std::cout << "m_paValueList:" << std::endl;
 	for (int i = 0; i < 16; i++)
 	{
-		cout << " " << m_paValueList.at(i);
+		std::cout << " " << m_paValueList.at(i);
 
 	}
-	cout << endl;
+	std::cout << std::endl;
 
 
 	m_lrTimerId = startTimer(1000);
